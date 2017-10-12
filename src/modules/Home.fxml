@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane stylesheets="@kinmu.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
+	<children>
+		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <SplitPane dividerPositions="0.5">
+              <items>
+                <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="500.0" minWidth="500.0" prefWidth="500.0">
+                     <children>
+                        <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <GridPane>
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="5.0" style="-fx-background-color: #CCC;">
+                                       <children>
+                                          <TextField prefHeight="29.0" prefWidth="400.0" style="-fx-border-color: white; -fx-background-insets: 1; -fx-border-radius: 3;" />
+                                          <JFXButton alignment="CENTER" contentDisplay="CENTER" prefHeight="29.0" prefWidth="0.0" ripplerFill="#00c3ff" style="-fx-background-color: white;">
+                                             <graphic>
+                                                <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../icons/barcode.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                             <padding>
+                                                <Insets bottom="-5.0" left="1.0" right="1.0" top="-5.0" />
+                                             </padding>
+                                          </JFXButton>
+                                          <JFXButton alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="41.0" ripplerFill="#00c3ff" style="-fx-background-color: BLACK; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;">
+                                             <graphic>
+                                                <ImageView fitHeight="21.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../icons/font.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                             <padding>
+                                                <Insets bottom="-5.0" left="1.0" right="1.0" top="-5.0" />
+                                             </padding>
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                          </JFXButton>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                    <TableView style="-fx-border-radius: 0 0 10 10; -fx-background-insets: 1; -fx-background-color: #333; -fx-border-width: 2px; -fx-background-radius: 0 0 11 11; -fx-border-color: white;" GridPane.rowIndex="1">
+                                       <cursor>
+                                          <Cursor fx:constant="DEFAULT" />
+                                       </cursor>
+                                       <GridPane.margin>
+                                          <Insets right="1.0" />
+                                       </GridPane.margin>
+                                    </TableView>
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="3">
+                                       <children>
+                                          <JFXButton buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: RED;" text="Hủy Hóa Đơn" textAlignment="CENTER" textFill="WHITE" />
+                                          <Separator prefHeight="3.0" prefWidth="198.0" />
+                                          <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: #333;" text="In Hóa Đơn" textAlignment="CENTER" textFill="WHITE" />
+                                          <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: GREEN;" text="Thanh Toán" textFill="WHITE" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                    <StackPane prefHeight="150.0" prefWidth="200.0" />
+                                    <StackPane style="-fx-background-color: #333; -fx-background-radius: 9px; -fx-border-radius: 8px; -fx-border-color: white;" GridPane.rowIndex="2">
+                                       <GridPane.margin>
+                                          <Insets left="1.0" right="1.0" />
+                                       </GridPane.margin>
+                                       <children>
+                                          <GridPane>
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                              <RowConstraints maxHeight="122.0" minHeight="10.0" prefHeight="107.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <HBox>
+                                                   <children>
+                                                      <Label text="Thành Tiền:" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="22.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                                <HBox alignment="TOP_CENTER" GridPane.rowIndex="1">
+                                                   <children>
+                                                      <Label alignment="CENTER" contentDisplay="CENTER" text="1,987,450" textAlignment="CENTER" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="81.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </GridPane>
+                                       </children></StackPane>
+                                 </children>
+                              </GridPane>
+                           </children>
+                        </StackPane>
+                     </children>
+                  </AnchorPane>
+                  <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Untitled Tab 1" />
+                      <Tab text="Untitled Tab 2">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+              </items>
+            </SplitPane>
+         </children>
+		</StackPane>
+	</children>
+</AnchorPane>

@@ -1,0 +1,9 @@
+.error {
+	-fx-text-fill: red ;
+	-fx-focus-color: red;
+}
+
+.list-view, .list-view:focused, .list-view:selected {
+	-fx-padding: 0;
+}
+

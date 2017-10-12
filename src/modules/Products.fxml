@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@kinmu.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.ProductsController">
+	<children>
+		<StackPane layoutX="6.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="530.0" prefWidth="1400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<children>
+				<GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+					<columnConstraints>
+						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints maxHeight="1.7976931348623157E308" minHeight="420.0" prefHeight="457.0" vgrow="SOMETIMES" />
+					</rowConstraints>
+					<children>
+						<StackPane maxHeight="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+							<children>
+								<GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<columnConstraints>
+										<ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+									</columnConstraints>
+									<rowConstraints>
+                              <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+										<RowConstraints maxHeight="1.7976931348623157E308" minHeight="484.0" prefHeight="488.0" vgrow="SOMETIMES" />
+									</rowConstraints>
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                 <padding>
+                                    <Insets left="8.0" right="8.0" />
+                                 </padding>
+                                 <children>
+                                    <JFXButton fx:id="btnAddCatalog" alignment="CENTER" contentDisplay="CENTER" maxHeight="25.0" maxWidth="27.0" minHeight="25.0" minWidth="27.0" onAction="#addCatalog" prefHeight="25.0" prefWidth="27.0" style="-fx-background-color: #353f40;" textFill="WHITE">
+                                       <graphic>
+                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../icons/plus.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </JFXButton>
+                                    <TextField fx:id="txtSearchCatalog" alignment="TOP_LEFT" prefHeight="27.0" prefWidth="210.0" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1">
+                                 <padding>
+                                    <Insets left="8.0" right="8.0" />
+                                 </padding>
+                                 <children>
+                                    <JFXButton fx:id="btnAddProduct" alignment="CENTER" contentDisplay="CENTER" maxHeight="25.0" maxWidth="27.0" minHeight="25.0" minWidth="27.0" onAction="#addProduct" prefHeight="25.0" prefWidth="27.0" style="-fx-background-color: #353f40;" textFill="WHITE">
+                                       <graphic>
+                                          <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../icons/plus.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </JFXButton>
+                                    <TextField fx:id="txtSearchProduct" prefWidth="210.0" />
+                                 </children>
+                              </HBox>
+                              <TableView fx:id="tableCatalog" style="-fx-border-color: #333;" GridPane.rowIndex="1" />
+                              <TableView fx:id="tableProducts" style="-fx-border-color: #333;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints maxHeight="26.0" minHeight="26.0" prefHeight="26.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="396.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <GridPane GridPane.rowIndex="1">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.0" minWidth="110.0" prefWidth="110.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                          <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <ListView fx:id="lvLabel" cacheShape="false" centerShape="false" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="180.0" prefWidth="180.0" scaleShape="false" style="-fx-background-color: white;" GridPane.rowIndex="1" />
+                                          <ListView fx:id="lvDetail" focusTraversable="false" scaleShape="false" style="-fx-background-color: white;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                             <GridPane.margin>
+                                                <Insets />
+                                             </GridPane.margin></ListView>
+                                          <Label alignment="TOP_CENTER" contentDisplay="TOP" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="110.0" style="-fx-background-color: white;">
+                                             <GridPane.margin>
+                                                <Insets />
+                                             </GridPane.margin>
+                                          </Label>
+                                          <Label fx:id="labelBarCode" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: white;" GridPane.columnIndex="1" />
+                                          <JFXButton alignment="TOP_LEFT" style="-fx-background-color: green;" text="Print" textFill="WHITE" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </GridPane>
+                                    <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #619dff;" text="Chi Tiết" textFill="WHITE" />
+                                 </children>
+                              </GridPane>
+                           </children>
+								</GridPane>
+							</children>
+						</StackPane>
+					</children>
+				</GridPane>
+			</children>
+		</StackPane>
+	</children>
+</AnchorPane>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXToolbar?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+	minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+	prefWidth="1100.0"  xmlns="http://javafx.com/javafx/8.0.102"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.DashboardController">
+	<columnConstraints>
+		<ColumnConstraints maxWidth="544.0" minWidth="10.0"
+			prefWidth="200.0" />
+		<ColumnConstraints hgrow="SOMETIMES" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints minHeight="10.0" prefHeight="30.0"
+			vgrow="SOMETIMES" />
+	</rowConstraints>
+	<children>
+		<VBox prefHeight="200.0" prefWidth="100.0" spacing="4.0"
+			style="-fx-background-color: #333;">
+			<children>
+				<Pane prefHeight="76.0" prefWidth="200.0" style="-fx-background-color: #333;">
+					<children>
+						<Label alignment="CENTER" contentDisplay="CENTER" layoutX="1.0"
+							layoutY="23.0" prefHeight="17.0" prefWidth="198.0" text="HOA PHUONG"
+							textAlignment="CENTER" textFill="WHITE">
+							<font>
+								<Font name="System Bold" size="21.0" />
+							</font>
+						</Label>
+					</children>
+				</Pane>
+				<JFXButton fx:id="btnHome" alignment="TOP_LEFT" blendMode="SRC_ATOP"
+					buttonType="RAISED" onAction="#openKinmu" prefHeight="25.0"
+					prefWidth="198.0" style="-fx-background-color: #333;" text="Home"
+					textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP">
+					<font>
+						<Font size="14.0" />
+					</font>
+					<graphic>
+						<Circle blendMode="SRC_ATOP" fill="RED" radius="7.0" />
+					</graphic>
+				</JFXButton>
+				<JFXButton fx:id="btnProducts" alignment="TOP_LEFT"
+					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openProducts"
+					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
+					text="Koutsuu Main" textAlignment="CENTER" textFill="WHITE"
+					textOverrun="CLIP">
+					<font>
+						<Font size="14.0" />
+					</font>
+					<graphic>
+						<Circle blendMode="SRC_ATOP" fill="YELLOW" radius="7.0" />
+					</graphic>
+				</JFXButton>
+				<JFXButton fx:id="btnUsers" alignment="TOP_LEFT"
+					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openUsers"
+					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
+					text="Koutsuu Main" textAlignment="CENTER" textFill="WHITE"
+					textOverrun="CLIP">
+					<font>
+						<Font size="14.0" />
+					</font>
+					<graphic>
+						<Circle blendMode="SRC_ATOP" fill="GREEN" radius="7.0" />
+					</graphic>
+				</JFXButton>
+			</children>
+		</VBox>
+		<GridPane GridPane.columnIndex="1">
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints maxHeight="40.0" minHeight="40.0"
+					prefHeight="0.0" vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="1.7976931348623157E308"
+					vgrow="SOMETIMES" />
+				<RowConstraints maxHeight="30.0" minHeight="20.0"
+					vgrow="SOMETIMES" />
+			</rowConstraints>
+			<children>
+				<JFXToolbar>
+					<GridPane.margin>
+						<Insets left="5.0" right="5.0" />
+					</GridPane.margin>
+					<left>
+						<HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+							<children>
+								<Label fx:id="lblToday" text="今日は 2017年7月5日 (水曜日)"
+									textAlignment="CENTER" textFill="#290075" GridPane.columnIndex="1"
+									GridPane.rowIndex="1">
+									<font>
+										<Font name="System Bold" size="12.0" />
+									</font>
+								</Label>
+							</children>
+							<opaqueInsets>
+								<Insets />
+							</opaqueInsets>
+						</HBox>
+					</left>
+					<right>
+						<HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+							<children>
+								<MenuButton alignment="CENTER" contentDisplay="TOP"
+									depthTest="ENABLE" mnemonicParsing="false" fx:id="menuConfig"
+									style="-fx-background-color: #333;" text="MenuButton" textFill="WHITE"
+									textOverrun="CLIP">
+
+								</MenuButton>
+								<JFXButton blendMode="SRC_ATOP" style="-fx-background-color: #333;"
+									text="Exit" textFill="WHITE" />
+							</children>
+							<opaqueInsets>
+								<Insets />
+							</opaqueInsets>
+						</HBox>
+					</right>
+				</JFXToolbar>
+				<AnchorPane fx:id="containIndex" GridPane.rowIndex="1">
+					<children></children>
+				</AnchorPane>
+				<FlowPane fx:id="containBottom" columnHalignment="RIGHT"
+					prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+			</children>
+		</GridPane>
+	</children>
+	<effect>
+		<Blend />
+	</effect>
+</GridPane>
