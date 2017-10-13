@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXToolbar?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -13,6 +13,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -20,7 +21,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane stylesheets="@kinmu.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
+<AnchorPane stylesheets="@home.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
 	<children>
 		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -41,10 +42,10 @@
                                     <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" maxWidth="500.0" spacing="5.0" style="-fx-background-color: #CCC;">
+                                    <HBox fx:id="hboxBarcode" alignment="CENTER_LEFT" maxWidth="500.0" spacing="5.0" style="-fx-background-color: #CCC;">
                                        <children>
-                                          <TextField prefHeight="29.0" prefWidth="400.0" style="-fx-border-color: white; -fx-background-insets: 1; -fx-border-radius: 3;" />
-                                          <JFXButton alignment="CENTER" contentDisplay="CENTER" prefHeight="29.0" prefWidth="0.0" ripplerFill="#00c3ff" style="-fx-background-color: white;">
+                                          <TextField fx:id="txtBarcode" prefHeight="29.0" prefWidth="400.0" style="-fx-border-color: white; -fx-background-insets: 1; -fx-border-radius: 3;" />
+                                          <JFXButton fx:id="btnBarcode" alignment="CENTER" contentDisplay="CENTER" onAction="#actionSwitchBarcode" prefHeight="29.0" prefWidth="0.0" ripplerFill="#00c3ff" style="-fx-background-color: white;">
                                              <graphic>
                                                 <ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -56,7 +57,7 @@
                                                 <Insets bottom="-5.0" left="1.0" right="1.0" top="-5.0" />
                                              </padding>
                                           </JFXButton>
-                                          <JFXButton alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="41.0" ripplerFill="#00c3ff" style="-fx-background-color: BLACK; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;">
+                                          <JFXButton fx:id="btnSearchProduct" alignment="CENTER" contentDisplay="CENTER" onAction="#actionSwitchProduct" prefHeight="27.0" prefWidth="41.0" ripplerFill="#00c3ff" style="-fx-background-color: BLACK; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;">
                                              <graphic>
                                                 <ImageView fitHeight="21.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -76,7 +77,7 @@
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
                                     </HBox>
-                                    <TableView style="-fx-border-radius: 0 0 10 10; -fx-background-insets: 1; -fx-background-color: #333; -fx-border-width: 2px; -fx-background-radius: 0 0 11 11; -fx-border-color: white;" GridPane.rowIndex="1">
+                                    <TableView fx:id="tableBuyList" style="-fx-background-color: #333; -fx-border-width: 3px; -fx-border-color: white;" GridPane.rowIndex="1">
                                        <cursor>
                                           <Cursor fx:constant="DEFAULT" />
                                        </cursor>
@@ -84,18 +85,22 @@
                                           <Insets right="1.0" />
                                        </GridPane.margin>
                                     </TableView>
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="3">
-                                       <children>
-                                          <JFXButton buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: RED;" text="Hủy Hóa Đơn" textAlignment="CENTER" textFill="WHITE" />
-                                          <Separator prefHeight="3.0" prefWidth="198.0" />
-                                          <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: #333;" text="In Hóa Đơn" textAlignment="CENTER" textFill="WHITE" />
-                                          <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: GREEN;" text="Thanh Toán" textFill="WHITE" />
-                                       </children>
+                                    <JFXToolbar GridPane.rowIndex="3">
+                                       <left>
+                                          <JFXButton buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: RED;" text="Hủy Hóa Đơn" textAlignment="CENTER" textFill="WHITE" BorderPane.alignment="CENTER" />
+                                       </left>
                                        <padding>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </padding>
-                                    </HBox>
-                                    <StackPane prefHeight="150.0" prefWidth="200.0" />
+                                       <right>
+                                          <HBox spacing="10.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                                <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: #333;" text="In Hóa Đơn" textAlignment="CENTER" textFill="WHITE" />
+                                                <JFXButton alignment="CENTER" buttonType="RAISED" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" prefHeight="30.0" style="-fx-background-color: GREEN;" text="Thanh Toán" textFill="WHITE" />
+                                             </children>
+                                          </HBox>
+                                       </right>
+                                    </JFXToolbar>
                                     <StackPane style="-fx-background-color: #333; -fx-background-radius: 9px; -fx-border-radius: 8px; -fx-border-color: white;" GridPane.rowIndex="2">
                                        <GridPane.margin>
                                           <Insets left="1.0" right="1.0" />
@@ -124,7 +129,7 @@
                                                 </HBox>
                                                 <HBox alignment="TOP_CENTER" GridPane.rowIndex="1">
                                                    <children>
-                                                      <Label alignment="CENTER" contentDisplay="CENTER" text="1,987,450" textAlignment="CENTER" textFill="WHITE">
+                                                      <Label fx:id="lblTotal" alignment="CENTER" contentDisplay="CENTER" text="1,987,450" textAlignment="CENTER" textFill="WHITE">
                                                          <font>
                                                             <Font size="81.0" />
                                                          </font>

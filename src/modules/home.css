@@ -1,0 +1,37 @@
+.error {
+	-fx-text-fill: red ;
+	-fx-focus-color: red;
+}
+
+.list-view, .list-view:focused, .list-view:selected {
+	-fx-padding: 0.0;
+}
+
+
+
+.table-view {
+  
+}
+
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-size: 30;
+  
+    -fx-background-color: transparent;
+   
+}
+
+.table-view .column-header .label {
+    -fx-font-size: 11pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-alignment: center-left;
+    -fx-opacity: 1;
+}
+
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: -fx-focus-color;
+}

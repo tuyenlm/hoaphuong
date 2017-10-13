@@ -210,8 +210,8 @@ public class ProductsController implements Initializable {
 			}
 			TableColumn<Catalogs, Number> indexColumn = new TableColumn<Catalogs, Number>("#");
 			indexColumn.setSortable(false);
-			indexColumn.setMinWidth(50);
-			indexColumn.setMaxWidth(50);
+			indexColumn.setMinWidth(40);
+			indexColumn.setMaxWidth(40);
 			indexColumn.getStyleClass().add("my-special-column-style");
 			indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
 					tableCatalog.getItems().indexOf(column.getValue()) + 1));
@@ -257,8 +257,8 @@ public class ProductsController implements Initializable {
 
 			TableColumn<Catalogs, Catalogs> editColumn = new TableColumn<>("Sửa");
 			editColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-			editColumn.setMinWidth(55);
-			editColumn.setMaxWidth(55);
+			editColumn.setMinWidth(43);
+			editColumn.setMaxWidth(43);
 			editColumn.getStyleClass().add("my-special-column-style");
 			editColumn.setCellFactory(param -> new TableCell<Catalogs, Catalogs>() {
 				@Override
@@ -326,8 +326,8 @@ public class ProductsController implements Initializable {
 			});
 			TableColumn<Catalogs, Catalogs> deleteColumn = new TableColumn<>("Xóa");
 			deleteColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-			deleteColumn.setMinWidth(55);
-			deleteColumn.setMaxWidth(55);
+			deleteColumn.setMinWidth(43);
+			deleteColumn.setMaxWidth(43);
 			deleteColumn.getStyleClass().add("my-special-column-style");
 			deleteColumn.setCellFactory(param -> new TableCell<Catalogs, Catalogs>() {
 				@Override
@@ -429,8 +429,8 @@ public class ProductsController implements Initializable {
 			}
 			TableColumn<Products, Number> indexColumn = new TableColumn<Products, Number>("#");
 			indexColumn.setSortable(false);
-			indexColumn.setMinWidth(50);
-			indexColumn.setMaxWidth(50);
+			indexColumn.setMinWidth(40);
+			indexColumn.setMaxWidth(40);
 			indexColumn.getStyleClass().add("my-special-column-style");
 			indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
 					tableProducts.getItems().indexOf(column.getValue()) + 1));
@@ -465,8 +465,8 @@ public class ProductsController implements Initializable {
 			TableColumn<Products, Products> editColumn = new TableColumn<>("Sửa");
 			editColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 			editColumn.getStyleClass().add("my-special-column-style");
-			editColumn.setMinWidth(55);
-			editColumn.setMaxWidth(55);
+			editColumn.setMinWidth(43);
+			editColumn.setMaxWidth(43);
 			editColumn.setCellFactory(param -> new TableCell<Products, Products>() {
 				@Override
 				protected void updateItem(Products item, boolean empty) {
@@ -562,8 +562,8 @@ public class ProductsController implements Initializable {
 			TableColumn<Products, Products> deleteColumn = new TableColumn<>("Xóa");
 			deleteColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 			deleteColumn.getStyleClass().add("my-special-column-style");
-			deleteColumn.setMinWidth(55);
-			deleteColumn.setMaxWidth(55);
+			deleteColumn.setMinWidth(43);
+			deleteColumn.setMaxWidth(43);
 			deleteColumn.setCellFactory(param -> new TableCell<Products, Products>() {
 				@Override
 				protected void updateItem(Products item, boolean empty) {
