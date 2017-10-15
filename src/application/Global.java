@@ -48,6 +48,7 @@ public class Global {
 	public static String tsl_menu_active_code = "Active Code";
 	public static String tsl_menu_tasks = "Tasks";
 	public static String tsl_menu_norikae = "場所";
+	public static String tsl_menu_home = "Thanh Toán";
 	public static String tsl_menu_Products = "Sản Phẩm";
 	public static String tsl_menu_Users = "Nhân Viên ";
 	public static String tsl_menu_norimono = "乗物";
@@ -84,7 +85,7 @@ public class Global {
 	public static String superEmployeId = "00000";
 	public static String superFullname = "Super";
 	public static String superUsername = "admin";
-	public static String patternTime = "yyyy年MM月dd日　EEEEE";
+	public static String patternTime = "EEEEE, dd-MM-yyyy";
 	
 	public static String tsl_lblConfirmDialog = "Thông báo";
 

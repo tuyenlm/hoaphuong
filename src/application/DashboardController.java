@@ -61,7 +61,7 @@ public class DashboardController implements Initializable {
 	
 
 		String pattern = Global.patternTime;
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("ja", "JP"));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("vi", "VN"));
 		String date = simpleDateFormat.format(new Date());
 		lblToday.setText(date);
 	}
@@ -69,7 +69,7 @@ public class DashboardController implements Initializable {
 	// Load all fxml files to a cahce for swapping
 	private void createPages() {
 		try {
-			btnHome.setText(Global.tsl_menu_kinmu);
+			btnHome.setText(Global.tsl_menu_home);
 			btnProducts.setText(Global.tsl_menu_Products);
 			btnUsers.setText(Global.tsl_menu_Users);
 			// tableWorks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

@@ -137,9 +137,7 @@ public class ProductsController implements Initializable {
 				} else {
 					BuilderProduct(0, txtSearchProduct.getText());
 				}
-
 			});
-
 		} catch (Exception e) {
 			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 		}
@@ -198,7 +196,7 @@ public class ProductsController implements Initializable {
 			if (nameSearch.isEmpty()) {
 				query = "SELECT * FROM catalogs ORDER BY id asc";
 			} else {
-				query = "SELECT * FROM catalogs WHERE nameCatalog LIKE '%" + nameSearch + "%' ORDER BY id asc";
+				query = "SELECT * FROM catalogs WHERE nameCatalog ILIKE '%" + nameSearch + "%' ORDER BY id asc";
 			}
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
@@ -416,7 +414,7 @@ public class ProductsController implements Initializable {
 			if (nameSearch.isEmpty()) {
 				query = "SELECT * FROM products WHERE catalogId = '" + catalogId + "' ORDER BY id ASC";
 			} else {
-				query = "SELECT * FROM products WHERE nameProduct LIKE '%" + nameSearch + "%' ORDER BY id ASC";
+				query = "SELECT * FROM products WHERE nameProduct ILIKE '%" + nameSearch + "%' ORDER BY id ASC";
 			}
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
@@ -714,13 +712,11 @@ public class ProductsController implements Initializable {
 				} catch (Exception e) {
 					Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 				}
-				
 			} else {
 				if (outputFileP != null && outputFileP.exists()) {
 					outputFileP.delete();
 				}
 			}
-
 		} catch (Exception e) {
 			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 		}
@@ -846,7 +842,6 @@ public class ProductsController implements Initializable {
 			}
 			return null;
 		});
-
 		return dialogProduct;
 	}
 
@@ -921,5 +916,4 @@ public class ProductsController implements Initializable {
 			}
 		}
 	}
-
 }
