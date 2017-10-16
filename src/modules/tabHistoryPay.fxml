@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXToolbar?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<AnchorPane stylesheets="@tabHistoryPay.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.TabHistoryPayController">
+<AnchorPane stylesheets="@tabHistoryPay.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.TabHistoryPayController">
 	<children>
 		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
@@ -17,16 +22,33 @@
 						<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
 					</columnConstraints>
 					<rowConstraints>
+                  <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES" />
 						<RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="190.0" minHeight="190.0" prefHeight="190.0" vgrow="SOMETIMES" />
 					</rowConstraints>
                <children>
-                  <TableView fx:id="tableHistoryPay" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" scaleShape="false" style="-fx-background-color: #CCC;" />
-                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #CCC; -fx-background-insets: 1px; -fx-border-insets: 2px; -fx-border-width: 1px; -fx-border-color: white;" GridPane.rowIndex="1">
+                  <TableView fx:id="tableHistoryPay" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" scaleShape="false" style="-fx-background-color: #CCC;" GridPane.rowIndex="1" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #CCC; -fx-background-insets: 1px; -fx-border-insets: 2px; -fx-border-width: 1px; -fx-border-color: white;" GridPane.rowIndex="2">
                      <children>
                         <ListView fx:id="listViewProductCount" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false" />
                      </children>
                   </StackPane>
+                  <JFXToolbar>
+                     <left>
+                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" spacing="5.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <ComboBox prefWidth="150.0" promptText="sss" />
+                              <ComboBox prefWidth="150.0" />
+                           </children>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </HBox>
+                     </left>
+                     <right>
+                        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                     </right>
+                  </JFXToolbar>
                </children>
 				</GridPane>
 			</children>

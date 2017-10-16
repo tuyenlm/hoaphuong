@@ -4,6 +4,7 @@
 <?import com.jfoenix.controls.JFXToolbar?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
@@ -22,7 +23,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane stylesheets="@home.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
+<AnchorPane stylesheets="@home.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
 	<children>
 		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
@@ -156,16 +157,61 @@
 												<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
 											</columnConstraints>
 											<rowConstraints>
+                                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
 												<RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
 												<RowConstraints maxHeight="190.0" minHeight="190.0" prefHeight="190.0" vgrow="SOMETIMES" />
 											</rowConstraints>
 											<children>
-												<TableView fx:id="tableHistoryPay" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false" style="-fx-background-color: #CCC;" styleClass="tableHistoryPay" />
-												<StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #CCC; -fx-background-insets: 1px; -fx-border-insets: 2px; -fx-border-width: 1px; -fx-border-color: white;" GridPane.rowIndex="1">
+												<TableView fx:id="tableHistoryPay" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false" style="-fx-background-color: #CCC;" styleClass="tableHistoryPay" GridPane.rowIndex="1" />
+												<StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #CCC; -fx-background-insets: 1px; -fx-border-insets: 2px; -fx-border-width: 1px; -fx-border-color: white;" GridPane.rowIndex="3">
 													<children>
-														<ListView fx:id="listViewProductCount" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false" />
+														<ListView fx:id="listViewProductCount" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false">
+                                             <StackPane.margin>
+                                                <Insets />
+                                             </StackPane.margin></ListView>
 													</children>
 												</StackPane>
+                                    <JFXToolbar>
+                                       <left>
+                                          <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                                <ComboBox fx:id="comCondition" maxWidth="1.7976931348623157E308" promptText="Tìm theo" />
+                                                <TextField fx:id="txtSearchHistory" prefHeight="27.0" prefWidth="135.0" />
+                                             </children>
+                                             <padding>
+                                                <Insets left="5.0" right="5.0" />
+                                             </padding>
+                                          </HBox>
+                                       </left>
+                                       <right>
+                                          <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" spacing="5.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                                <ComboBox fx:id="comYear" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="27.0" prefWidth="78.0" promptText="Năm" scaleShape="false" />
+                                                <ComboBox fx:id="comMonth" prefHeight="27.0" prefWidth="87.0" promptText="Tháng" />
+                                             </children>
+                                             <padding>
+                                                <Insets left="5.0" right="5.0" />
+                                             </padding>
+                                          </HBox>
+                                       </right>
+                                    </JFXToolbar>
+                                    <JFXToolbar GridPane.rowIndex="2">
+                                       <right>
+                                          <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" minWidth="341.0" prefWidth="341.0" BorderPane.alignment="CENTER">
+                                             <children>
+                                                <Label fx:id="lblSum" alignment="CENTER_RIGHT" cacheShape="false" centerShape="false" contentDisplay="RIGHT" focusTraversable="false" minWidth="100.0" prefWidth="100.0" scaleShape="false" style="-fx-background-color: #CCC; -fx-border-color: #333;" text="0" textAlignment="RIGHT">
+                                                   <font>
+                                                      <Font name="System Bold" size="13.0" />
+                                                   </font>
+                                                   <padding>
+                                                      <Insets bottom="2.0" left="20.0" right="3.0" top="2.0" />
+                                                   </padding>
+                                                </Label>
+                                             </children>
+                                          </HBox>
+                                       </right>
+                                    </JFXToolbar>
 											</children>
 										</GridPane>
 									</content>
