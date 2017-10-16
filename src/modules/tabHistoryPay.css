@@ -1,20 +1,10 @@
-.error {
-	-fx-text-fill: red ;
-	-fx-focus-color: red;
-}
-
-.list-view, .list-view:focused, .list-view:selected {
-	-fx-padding: 0.0;
-}
-
-
 .table-view .column-header-background {
     -fx-background-color: transparent;
 }
 
 .table-view .column-header, .table-view .filler {
     -fx-size: 30;
-    -fx-background-color: transparent;
+    -fx-background-color: #333;
    
 }
 
@@ -24,16 +14,11 @@
     -fx-text-fill: white;
     -fx-alignment: center;
     -fx-opacity: 1;
-    
 }
-
 .table-view:focused .table-row-cell:filled:focused:selected {
     -fx-background-color: -fx-focus-color;
      -fx-cell-size: 25px;
 }
 .table-row-cell {
     -fx-cell-size: 27px;
-}
-.tableHistoryPay .column-header-background {
-    -fx-background-color: #333;
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.ItemsForBillController">
+	<columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints maxHeight="427.0" minHeight="10.0" prefHeight="273.0" valignment="CENTER" vgrow="SOMETIMES" />
+	</rowConstraints>
+	<children>
+		<StackPane focusTraversable="true">
+			<GridPane.margin>
+				<Insets />
+			</GridPane.margin>
+			<children>
+				<GridPane gridLinesVisible="true" style="-fx-background-color: #444;">
+					<columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
+						<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+					</rowConstraints>
+					<children>
+                  <JFXButton fx:id="btnBack" buttonType="RAISED" maxHeight="1.7976931348623157E308" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" ripplerFill="WHITE" style="-fx-background-color: black;" />
+                  <JFXButton fx:id="btnNext" buttonType="RAISED" maxHeight="1.7976931348623157E308" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" ripplerFill="WHITE" style="-fx-background-color: black;" GridPane.columnIndex="2" />
+                  <TableView fx:id="_table" GridPane.columnIndex="1" />
+					</children>
+				</GridPane>
+			</children>
+		</StackPane>
+	</children>
+   <padding>
+      <Insets left="-3.0" right="-3.0" />
+   </padding>
+</GridPane>

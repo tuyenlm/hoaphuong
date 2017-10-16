@@ -104,8 +104,6 @@ public class UsersController implements Initializable {
 							: Global.typeUser.getKey();
 					try {
 						Statement stmt = connection.createStatement();
-						String sqlCreate = "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY NOT NULL, username VARCHAR(30), password VARCHAR(35), fullname VARCHAR(90), type INT, createdAt timestamp default current_timestamp);";
-						stmt.execute(sqlCreate);
 						String generatedPassword = "";
 						MessageDigest md = MessageDigest.getInstance("MD5");
 						md.update(password.getBytes());
