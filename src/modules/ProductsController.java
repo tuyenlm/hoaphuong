@@ -699,9 +699,7 @@ public class ProductsController implements Initializable {
 					if (rs.next()) {
 						BuilderProduct(hmCatalog.get(catalogIdDialog), txtSearchProduct.getText());
 						if (tableProducts.getItems().size() > 0) {
-						
 							tableProducts.getSelectionModel().selectLast();
-							BarcodeController.renderBarcode(barcodeDialog);
 							loadProduct(rs.getInt("id"));
 						} else {
 							loadProduct(0);
@@ -709,6 +707,7 @@ public class ProductsController implements Initializable {
 					}
 					stmt.close();
 					connection.close();
+					BarcodeController.renderBarcode(barcodeDialog);
 				} catch (Exception e) {
 					Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 				}

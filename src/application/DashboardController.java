@@ -74,7 +74,6 @@ public class DashboardController implements Initializable {
 			btnUsers.setText(Global.tsl_menu_Users);
 			// tableWorks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 			home = FXMLLoader.load(getClass().getResource("/modules/Home.fxml"));
-			products = FXMLLoader.load(getClass().getResource("/modules/Products.fxml"));
 			// users =
 			// FXMLLoader.load(getClass().getResource("/modules/UsersNew.fxml"));
 			// if (Global.isTypeUser == Global.typeUser.getKey()) {

@@ -26,6 +26,7 @@ import application.ValidateHandle;
 import database.DbHandler;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,6 +54,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import models.Bill;
 import models.Buy;
@@ -65,7 +67,7 @@ import models.Products;
  */
 public class HomeController implements Initializable {
 	@FXML
-	private Label lblTotal, lblSum;
+	private Label lblTotal, lblSum, lblTest;
 	@FXML
 	private JFXButton btnBarcode, btnSearchProduct, btnPay;
 	@FXML
@@ -83,6 +85,8 @@ public class HomeController implements Initializable {
 	private TableView<Bill> tableHistoryPay;
 	@FXML
 	private ListView<String> listViewProductCount;
+	@FXML
+	public Circle iconNotifiUnkknowProduct;
 	HashMap<String, String> hasMUser = new HashMap<String, String>();
 	protected Connection connection;
 	private DbHandler handler;
@@ -105,7 +109,15 @@ public class HomeController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm", "Giá gốc", "Giá bán", "Đơn vị", "Vị trí");
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				txtBarcode.requestFocus();
+				txtBarcode.selectAll();
+			}
+		});
+		ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm", "Giá gốc",
+				"Giá bán", "Đơn vị", "Vị trí");
 		listViewProductCount.getItems().addAll(itemLabel);
 		tabUnknowProduct.setOnSelectionChanged((event) -> {
 			if (tabUnknowProduct.isSelected()) {
@@ -117,12 +129,7 @@ public class HomeController implements Initializable {
 			}
 		});
 		btnBarcode.setStyle("-fx-background-color: green;");
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				txtBarcode.requestFocus();
-			}
-		});
+
 		handler = new DbHandler();
 
 		txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -153,8 +160,9 @@ public class HomeController implements Initializable {
 					if (rs.isBeforeFirst()) {
 						while (rs.next()) {
 							ObservableList<Buy> items = FXCollections.observableArrayList();
-							items.add(new Buy(rs.getInt("productId"), rs.getString("nameProduct"), rs.getInt("quantitys"), rs.getInt("priceSell"), (rs.getInt("priceSell") * rs.getInt("quantitys")),
-									rs.getInt("id")));
+							items.add(new Buy(rs.getInt("productId"), rs.getString("nameProduct"),
+									rs.getInt("quantitys"), rs.getInt("priceSell"),
+									(rs.getInt("priceSell") * rs.getInt("quantitys")), rs.getInt("id")));
 							itemBuyList.put(rs.getInt("productId"), items);
 							billId = rs.getInt("billId");
 						}
@@ -209,13 +217,15 @@ public class HomeController implements Initializable {
 						if (rs.isBeforeFirst()) {
 							while (rs.next()) {
 								System.out.println(rs.getString("nameProduct"));
-								items.add(new Buy(0, rs.getString("nameProduct"), rs.getInt("quantitys"), rs.getInt("priceSell"), (rs.getInt("quantitys") * rs.getInt("priceSell")), 0));
+								items.add(new Buy(0, rs.getString("nameProduct"), rs.getInt("quantitys"),
+										rs.getInt("priceSell"), (rs.getInt("quantitys") * rs.getInt("priceSell")), 0));
 
 							}
 						}
 						rs.close();
 						connection.close();
-						Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(tableHistoryPay.getSelectionModel().getSelectedItem().getCreatedAtB());
+						Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+								.parse(tableHistoryPay.getSelectionModel().getSelectedItem().getCreatedAtB());
 						Dialog<Pair<String, String>> dialog = new Dialog<>();
 						dialog.setTitle(date.toLocaleString());
 						setItemDetailBill(items);
@@ -257,14 +267,20 @@ public class HomeController implements Initializable {
 		comYear.setStyle("-fx-border-insets: 3px;-fx-background-insets: 2px;-fx-border-color: WHITE");
 		comCondition.setStyle("-fx-border-insets: 3px;-fx-background-insets: 2px;-fx-border-color: WHITE");
 		txtSearchHistory.setStyle("-fx-border-insets: 1px;-fx-background-insets: 1px;-fx-border-color: WHITE");
+		Global.val = new SimpleStringProperty("0");
+		lblTest.setVisible(false);
+		lblTest.textProperty().bind(Global.val);
+		lblTest.textProperty().addListener((a, b, c) -> {
+			if (c != null) {
+				iconNotifiUnkknowProduct.setRadius(Integer.parseInt(lblTest.getText()));
+			}
+		});
 	}
 
 	private void changeComboboxTime() {
 		String yearCom = comYear.getValue();
 		String monthCom = comMonth.getValue();
-
 		buildTableHistoryPay(yearCom + "-" + monthCom, "CAST(createdatb as TEXT)");
-
 	}
 
 	public void setItemDetailBill(ObservableList<Buy> items) {
@@ -285,8 +301,8 @@ public class HomeController implements Initializable {
 			connection = handler.getConnection();
 			String query;
 			if (!text.isEmpty() && !field.isEmpty()) {
-				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) WHERE " + field + " ILIKE '%" + text
-						+ "%' ORDER BY bills.id DESC";
+				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) WHERE "
+						+ field + " ILIKE '%" + text + "%' ORDER BY bills.id DESC";
 			} else {
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
 			}
@@ -294,7 +310,8 @@ public class HomeController implements Initializable {
 			int sum = 0;
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
-					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"), rs.getBoolean("statusBill"), rs.getString("createdAtB"), rs.getString("fullname")));
+					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"),
+							rs.getBoolean("statusBill"), rs.getString("createdAtB"), rs.getString("fullname")));
 					sum += Integer.parseInt(rs.getString("priceTotalDe").trim().replaceAll(",", ""));
 				}
 			}
@@ -308,14 +325,16 @@ public class HomeController implements Initializable {
 		indexColumn.setMinWidth(30);
 		indexColumn.setMaxWidth(30);
 		indexColumn.setStyle("-fx-alignment: CENTER;");
-		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(tableHistoryPay.getItems().indexOf(column.getValue()) + 1));
+		indexColumn.setCellValueFactory(
+				column -> new ReadOnlyObjectWrapper<Number>(tableHistoryPay.getItems().indexOf(column.getValue()) + 1));
 		tableHistoryPay.getColumns().add(0, indexColumn);
-		tableHistoryPay.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Bill> observable, Bill oldValue, Bill newValue) -> {
-			if (newValue == null) {
-				return;
-			}
+		tableHistoryPay.getSelectionModel().selectedItemProperty()
+				.addListener((ObservableValue<? extends Bill> observable, Bill oldValue, Bill newValue) -> {
+					if (newValue == null) {
+						return;
+					}
 
-		});
+				});
 		TableColumn<Bill, String> barcodeBillCol = new TableColumn<Bill, String>("Mã Hóa Đơn");
 		barcodeBillCol.setCellValueFactory(new PropertyValueFactory<>("barcodeBill"));
 		barcodeBillCol.setCellFactory(TextFieldTableCell.<Bill>forTableColumn());
@@ -354,6 +373,7 @@ public class HomeController implements Initializable {
 		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, barcodeBillCol, sellerNameCol);
 		tableHistoryPay.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		tableHistoryPay.getItems().addAll(lists);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -368,13 +388,15 @@ public class HomeController implements Initializable {
 		indexColumn.setMinWidth(30);
 		indexColumn.setMaxWidth(30);
 		indexColumn.setStyle("-fx-alignment: CENTER;");
-		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(tableBuyList.getItems().indexOf(column.getValue()) + 1));
+		indexColumn.setCellValueFactory(
+				column -> new ReadOnlyObjectWrapper<Number>(tableBuyList.getItems().indexOf(column.getValue()) + 1));
 		tableBuyList.getColumns().add(0, indexColumn);
-		tableBuyList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Buy> observable, Buy oldValue, Buy newValue) -> {
-			if (newValue == null) {
-				return;
-			}
-		});
+		tableBuyList.getSelectionModel().selectedItemProperty()
+				.addListener((ObservableValue<? extends Buy> observable, Buy oldValue, Buy newValue) -> {
+					if (newValue == null) {
+						return;
+					}
+				});
 		TableColumn<Buy, String> nameProductCol = new TableColumn<Buy, String>("Sản Phẩm");
 		nameProductCol.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
 		nameProductCol.setCellFactory(TextFieldTableCell.<Buy>forTableColumn());
@@ -419,7 +441,8 @@ public class HomeController implements Initializable {
 					txtQuatity.textProperty().addListener((a, b, c) -> {
 						if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0) {
 							// tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(c));
-							tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(c));
+							tableBuyList.getItems().get(getIndex()).setPriceTotal(
+									tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(c));
 							txtQuatity.setText(c);
 						} else {
 							txtQuatity.setText(b);
@@ -429,8 +452,11 @@ public class HomeController implements Initializable {
 					txtQuatity.setOnKeyReleased(new EventHandler<KeyEvent>() {
 						public void handle(KeyEvent ke) {
 							if (ke.getText().trim().isEmpty() && !txtQuatity.getText().trim().isEmpty()) {
-								tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(txtQuatity.getText()));
-								tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(txtQuatity.getText()));
+								tableBuyList.getItems().get(getIndex())
+										.setQuatity(Integer.parseInt(txtQuatity.getText()));
+								tableBuyList.getItems().get(getIndex())
+										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+												* Integer.parseInt(txtQuatity.getText()));
 							}
 							updateTotal();
 						}
@@ -438,20 +464,28 @@ public class HomeController implements Initializable {
 					txtQuatity.focusedProperty().addListener((a, b, c) -> {
 						if (b) {
 							tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(txtQuatity.getText()));
-							tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(txtQuatity.getText()));
+							tableBuyList.getItems().get(getIndex())
+									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+											* Integer.parseInt(txtQuatity.getText()));
 							updateTotal();
 						}
 					});
 					btnExcept.setOnAction(e -> {
 						if ((tableBuyList.getItems().get(getIndex()).getQuatity() - 1) > 0) {
-							tableBuyList.getItems().get(getIndex()).setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() - 1);
-							tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * tableBuyList.getItems().get(getIndex()).getQuatity());
+							tableBuyList.getItems().get(getIndex())
+									.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() - 1);
+							tableBuyList.getItems().get(getIndex())
+									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+											* tableBuyList.getItems().get(getIndex()).getQuatity());
 						}
 						updateTotal();
 					});
 					btnPlus.setOnAction(e -> {
-						tableBuyList.getItems().get(getIndex()).setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
-						tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * tableBuyList.getItems().get(getIndex()).getQuatity());
+						tableBuyList.getItems().get(getIndex())
+								.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
+						tableBuyList.getItems().get(getIndex())
+								.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+										* tableBuyList.getItems().get(getIndex()).getQuatity());
 						updateTotal();
 					});
 				}
@@ -563,7 +597,8 @@ public class HomeController implements Initializable {
 			txtBarcode.setMaxWidth(395);
 			txtBarcode.requestFocus();
 			btnBarcode.setStyle("-fx-background-color: green;");
-			btnSearchProduct.setStyle("-fx-background-color: black; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;");
+			btnSearchProduct.setStyle(
+					"-fx-background-color: black; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;");
 		}
 	}
 
@@ -599,7 +634,8 @@ public class HomeController implements Initializable {
 			hboxBarcode.getChildren().add(0, searchProduct);
 		}
 		btnBarcode.setStyle("-fx-background-color: white;");
-		btnSearchProduct.setStyle("-fx-background-color: green; -fx-background-radius: 5; -fx-border-color: green; -fx-border-radius: 2; -fx-border-width: 1px;");
+		btnSearchProduct.setStyle(
+				"-fx-background-color: green; -fx-background-radius: 5; -fx-border-color: green; -fx-border-radius: 2; -fx-border-width: 1px;");
 	}
 
 	private void doSearch(String val, String field) {
@@ -611,12 +647,15 @@ public class HomeController implements Initializable {
 				while (rs.next()) {
 					if (!itemBuyList.containsKey(rs.getInt("id"))) {
 						ObservableList<Buy> items = FXCollections.observableArrayList();
-						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"), rs.getInt("priceSell"), 0));
+						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),
+								rs.getInt("priceSell"), 0));
 						itemBuyList.put(rs.getInt("id"), items);
 					} else {
 						if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
-							itemBuyList.get(rs.getInt("id")).get(0).setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
-							itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+							itemBuyList.get(rs.getInt("id")).get(0)
+									.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
+							itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(
+									rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
 						}
 					}
 				}
@@ -624,8 +663,12 @@ public class HomeController implements Initializable {
 				System.out.println("tim ko ra");
 				ObservableList<Products> items = FXCollections.observableArrayList();
 
-				items.add(new Products(0, "", 0, "", "", "", "0", "0", ""));
+				items.add(new Products(0, "0", 0, val.trim(), "0", "0", "0", "0", "0"));
 				itemUnknowList.put(val.trim(), items);
+				if (itemUnknowList.size() > 0) {
+					Global.val.setValue("5");
+					iconNotifiUnkknowProduct.setRadius(5);
+				}
 				if (tabUnknowProduct.isSelected()) {
 					setDataUnknowProduct(itemUnknowList);
 				}
@@ -661,7 +704,8 @@ public class HomeController implements Initializable {
 				String barcodeBill = "";
 				if (billId == 0) {
 					barcodeBill = "BI-" + String.valueOf(Instant.now().getEpochSecond());
-					String sqlBills = "insert into Bills (priceTotal,statusBill,sellerId,barcodeBill) " + "values ('" + priceTotal + "','" + statusBill + "','" + sellerId + "','" + barcodeBill + "')";
+					String sqlBills = "insert into Bills (priceTotal,statusBill,sellerId,barcodeBill) " + "values ('"
+							+ priceTotal + "','" + statusBill + "','" + sellerId + "','" + barcodeBill + "')";
 					stmt.execute(sqlBills, Statement.RETURN_GENERATED_KEYS);
 					ResultSet keyset = stmt.getGeneratedKeys();
 					keyset.next();
@@ -671,12 +715,14 @@ public class HomeController implements Initializable {
 					ObservableList<Buy> value = entry.getValue();
 					Statement stmt2 = connection.createStatement();
 					if (value.get(0).getSaleId() == 0) {
-						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,billId) " + "values ('" + value.get(0).getProductId() + "','" + value.get(0).getQuatity() + "','"
+						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,billId) " + "values ('"
+								+ value.get(0).getProductId() + "','" + value.get(0).getQuatity() + "','"
 								+ value.get(0).getPrice() + "','" + billId + "')";
 						stmt2.execute(sqlInsertSale);
 					} else {
-						String sqlUpdate = "UPDATE Sales SET quantitys ='" + value.get(0).getQuatity() + "', priceSell ='" + value.get(0).getPrice() + "' WHERE id = '" + value.get(0).getSaleId()
-								+ "'; ";
+						String sqlUpdate = "UPDATE Sales SET quantitys ='" + value.get(0).getQuatity()
+								+ "', priceSell ='" + value.get(0).getPrice() + "' WHERE id = '"
+								+ value.get(0).getSaleId() + "'; ";
 						stmt.executeUpdate(sqlUpdate);
 					}
 					connection.commit();

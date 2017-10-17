@@ -6,21 +6,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.util.Pair;
 
 public class Global {
 	public static Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
-	
+
 	public static Timestamp getTimeStampFormat() {
 		return new Timestamp(System.currentTimeMillis());
 	}
-	
+
 	public static String userId;
 	public static String username;
 	public static String fullname;
@@ -36,7 +36,7 @@ public class Global {
 	public static int totalTimeWork = 0;
 	public static boolean isSave = true;
 	public static String folderBackups = "backups";
-	
+
 	public static int UserMinLength = 6;
 	public static int UserMaxLength = 15;
 	// MENU LEFT
@@ -86,7 +86,7 @@ public class Global {
 	public static String superFullname = "Super";
 	public static String superUsername = "admin";
 	public static String patternTime = "EEEEE, dd-MM-yyyy";
-	
+
 	public static String tsl_lblConfirmDialog = "Thông báo";
 
 	public static Pair<Integer, String> female = new Pair<>(1, "女性");
@@ -95,9 +95,8 @@ public class Global {
 	public static Pair<Integer, String> typeAdmin = new Pair<>(1, "Admin");
 	public static Pair<Integer, String> typeUser = new Pair<>(2, "User");
 
-	
-
-	public static Optional<ButtonType> showDialogAlert(AlertType typeAlert, String title, String headerText, String contentText) {
+	public static Optional<ButtonType> showDialogAlert(AlertType typeAlert, String title, String headerText,
+			String contentText) {
 		Alert alert = new Alert(typeAlert);
 		alert.setTitle(title);
 		alert.setHeaderText(headerText);
@@ -112,5 +111,6 @@ public class Global {
 	public static String tsl_processBarTitle = "ファイルをインポートしています";
 	public static String tsl_processBarReading = "読書";
 	public static String tsl_openResourceFile = "オープンリソースファイル。";
+	public static SimpleStringProperty val;
 
 }
