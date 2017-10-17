@@ -422,7 +422,7 @@ public class ProductsController implements Initializable {
 					productList.add(new Products(rs.getInt("id"), rs.getString("nameProduct"), rs.getInt("catalogId"),
 							rs.getString("barcodeProduct"), rs.getString("descriptionProduct"),
 							rs.getString("location"), rs.getString("priceOrigin"), rs.getString("priceSell"),
-							rs.getString("unit"), rs.getDate("createdAtP")));
+							rs.getString("unit")));
 				}
 			}
 			TableColumn<Products, Number> indexColumn = new TableColumn<Products, Number>("#");

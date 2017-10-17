@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.Tab2Controller">
+<AnchorPane stylesheets="@tabHistoryPay.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.TabUnknowProductController">
 	<children>
 		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
@@ -19,16 +18,9 @@
 					<rowConstraints>
 						<RowConstraints maxHeight="1.7976931348623157E308" minHeight="420.0" prefHeight="457.0" vgrow="SOMETIMES" />
 					</rowConstraints>
-					<children>
-						<StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <Label text="Tab2 " textFill="RED">
-                           <font>
-                              <Font size="31.0" />
-                           </font></Label>
-                     </children>
-						</StackPane>
-					</children>
+               <children>
+                  <TableView fx:id="tableUnknowProduct" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+               </children>
 				</GridPane>
 			</children>
 		</StackPane>

@@ -14,11 +14,10 @@ public class Products {
 	private final SimpleStringProperty location;
 	private final SimpleStringProperty priceOrigin;
 	private final SimpleStringProperty priceSell;
-	private Date createdAtP;
 	private final SimpleStringProperty unit;
 
 	public Products(int id, String nameProduct, int catalogId, String barcodeProduct, String descriptionProduct,
-			String location, String priceOrigin, String priceSell, String unit, Date createdAtP) {
+			String location, String priceOrigin, String priceSell, String unit) {
 		this.id = new SimpleIntegerProperty(id);
 		this.nameProduct = new SimpleStringProperty(nameProduct);
 		this.catalogId = new SimpleIntegerProperty(catalogId);
@@ -28,7 +27,6 @@ public class Products {
 		this.priceOrigin = new SimpleStringProperty(priceOrigin);
 		this.priceSell = new SimpleStringProperty(priceSell);
 		this.unit = new SimpleStringProperty(unit);
-		this.createdAtP = createdAtP;
 	}
 
 	public SimpleIntegerProperty idProperty() {
@@ -146,5 +144,5 @@ public class Products {
 	public void setDescriptionProduct(final String descriptionProduct) {
 		this.descriptionProductProperty().set(descriptionProduct);
 	}
-	
+
 }
