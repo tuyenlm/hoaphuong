@@ -59,6 +59,7 @@ import javafx.util.Pair;
 import models.Bill;
 import models.Buy;
 import models.Products;
+import models.UnknowProduct;
 
 /**
  * FXML Controller class
@@ -98,7 +99,7 @@ public class HomeController implements Initializable {
 	private DecimalFormat decimalFormat = new DecimalFormat("###,###");
 	private int billId = 0;
 	private static ObservableList<Buy> itemsBill;
-	private HashMap<String, ObservableList<Products>> itemUnknowList = new HashMap<String, ObservableList<Products>>();
+	private HashMap<String, String> itemUnknowList = new HashMap<String, String>();
 
 	/**
 	 * Initializes the controller class.
@@ -122,7 +123,7 @@ public class HomeController implements Initializable {
 		tabUnknowProduct.setOnSelectionChanged((event) -> {
 			if (tabUnknowProduct.isSelected()) {
 				try {
-					setDataUnknowProduct(itemUnknowList);
+					setDataUnknowProduct("");
 				} catch (Exception e) {
 					Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 				}
@@ -145,7 +146,7 @@ public class HomeController implements Initializable {
 							break;
 						}
 					} else {
-						doSearch(txtBarcode.getText(), "barcodeProduct");
+						doSearch(txtBarcode.getText().trim(), "barcodeProduct");
 					}
 				}
 			}
@@ -275,6 +276,9 @@ public class HomeController implements Initializable {
 				iconNotifiUnkknowProduct.setRadius(Integer.parseInt(lblTest.getText()));
 			}
 		});
+		if (TabUnknowProductController.getData() > 0) {
+			iconNotifiUnkknowProduct.setRadius(5);
+		}
 	}
 
 	private void changeComboboxTime() {
@@ -641,7 +645,7 @@ public class HomeController implements Initializable {
 	private void doSearch(String val, String field) {
 		try {
 			connection = handler.getConnection();
-			String query = "SELECT * FROM products WHERE " + field + " = '" + val.trim() + "'";
+			String query = "SELECT * FROM products WHERE " + field + " = '" + val + "'";
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
@@ -659,24 +663,13 @@ public class HomeController implements Initializable {
 						}
 					}
 				}
+				builTableBuy();
 			} else {
 				System.out.println("tim ko ra");
-				ObservableList<Products> items = FXCollections.observableArrayList();
-
-				items.add(new Products(0, "0", 0, val.trim(), "0", "0", "0", "0", "0"));
-				itemUnknowList.put(val.trim(), items);
-				if (itemUnknowList.size() > 0) {
-					Global.val.setValue("5");
-					iconNotifiUnkknowProduct.setRadius(5);
-				}
-				if (tabUnknowProduct.isSelected()) {
-					setDataUnknowProduct(itemUnknowList);
-				}
-
+				setDataUnknowProduct(val);
 			}
 			txtBarcode.requestFocus();
 			txtBarcode.selectAll();
-			builTableBuy();
 			rs.close();
 			connection.close();
 		} catch (Exception e) {
@@ -684,13 +677,11 @@ public class HomeController implements Initializable {
 		}
 	}
 
-	private void setDataUnknowProduct(HashMap<String, ObservableList<Products>> items) throws IOException {
+	private void setDataUnknowProduct(String items) throws IOException {
 		TabUnknowProductController.setVariable(items);
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("tabUnknowProduct.fxml"));
-		if (items.size() > 0) {
-			TabUnknowProductController.setVariable(items);
-		}
 		tabUnknowProduct.setContent(loader.load());
+
 	}
 
 	private void createBill() {

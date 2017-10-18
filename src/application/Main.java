@@ -28,6 +28,8 @@ public class Main extends Application {
 			stmt.execute(sqlCreateSales);
 			String sqlCreate = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY NOT NULL, username VARCHAR(30), password VARCHAR(35), fullname VARCHAR(90), type INT, createdAt timestamp default current_timestamp);";
 			stmt.execute(sqlCreate);
+			String sqlCreateUnknowProduct = "CREATE TABLE IF NOT EXISTS UnknowProduct (id SERIAL PRIMARY KEY NOT NULL, barcodeUnknow VARCHAR(20));";
+			stmt.execute(sqlCreateUnknowProduct);
 			connection.commit();
 			stmt.close();
 			connection.close();

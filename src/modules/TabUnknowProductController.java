@@ -4,6 +4,7 @@ import java.awt.List;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -19,8 +20,6 @@ import application.ValidateHandle;
 import database.DbHandler;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,38 +48,55 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import models.Products;
+import models.Buy;
+import models.UnknowProduct;
 
 public class TabUnknowProductController implements Initializable {
 
-	private DbHandler handler;
-	private Connection connection;
+	private static DbHandler handler;
+	private static Connection connection;
 	private GridPane gridProduct;
 	private TextField nameProduct, unit, location, priceOrigin, priceSell;
 	private ComboBox<String> comCatalogId;
 	private TextArea description;
 	private ObservableList<String> checkValidate = FXCollections.observableArrayList();
 	private File outputFileP;
-	private SimpleStringProperty bindTxtCountHoliday;
 	// private TableView<Products> tableUnknowProduct;
-	private static HashMap<String, ObservableList<Products>> itemUnknowList;
+	private static HashMap<String, String> itemUnknowList = new HashMap<String, String>();
 	@FXML
-	private TableView<Products> tableUnknowProduct;
+	private TableView<UnknowProduct> tableUnknowProduct;
+	private static String selectItem;
 
 	public void initialize(URL url, ResourceBundle rb) {
+		getData();
 		builTable();
-		handler = new DbHandler();
 		tableUnknowProduct.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent event) {
 				if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
-					String bar = tableUnknowProduct.getSelectionModel().getSelectedItem().getBarcodeProduct();
+					String bar = tableUnknowProduct.getSelectionModel().getSelectedItem().getBarcodeUnknow();
 					addProduct(bar);
 				}
 			}
 		});
+	}
 
+	public static int getData() {
+		handler = new DbHandler();
+		try {
+			connection = handler.getConnection();
+			String query = "SELECT barcodeUnknow FROM UnknowProduct";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			while (rs.next()) {
+				itemUnknowList.put(rs.getString("barcodeUnknow"), rs.getString("barcodeUnknow"));
+			}
+
+			connection.close();
+		} catch (Exception e) {
+			Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
+		}
+		return itemUnknowList.size();
 	}
 
 	private void addProduct(String bar) {
@@ -95,9 +111,7 @@ public class TabUnknowProductController implements Initializable {
 			imgBarcode.setFitHeight(50);
 			gridProduct.add(imgBarcode, 1, 3);
 			String barcodeDialog = bar.trim();
-			File fileNewBar = BarcodeController.renderBarcode(barcodeDialog);
-			outputFileP = fileNewBar;
-			imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
+			imgBarcode.setImage(new Image(new File("barImg/" + barcodeDialog + ".png").toURI().toString()));
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				List value = result.get();
@@ -120,12 +134,20 @@ public class TabUnknowProductController implements Initializable {
 					ResultSet rs = stmt.getGeneratedKeys();
 					connection.commit();
 					if (rs.next()) {
-						int d = tableUnknowProduct.getSelectionModel().getSelectedIndex();
-						itemUnknowList.remove(tableUnknowProduct.getItems().get(d).getBarcodeProduct());
-						tableUnknowProduct.getItems().remove(d);
-						if (itemUnknowList.size() == 0) {
-							tableUnknowProduct.refresh();
-							Global.val.setValue( "0");
+						PreparedStatement ps = connection
+								.prepareStatement("DELETE FROM UnknowProduct WHERE barcodeUnknow = ?;");
+						ps.setString(1, barcodeDialog);
+						int sts = ps.executeUpdate();
+						connection.commit();
+						ps.close();
+						if (sts == 1) {
+							int d = tableUnknowProduct.getSelectionModel().getSelectedIndex();
+							itemUnknowList.remove(tableUnknowProduct.getItems().get(d).getBarcodeUnknow());
+							tableUnknowProduct.getItems().remove(d);
+							if (itemUnknowList.size() == 0) {
+								tableUnknowProduct.refresh();
+								Global.val.setValue("0");
+							}
 						}
 					}
 					stmt.close();
@@ -133,11 +155,12 @@ public class TabUnknowProductController implements Initializable {
 				} catch (Exception e) {
 					Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
 				}
-			} else {
-				if (outputFileP != null && outputFileP.exists()) {
-					outputFileP.delete();
-				}
 			}
+			// else {
+			// if (outputFileP != null && outputFileP.exists()) {
+			// outputFileP.delete();
+			// }
+			// }
 		} catch (Exception e) {
 			Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
 		}
@@ -308,69 +331,88 @@ public class TabUnknowProductController implements Initializable {
 		}
 	}
 
-	public static HashMap<String, ObservableList<Products>> getVariable() {
-		return itemUnknowList;
-	}
+	public static void setVariable(String itemUnknowLis) {
+		if (!itemUnknowLis.isEmpty()) {
+			selectItem = itemUnknowLis;
+			if (TabUnknowProductController.itemUnknowList.get(itemUnknowLis) == null) {
 
-	public static void setVariable(HashMap<String, ObservableList<Products>> itemUnknowLis) {
-		TabUnknowProductController.itemUnknowList = itemUnknowLis;
+				TabUnknowProductController.itemUnknowList.put(itemUnknowLis, itemUnknowLis);
+				try {
+					connection = handler.getConnection();
+					Statement stmt = connection.createStatement();
+					String sql = "insert into UnknowProduct (barcodeUnknow) values ('" + itemUnknowLis + "')";
+					stmt.executeUpdate(sql);
+					connection.commit();
+					stmt.close();
+					connection.close();
+					BarcodeController.renderBarcode(itemUnknowLis);
+				} catch (Exception e) {
+					Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
+				}
+			}
+		}
+		if (itemUnknowList.size() > 0) {
+			Global.val.setValue("5");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public void builTable() {
-		if (itemUnknowList.size() > 0) {
-			TableColumn<Products, Number> indexColumn = new TableColumn<Products, Number>("#");
-			indexColumn.setSortable(false);
-			indexColumn.setMinWidth(30);
-			indexColumn.setMaxWidth(30);
-			indexColumn.setStyle("-fx-alignment: CENTER;");
-			indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
-					tableUnknowProduct.getItems().indexOf(column.getValue()) + 1));
-			tableUnknowProduct.getColumns().add(0, indexColumn);
-			tableUnknowProduct.getSelectionModel().selectedItemProperty().addListener(
-					(ObservableValue<? extends Products> observable, Products oldValue, Products newValue) -> {
-						if (newValue == null) {
-							return;
-						}
-					});
-			TableColumn<Products, String> barcodeUnKCol = new TableColumn<Products, String>("Mã");
-			barcodeUnKCol.setCellValueFactory(new PropertyValueFactory<>("barcodeProduct"));
-			barcodeUnKCol.setCellFactory(TextFieldTableCell.<Products>forTableColumn());
-			barcodeUnKCol.setStyle("-fx-alignment: CENTER-LEFT;");
-			barcodeUnKCol.setMinWidth(130);
-			barcodeUnKCol.setMaxWidth(130);
-			TableColumn<Products, String> nameProductCol = new TableColumn<Products, String>("Sản Phẩm");
-			nameProductCol.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
-			nameProductCol.setCellFactory(TextFieldTableCell.<Products>forTableColumn());
-			nameProductCol.setStyle("-fx-alignment: CENTER-LEFT;");
-
-			TableColumn<Products, String> priceSellCol = new TableColumn<Products, String>("Giá Bán");
-			priceSellCol.setCellValueFactory(new PropertyValueFactory<>("priceSell"));
-			priceSellCol.setMinWidth(70);
-			priceSellCol.setMaxWidth(70);
-			priceSellCol.setStyle("-fx-alignment: CENTER-RIGHT;");
-			priceSellCol.setCellFactory(column -> new TableCell<Products, String>() {
-
-				@Override
-				public void updateItem(String item, boolean empty) {
-					super.updateItem(item, empty);
-					if (item == null || empty) {
-						setText(null);
-					} else {
-						// setText(decimalFormat.format(item));
-						setText(item);
+		TableColumn<UnknowProduct, Number> indexColumn = new TableColumn<UnknowProduct, Number>("#");
+		indexColumn.setSortable(false);
+		indexColumn.setMinWidth(30);
+		indexColumn.setMaxWidth(30);
+		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
+				tableUnknowProduct.getItems().indexOf(column.getValue()) + 1));
+		tableUnknowProduct.getColumns().add(0, indexColumn);
+		tableUnknowProduct.getSelectionModel().selectedItemProperty()
+				.addListener((ObservableValue<? extends UnknowProduct> observable, UnknowProduct oldValue,
+						UnknowProduct newValue) -> {
+					if (newValue == null) {
+						return;
 					}
+				});
+		indexColumn.setCellFactory(column -> new TableCell<UnknowProduct, Number>() {
+
+			@Override
+			public void updateItem(Number item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setText(null);
+				} else {
+					setText(item.toString());
+					if (tableUnknowProduct.getItems().get(getIndex()).getBarcodeUnknow().equals(selectItem))
+						setStyle("-fx-background-color: #333; -fx-text-fill: white;-fx-alignment: CENTER;");
+					else
+						setStyle("-fx-alignment: CENTER;");
 				}
-			});
-			tableUnknowProduct.getColumns().addAll(barcodeUnKCol, nameProductCol, priceSellCol);
-			tableUnknowProduct.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-			for (Map.Entry<String, ObservableList<Products>> entry : itemUnknowList.entrySet()) {
-				ObservableList<Products> value = entry.getValue();
-				tableUnknowProduct.getItems().addAll(value);
-
 			}
+		});
+		TableColumn<UnknowProduct, String> barcodeUnKCol = new TableColumn<UnknowProduct, String>("Mã");
+		barcodeUnKCol.setCellValueFactory(new PropertyValueFactory<>("barcodeUnknow"));
+		barcodeUnKCol.setCellFactory(TextFieldTableCell.<UnknowProduct>forTableColumn());
+		barcodeUnKCol.setStyle("-fx-alignment: CENTER-LEFT;");
+		barcodeUnKCol.setCellFactory(column -> new TableCell<UnknowProduct, String>() {
+
+			@Override
+			public void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setText(null);
+				} else {
+					setText(item);
+
+					if (item.equals(selectItem)) {
+						setStyle("-fx-background-color: #333; -fx-text-fill: white");
+					} else
+						setStyle(null);
+				}
+			}
+		});
+		tableUnknowProduct.getColumns().add(barcodeUnKCol);
+		tableUnknowProduct.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		for (Map.Entry<String, String> entry : itemUnknowList.entrySet()) {
+			tableUnknowProduct.getItems().addAll(new UnknowProduct(entry.getValue()));
 		}
-
 	}
-
 }
