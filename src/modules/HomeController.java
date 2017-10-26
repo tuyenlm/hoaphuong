@@ -1,5 +1,7 @@
 package modules;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -16,6 +18,14 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Iterator;
+
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 
 import com.jfoenix.controls.JFXButton;
 
@@ -27,6 +37,7 @@ import database.DbHandler;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +49,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
@@ -48,8 +60,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -58,8 +73,6 @@ import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import models.Bill;
 import models.Buy;
-import models.Products;
-import models.UnknowProduct;
 
 /**
  * FXML Controller class
@@ -68,11 +81,11 @@ import models.UnknowProduct;
  */
 public class HomeController implements Initializable {
 	@FXML
-	private Label lblTotal, lblSum, lblTest;
+	private Label lblTotal, lblSum, lblTest, lblTurnedBack;
 	@FXML
-	private JFXButton btnBarcode, btnSearchProduct, btnPay;
+	private JFXButton btnBarcode, btnSearchProduct, btnPay, btnDeletePay, btnJustPay;
 	@FXML
-	private TextField txtBarcode, txtSearchHistory;
+	private TextField txtBarcode, txtSearchHistory, txtMoneyReceived;
 	@FXML
 	private HBox hboxBarcode;
 	@FXML
@@ -99,7 +112,6 @@ public class HomeController implements Initializable {
 	private DecimalFormat decimalFormat = new DecimalFormat("###,###");
 	private int billId = 0;
 	private static ObservableList<Buy> itemsBill;
-	private HashMap<String, String> itemUnknowList = new HashMap<String, String>();
 
 	/**
 	 * Initializes the controller class.
@@ -124,6 +136,13 @@ public class HomeController implements Initializable {
 			if (tabUnknowProduct.isSelected()) {
 				try {
 					setDataUnknowProduct("");
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							txtBarcode.requestFocus();
+							txtBarcode.selectAll();
+						}
+					});
 				} catch (Exception e) {
 					Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 				}
@@ -228,14 +247,22 @@ public class HomeController implements Initializable {
 						Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 								.parse(tableHistoryPay.getSelectionModel().getSelectedItem().getCreatedAtB());
 						Dialog<Pair<String, String>> dialog = new Dialog<>();
-						dialog.setTitle(date.toLocaleString());
+						dialog.setTitle("Chi tiết thanh toán của ngày: " + date.toLocaleString());
 						setItemDetailBill(items);
-						dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
+						ButtonType buttonTypePrint = new ButtonType("IN", ButtonData.OK_DONE);
+
+						dialog.getDialogPane().getButtonTypes().addAll(buttonTypePrint, ButtonType.CANCEL);
 						Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
 						closeButton.setDisable(false);
 						FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/modules/itemsForBill.fxml"));
 						Parent root = (Parent) fxmlLoader.load();
 						dialog.getDialogPane().setContent(root);
+						dialog.setResultConverter(dialogButton -> {
+							if (dialogButton == buttonTypePrint) {
+								System.out.println("print");
+							}
+							return null;
+						});
 						dialog.showAndWait();
 					} catch (Exception e) {
 						Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
@@ -266,6 +293,8 @@ public class HomeController implements Initializable {
 		});
 		comMonth.setStyle("-fx-border-insets: 3px;-fx-background-insets: 2px;-fx-border-color: WHITE");
 		comYear.setStyle("-fx-border-insets: 3px;-fx-background-insets: 2px;-fx-border-color: WHITE");
+		comYear.setMaxWidth(90);
+		comYear.setMinWidth(90);
 		comCondition.setStyle("-fx-border-insets: 3px;-fx-background-insets: 2px;-fx-border-color: WHITE");
 		txtSearchHistory.setStyle("-fx-border-insets: 1px;-fx-background-insets: 1px;-fx-border-color: WHITE");
 		Global.val = new SimpleStringProperty("0");
@@ -279,6 +308,22 @@ public class HomeController implements Initializable {
 		if (TabUnknowProductController.getData() > 0) {
 			iconNotifiUnkknowProduct.setRadius(5);
 		}
+		statusDisableButton();
+
+		txtMoneyReceived.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				System.out.println();
+				if (!newValue.isEmpty() && newValue.length() < 9)
+					if (newValue.matches("\\d*")) {
+						int value = Integer.parseInt(newValue);
+						int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
+						lblTurnedBack.setText(decimalFormat.format(value - priceTotal));
+					} else {
+						txtMoneyReceived.setText(oldValue);
+					}
+			}
+		});
 	}
 
 	private void changeComboboxTime() {
@@ -305,17 +350,18 @@ public class HomeController implements Initializable {
 			connection = handler.getConnection();
 			String query;
 			if (!text.isEmpty() && !field.isEmpty()) {
-				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) WHERE "
+				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) WHERE "
 						+ field + " ILIKE '%" + text + "%' ORDER BY bills.id DESC";
 			} else {
-				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
+				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
 			}
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			int sum = 0;
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
 					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"),
-							rs.getBoolean("statusBill"), rs.getString("createdAtB"), rs.getString("fullname")));
+							rs.getString("priceReceiveDe"), rs.getBoolean("statusBill"), rs.getString("createdAtB"),
+							rs.getString("fullname")));
 					sum += Integer.parseInt(rs.getString("priceTotalDe").trim().replaceAll(",", ""));
 				}
 			}
@@ -350,6 +396,12 @@ public class HomeController implements Initializable {
 		priceTotalCol.setStyle("-fx-alignment: CENTER-RIGHT;");
 		priceTotalCol.setMinWidth(100);
 		priceTotalCol.setMaxWidth(100);
+		TableColumn<Bill, String> priceReceiveCol = new TableColumn<Bill, String>("Tiền Nhận");
+		priceReceiveCol.setCellValueFactory(new PropertyValueFactory<>("priceReceive"));
+		priceReceiveCol.setStyle("-fx-alignment: CENTER-RIGHT;");
+		priceReceiveCol.setMinWidth(100);
+		priceReceiveCol.setMaxWidth(100);
+
 		TableColumn<Bill, String> createdAtBCol = new TableColumn<Bill, String>("Thời Gian");
 		createdAtBCol.setCellValueFactory(new PropertyValueFactory<>("createdAtB"));
 		createdAtBCol.setCellFactory(column -> new TableCell<Bill, String>() {
@@ -374,7 +426,39 @@ public class HomeController implements Initializable {
 		sellerNameCol.setStyle("-fx-alignment: CENTER-RIGHT;");
 		sellerNameCol.setMinWidth(120);
 		sellerNameCol.setMaxWidth(120);
-		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, barcodeBillCol, sellerNameCol);
+
+		TableColumn<Bill, Bill> printCol = new TableColumn<>("In");
+		printCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		printCol.setMinWidth(40);
+		printCol.setMaxWidth(40);
+		printCol.setCellFactory(param -> new TableCell<Bill, Bill>() {
+			@Override
+			protected void updateItem(Bill item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null) {
+					setGraphic(null);
+					return;
+				}
+				ImageView imageViewPrint = new ImageView(
+						new Image(getClass().getResourceAsStream("/icons/printer.png")));
+				imageViewPrint.setFitWidth(18);
+				imageViewPrint.setFitHeight(18);
+				JFXButton btnPrint = new JFXButton();
+				btnPrint.setTooltip(new Tooltip("In"));
+				btnPrint.setGraphic(imageViewPrint);
+				btnPrint.setStyle("-fx-background-color: #333;-fx-padding: -5px");
+				btnPrint.setMaxHeight(21);
+				btnPrint.setMinHeight(21);
+				btnPrint.setMaxWidth(30);
+				btnPrint.setMinWidth(30);
+				setGraphic(btnPrint);
+				btnPrint.setOnAction(event -> {
+					exportFile();
+				});
+			}
+		});
+		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, priceReceiveCol, barcodeBillCol,
+				sellerNameCol, printCol);
 		tableHistoryPay.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		tableHistoryPay.getItems().addAll(lists);
 
@@ -579,6 +663,20 @@ public class HomeController implements Initializable {
 		createBill();
 	}
 
+	@FXML
+	private void actionDeletePay() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle(Global.tsl_lblConfirmDialog);
+		alert.setHeaderText(null);
+		alert.setContentText("Có muốn hủy thanh toán này không?");
+		Optional<ButtonType> action = alert.showAndWait();
+		if (action.get() == ButtonType.OK) {
+			itemBuyList.clear();
+			tableBuyList.getItems().clear();
+			statusDisableButton();
+		}
+	}
+
 	private void updateTotal() {
 		if (itemBuyList.size() > 0) {
 			int val = 0;
@@ -664,6 +762,7 @@ public class HomeController implements Initializable {
 					}
 				}
 				builTableBuy();
+				updateMoneyReturn();
 			} else {
 				System.out.println("tim ko ra");
 				setDataUnknowProduct(val);
@@ -672,9 +771,20 @@ public class HomeController implements Initializable {
 			txtBarcode.selectAll();
 			rs.close();
 			connection.close();
+			statusDisableButton();
 		} catch (Exception e) {
 			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 		}
+	}
+
+	private void statusDisableButton() {
+		boolean b = true;
+		if (itemBuyList.size() > 0) {
+			b = false;
+		}
+		btnPay.setDisable(b);
+		btnJustPay.setDisable(b);
+		btnDeletePay.setDisable(b);
 	}
 
 	private void setDataUnknowProduct(String items) throws IOException {
@@ -690,13 +800,16 @@ public class HomeController implements Initializable {
 				connection = handler.getConnection();
 				stmt = connection.createStatement();
 				int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
+				int priceReceive = txtMoneyReceived.getText().isEmpty() ? 0
+						: Integer.parseInt(txtMoneyReceived.getText());
 				boolean statusBill = true;
 				int sellerId = 1;
 				String barcodeBill = "";
 				if (billId == 0) {
 					barcodeBill = "BI-" + String.valueOf(Instant.now().getEpochSecond());
-					String sqlBills = "insert into Bills (priceTotal,statusBill,sellerId,barcodeBill) " + "values ('"
-							+ priceTotal + "','" + statusBill + "','" + sellerId + "','" + barcodeBill + "')";
+					String sqlBills = "insert into Bills (priceTotal,priceReceive,statusBill,sellerId,barcodeBill) "
+							+ "values ('" + priceTotal + "','" + priceReceive + "','" + statusBill + "','" + sellerId
+							+ "','" + barcodeBill + "')";
 					stmt.execute(sqlBills, Statement.RETURN_GENERATED_KEYS);
 					ResultSet keyset = stmt.getGeneratedKeys();
 					keyset.next();
@@ -727,11 +840,49 @@ public class HomeController implements Initializable {
 				tabHistoryPay.isSelected();
 				billId = 0;
 				buildTableHistoryPay("", "");
+				txtMoneyReceived.clear();
+				lblTurnedBack.setText("0");
 				if (!barcodeBill.isEmpty())
 					BarcodeController.renderBarcode(barcodeBill);
 			} catch (Exception e) {
 				Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 			}
 		}
+	}
+
+	private void updateMoneyReturn() {
+		if (!txtMoneyReceived.getText().trim().isEmpty()) {
+			int value = Integer.parseInt(txtMoneyReceived.getText());
+			int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
+			lblTurnedBack.setText(decimalFormat.format(value - priceTotal));
+		}
+	}
+
+	private File exportFile() {
+		try {
+			final URL FILE_NAME = this.getClass().getResource("/files/bill.xls.numbers");
+			System.out.println(FILE_NAME);
+			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME.getPath()));
+			HSSFWorkbook wb = new HSSFWorkbook(fs, true);
+			HSSFSheet sheet = wb.getSheetAt(0);
+			Iterator<Row> iterator = sheet.iterator();
+			int process = 0;
+			while (iterator.hasNext()) {
+				Row currentRow = iterator.next();
+				Iterator<Cell> cellIterator = currentRow.iterator();
+				while (cellIterator.hasNext()) {
+					Cell currentCell = cellIterator.next();
+					if (currentCell.getCellTypeEnum() == CellType.STRING) {
+						System.out.println(currentCell.getStringCellValue());
+					}
+				
+				}
+			}
+		} catch (Exception e) {
+			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
+		}
+		File file = null;
+		
+		return file;
 	}
 }

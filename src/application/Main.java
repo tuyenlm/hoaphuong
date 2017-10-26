@@ -22,7 +22,7 @@ public class Main extends Application {
 			handler = new DbHandler();
 			connection = handler.getConnection();
 			stmt = connection.createStatement();
-			String sqlCreateBills = "CREATE TABLE IF NOT EXISTS Bills (id SERIAL PRIMARY KEY NOT NULL, priceTotal INT, statusBill boolean, sellerId INT, barcodeBill VARCHAR(20), createdAtB timestamp default current_timestamp);";
+			String sqlCreateBills = "CREATE TABLE IF NOT EXISTS Bills (id SERIAL PRIMARY KEY NOT NULL, priceTotal INT, priceReceive INT, statusBill boolean, sellerId INT, barcodeBill VARCHAR(20), createdAtB timestamp default current_timestamp);";
 			stmt.execute(sqlCreateBills);
 			String sqlCreateSales = "CREATE TABLE IF NOT EXISTS Sales (id SERIAL PRIMARY KEY NOT NULL, productId INT, quantityS INT, priceSell INT, billId INT);";
 			stmt.execute(sqlCreateSales);

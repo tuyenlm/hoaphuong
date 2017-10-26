@@ -9,13 +9,15 @@ public class Bill {
 	private final SimpleStringProperty barcodeBill;
 	private final SimpleBooleanProperty statusBill;
 	private final SimpleStringProperty priceTotal;
+	private final SimpleStringProperty priceReceive;
 	private final SimpleStringProperty createdAtB;
 	private final SimpleStringProperty sellerName;
 
-	public Bill(int id, String barcodeBill, String priceTotal, boolean statusBill, String createdAtB, String sellerName) {
+	public Bill(int id, String barcodeBill, String priceTotal,String priceReceive, boolean statusBill, String createdAtB, String sellerName) {
 		this.id = new SimpleIntegerProperty(id);
 		this.barcodeBill = new SimpleStringProperty(barcodeBill);
 		this.priceTotal = new SimpleStringProperty(priceTotal);
+		this.priceReceive = new SimpleStringProperty(priceReceive);
 		this.statusBill = new SimpleBooleanProperty(statusBill);
 		this.createdAtB = new SimpleStringProperty(createdAtB);
 		this.sellerName = new SimpleStringProperty(sellerName);
@@ -107,6 +109,21 @@ public class Bill {
 	public final void setPriceTotal(final String priceTotal) {
 		this.priceTotalProperty().set(priceTotal);
 	}
+
+	public SimpleStringProperty priceReceiveProperty() {
+		return this.priceReceive;
+	}
+	
+
+	public String getPriceReceive() {
+		return this.priceReceiveProperty().get();
+	}
+	
+
+	public void setPriceReceive(final String priceReceive) {
+		this.priceReceiveProperty().set(priceReceive);
+	}
+	
 	
 	
 

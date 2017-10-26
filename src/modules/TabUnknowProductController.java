@@ -14,6 +14,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jfoenix.controls.JFXButton;
+
 import application.BarcodeController;
 import application.Global;
 import application.ValidateHandle;
@@ -31,6 +33,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -42,6 +45,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
@@ -91,7 +95,6 @@ public class TabUnknowProductController implements Initializable {
 			while (rs.next()) {
 				itemUnknowList.put(rs.getString("barcodeUnknow"), rs.getString("barcodeUnknow"));
 			}
-
 			connection.close();
 		} catch (Exception e) {
 			Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
@@ -156,11 +159,6 @@ public class TabUnknowProductController implements Initializable {
 					Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
 				}
 			}
-			// else {
-			// if (outputFileP != null && outputFileP.exists()) {
-			// outputFileP.delete();
-			// }
-			// }
 		} catch (Exception e) {
 			Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
 		}
@@ -382,7 +380,7 @@ public class TabUnknowProductController implements Initializable {
 				} else {
 					setText(item.toString());
 					if (tableUnknowProduct.getItems().get(getIndex()).getBarcodeUnknow().equals(selectItem))
-						setStyle("-fx-background-color: #333; -fx-text-fill: white;-fx-alignment: CENTER;");
+						setStyle("-fx-background-color: #58C9FF; -fx-text-fill: black;-fx-alignment: CENTER;");
 					else
 						setStyle("-fx-alignment: CENTER;");
 				}
@@ -403,13 +401,70 @@ public class TabUnknowProductController implements Initializable {
 					setText(item);
 
 					if (item.equals(selectItem)) {
-						setStyle("-fx-background-color: #333; -fx-text-fill: white");
+						setStyle("-fx-background-color: #58C9FF; -fx-text-fill: black");
 					} else
 						setStyle(null);
 				}
 			}
 		});
-		tableUnknowProduct.getColumns().add(barcodeUnKCol);
+		TableColumn<UnknowProduct, UnknowProduct> deleteColumn = new TableColumn<>("Xóa");
+		deleteColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		deleteColumn.setMinWidth(40);
+		deleteColumn.setMaxWidth(40);
+		deleteColumn.setCellFactory(param -> new TableCell<UnknowProduct, UnknowProduct>() {
+			@Override
+			protected void updateItem(UnknowProduct item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null) {
+					setGraphic(null);
+					return;
+				}
+				if (tableUnknowProduct.getItems().get(getIndex()).getBarcodeUnknow().equals(selectItem)) {
+					setStyle("-fx-background-color: #58C9FF; -fx-text-fill: black");
+				} else
+					setStyle(null);
+				JFXButton btnDelete = new JFXButton("Xóa");
+				btnDelete.setStyle("-fx-background-color: #F48024;-fx-text-fill:white;-fx-padding: -5px");
+				btnDelete.setMaxHeight(21);
+				btnDelete.setMinHeight(21);
+				btnDelete.setMaxWidth(30);
+				btnDelete.setMinWidth(30);
+				setGraphic(btnDelete);
+				btnDelete.setOnAction(event -> {
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle(Global.tsl_lblConfirmDialog);
+					alert.setHeaderText(null);
+					alert.setContentText("Xóa '" + item.getBarcodeUnknow() + "' ?");
+					Optional<ButtonType> action = alert.showAndWait();
+					if (action.get() == ButtonType.OK) {
+						try {
+							connection = handler.getConnection();
+							PreparedStatement ps = connection
+									.prepareStatement("DELETE FROM UnknowProduct WHERE barcodeUnknow = ?");
+							ps.setString(1, item.getBarcodeUnknow());
+							int sts = ps.executeUpdate();
+							connection.commit();
+							ps.close();
+							if (sts == 1) {
+								itemUnknowList.remove(item.getBarcodeUnknow().trim());
+								tableUnknowProduct.getItems().remove(getIndex());
+								if (itemUnknowList.size() == 0) {
+
+									Global.val.setValue("0");
+								}
+								tableUnknowProduct.refresh();
+								File file = new File("barImg/" + item.getBarcodeUnknow().trim() + ".png");
+								file.delete();
+							}
+							connection.close();
+						} catch (Exception e) {
+							Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
+						}
+					}
+				});
+			}
+		});
+		tableUnknowProduct.getColumns().addAll(barcodeUnKCol, deleteColumn);
 		tableUnknowProduct.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		for (Map.Entry<String, String> entry : itemUnknowList.entrySet()) {
 			tableUnknowProduct.getItems().addAll(new UnknowProduct(entry.getValue()));

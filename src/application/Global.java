@@ -21,6 +21,17 @@ public class Global {
 		return new Timestamp(System.currentTimeMillis());
 	}
 
+	public static String billNameStoreText = "TẠP HÓA HOA PHƯỢNG";
+	public static String billAddressText = "116 Vân Đồn, Đà Nẵng";
+	public static String billTelText = "0236.3848431";
+	public static String billDetailText = "CHI TIẾT HÓA ĐƠN";
+	public static String billTotalText = "Tổng cộng";
+	public static String billMoneyReceiveText = "Nhận tiền";
+	public static String billMoneyBackText = "Trả lại";
+	public static String billTimePayText = "Thời gian thanh toán:";
+	public static String billThanksSayText = "Cảm ơn quý khách đã mua hàng!";
+	
+	//
 	public static String userId;
 	public static String username;
 	public static String fullname;

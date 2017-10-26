@@ -5,10 +5,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.jfoenix.controls.JFXButton;
+
+import application.Global;
 import database.DbHandler;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -16,13 +20,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import models.Bill;
+import models.Buy;
 
 public class TabHistoryPayController implements Initializable {
 
@@ -37,7 +45,8 @@ public class TabHistoryPayController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 
 		handler = new DbHandler();
-		ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm", "Giá gốc", "Giá bán", "Đơn vị", "Vị trí", "Danh mục", "Ngày tạo", "Mô tả");
+		ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm", "Giá gốc",
+				"Giá bán", "Đơn vị", "Vị trí", "Danh mục", "Ngày tạo", "Mô tả");
 		listViewProductCount.getItems().addAll(itemLabel);
 		try {
 			connection = handler.getConnection();
@@ -47,7 +56,8 @@ public class TabHistoryPayController implements Initializable {
 
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
-					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"), rs.getBoolean("statusBill"), rs.getString("createdAtB"), rs.getString("fullname")));
+					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"), rs.getString("priceReceive"),
+							rs.getBoolean("statusBill"), rs.getString("createdAtB"), rs.getString("fullname")));
 				}
 			}
 			connection.close();
@@ -67,14 +77,16 @@ public class TabHistoryPayController implements Initializable {
 		indexColumn.setMinWidth(30);
 		indexColumn.setMaxWidth(30);
 		indexColumn.setStyle("-fx-alignment: CENTER;");
-		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(tableHistoryPay.getItems().indexOf(column.getValue()) + 1));
+		indexColumn.setCellValueFactory(
+				column -> new ReadOnlyObjectWrapper<Number>(tableHistoryPay.getItems().indexOf(column.getValue()) + 1));
 		tableHistoryPay.getColumns().add(0, indexColumn);
-		tableHistoryPay.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Bill> observable, Bill oldValue, Bill newValue) -> {
-			if (newValue == null) {
-				return;
-			}
+		tableHistoryPay.getSelectionModel().selectedItemProperty()
+				.addListener((ObservableValue<? extends Bill> observable, Bill oldValue, Bill newValue) -> {
+					if (newValue == null) {
+						return;
+					}
 
-		});
+				});
 		TableColumn<Bill, String> barcodeBillCol = new TableColumn<Bill, String>("Mã Hóa Đơn");
 		barcodeBillCol.setCellValueFactory(new PropertyValueFactory<>("barcodeBill"));
 		barcodeBillCol.setCellFactory(TextFieldTableCell.<Bill>forTableColumn());
@@ -110,7 +122,32 @@ public class TabHistoryPayController implements Initializable {
 		sellerNameCol.setStyle("-fx-alignment: CENTER-RIGHT;");
 		sellerNameCol.setMinWidth(120);
 		sellerNameCol.setMaxWidth(120);
-		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, barcodeBillCol, sellerNameCol);
+
+		TableColumn<Bill, Bill> printCol = new TableColumn<>("In");
+		printCol.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		printCol.setMinWidth(40);
+		printCol.setMaxWidth(40);
+		printCol.setCellFactory(param -> new TableCell<Bill, Bill>() {
+			@Override
+			protected void updateItem(Bill item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null) {
+					setGraphic(null);
+					return;
+				}
+				JFXButton btnPrint = new JFXButton("In");
+				btnPrint.setStyle("-fx-background-color: #F48024;-fx-text-fill:black;-fx-padding: -5px");
+				btnPrint.setMaxHeight(21);
+				btnPrint.setMinHeight(21);
+				btnPrint.setMaxWidth(30);
+				btnPrint.setMinWidth(30);
+				setGraphic(btnPrint);
+				btnPrint.setOnAction(event -> {
+
+				});
+			}
+		});
+		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, barcodeBillCol, sellerNameCol, printCol);
 		tableHistoryPay.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		tableHistoryPay.getItems().addAll(lists);
 	}
