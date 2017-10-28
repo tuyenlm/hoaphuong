@@ -4,11 +4,11 @@
 	<classpathentry kind="src" path="resource"/>
 	<classpathentry kind="src" path="lib"/>
 	<classpathentry kind="src" path="libs"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="lib" path="resource/jfoenix.jar"/>
-	<classpathentry kind="lib" path="resource/postgresql-42.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/barcode4j-2.0.jar" sourcepath="lib/barcode4j-2.0.jar"/>
-	<classpathentry kind="lib" path="libs/poi-3.17-beta1.jar"/>
+	<classpathentry exported="true" kind="lib" path="resource/postgresql-42.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/barcode4j-2.0.jar" sourcepath="lib/barcode4j-2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/poi-3.17-beta1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

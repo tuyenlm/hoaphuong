@@ -860,7 +860,8 @@ public class HomeController implements Initializable {
 
 	private File exportFile() {
 		try {
-			final URL FILE_NAME = this.getClass().getResource("/files/bill.xls.numbers");
+			
+			final URL FILE_NAME = this.getClass().getResource("/files/bill.xls");
 			System.out.println(FILE_NAME);
 			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME.getPath()));
 			HSSFWorkbook wb = new HSSFWorkbook(fs, true);
