@@ -40,10 +40,10 @@ public class DashboardController implements Initializable {
 	@FXML
 	private FlowPane containBottom;
 	@FXML
-	private JFXButton btnHome, btnProducts, btnUsers;
+	private JFXButton btnHome, btnProducts, btnUsers, btnWarehouse;
 	@FXML
 	private Label lblToday;
-	private AnchorPane home, products, users;
+	private AnchorPane home, products, users, wareHouse;
 	@FXML
 	private MenuItem menuReadGolbalFile;
 
@@ -58,7 +58,6 @@ public class DashboardController implements Initializable {
 	 */
 	public void initialize(URL location, ResourceBundle resources) {
 		createPages();
-	
 
 		String pattern = Global.patternTime;
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("vi", "VN"));
@@ -129,6 +128,16 @@ public class DashboardController implements Initializable {
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnHome.setStyle("-fx-background-color: #333;");
+		setNode(users);
+	}
+
+	@FXML
+	private void openWarehouse(ActionEvent event) throws IOException {
+		wareHouse = FXMLLoader.load(getClass().getResource("/modules/wareHouse.fxml"));
+		btnWarehouse.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
+		btnProducts.setStyle("-fx-background-color: #333;");
+		btnHome.setStyle("-fx-background-color: #333;");
+		btnUsers.setStyle("-fx-background-color: #333;");
 		setNode(users);
 	}
 }

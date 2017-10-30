@@ -658,18 +658,30 @@ public class ProductsController implements Initializable {
 			TextField txtBarcode = new TextField();
 			gridProduct.add(new Label("Mã Barcode:"), 0, 2);
 			gridProduct.add(txtBarcode, 1, 2);
+
 			ImageView imgBarcode = new ImageView();
 			imgBarcode.setFitHeight(50);
 			gridProduct.add(imgBarcode, 1, 3);
 			txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 				public void handle(KeyEvent ke) {
 					if (ke.getText().trim().isEmpty() && !txtBarcode.getText().trim().isEmpty()) {
-						File fileNewBar = BarcodeController.renderBarcode(txtBarcode.getText().trim());
-						outputFileP = fileNewBar;
-						imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
+						if(checkBarcodeIsExist(txtBarcode.getText())) {
+							Alert alert = new Alert(AlertType.WARNING);
+							alert.setTitle(Global.tsl_lblConfirmDialog);
+							alert.setHeaderText(null);
+							alert.setContentText("Mã sản phẩm '" + txtBarcode.getText() + "' này đã tồn tại?");
+							alert.showAndWait();
+							txtBarcode.clear();
+							txtBarcode.requestFocus();
+						}else {
+							File fileNewBar = BarcodeController.renderBarcode(txtBarcode.getText().trim());
+							outputFileP = fileNewBar;
+							imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
+						}
 					}
 				}
 			});
+		
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				String barcodeDialog;
@@ -751,6 +763,19 @@ public class ProductsController implements Initializable {
 		nameCatalog.textProperty().addListener((observable, oldValue, newValue) -> {
 			saveButton.setDisable(newValue.trim().isEmpty());
 		});
+		nameCatalog.focusedProperty().addListener((a, b, c) -> {
+			if (b) {
+				if (!nameCatalog.getText().trim().isEmpty() && checkIsExist(nameCatalog.getText(), true)) {
+					Alert alert = new Alert(AlertType.WARNING);
+					alert.setTitle(Global.tsl_lblConfirmDialog);
+					alert.setHeaderText(null);
+					alert.setContentText("Danh mục '" + nameCatalog.getText() + "' đã tồn tại?");
+					alert.showAndWait();
+					this.nameCatalog.clear();
+					nameCatalog.requestFocus();
+				}
+			}
+		});
 		dialogCatalog.getDialogPane().setContent(gridCatalog);
 		Platform.runLater(() -> nameCatalog.requestFocus());
 		dialogCatalog.setResultConverter(dialogButton -> {
@@ -824,6 +849,17 @@ public class ProductsController implements Initializable {
 		});
 		nameProduct.textProperty().addListener((observable, oldValue, newValue) -> {
 			saveButton.setDisable(newValue.trim().isEmpty());
+		});
+		nameProduct.focusedProperty().addListener((a, b, c) -> {
+			if (b && !nameProduct.getText().trim().isEmpty() && checkIsExist(nameProduct.getText(), false)) {
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle(Global.tsl_lblConfirmDialog);
+				alert.setHeaderText(null);
+				alert.setContentText("Sản phẩm '" + nameProduct.getText() + "' đã tồn tại?");
+				alert.showAndWait();
+				nameProduct.clear();
+				nameProduct.requestFocus();
+			}
 		});
 		dialogProduct.getDialogPane().setContent(gridProduct);
 		Platform.runLater(() -> nameProduct.requestFocus());
@@ -914,5 +950,49 @@ public class ProductsController implements Initializable {
 				}
 			}
 		}
+	}
+
+	private boolean checkIsExist(String txt, boolean type) {
+		boolean sts = false;
+		try {
+			connection = dbHandler.getConnection();
+			String query;
+			if (type) {
+				query = "SELECT nameCatalog FROM catalogs WHERE lower(nameCatalog) = '" + txt.toLowerCase() + "'";
+			} else
+				query = "SELECT nameProduct FROM products WHERE lower(nameProduct) = '" + txt.toLowerCase() + "'";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			if (rs.isBeforeFirst()) {
+				sts = true;
+			} else {
+				sts = false;
+			}
+			rs.close();
+			connection.close();
+		} catch (Exception e) {
+			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+		}
+		System.out.println(sts);
+		return sts;
+	}
+
+	private boolean checkBarcodeIsExist(String txt) {
+		boolean sts = false;
+		try {
+			connection = dbHandler.getConnection();
+			String query = "SELECT barcodeProduct FROM products WHERE lower(barcodeProduct) = '" + txt.toLowerCase()
+					+ "'";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			if (rs.isBeforeFirst()) {
+				sts = true;
+			} else {
+				sts = false;
+			}
+			rs.close();
+			connection.close();
+		} catch (Exception e) {
+			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+		}
+		return sts;
 	}
 }

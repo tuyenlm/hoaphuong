@@ -1,9 +1,13 @@
 package modules;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -13,19 +17,19 @@ import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Iterator;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 
 import com.jfoenix.controls.JFXButton;
 
@@ -453,7 +457,12 @@ public class HomeController implements Initializable {
 				btnPrint.setMinWidth(30);
 				setGraphic(btnPrint);
 				btnPrint.setOnAction(event -> {
-					exportFile();
+					try {
+						File file = exportFile();
+						Desktop.getDesktop().print(file);
+					} catch (IOException e1) {
+						Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e1);
+					}
 				});
 			}
 		});
@@ -859,31 +868,47 @@ public class HomeController implements Initializable {
 	}
 
 	private File exportFile() {
+		File file = null;
 		try {
-			
+
 			final URL FILE_NAME = this.getClass().getResource("/files/bill.xls");
 			System.out.println(FILE_NAME);
 			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME.getPath()));
 			HSSFWorkbook wb = new HSSFWorkbook(fs, true);
 			HSSFSheet sheet = wb.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
-			int process = 0;
 			while (iterator.hasNext()) {
 				Row currentRow = iterator.next();
 				Iterator<Cell> cellIterator = currentRow.iterator();
 				while (cellIterator.hasNext()) {
 					Cell currentCell = cellIterator.next();
-					if (currentCell.getCellTypeEnum() == CellType.STRING) {
-						System.out.println(currentCell.getStringCellValue());
+					if (currentRow.getRowNum() > 6) {
+						if (currentCell.getCellTypeEnum() == CellType.BLANK) {
+
+							if (currentCell.getAddress().toString().equals("B6")) {
+								System.out.println(currentCell.getAddress());
+								System.out.println(currentCell.getStringCellValue());
+								currentCell.setCellValue("tuyen");
+							}
+						}
 					}
-				
+
 				}
 			}
+			URL resource = this.getClass().getResource("/files/bill_copy.xls");
+			// Paths.get(resource.toURI()).toFile();
+			System.out.println(resource);
+			FileOutputStream out = new FileOutputStream(Paths.get(resource.toURI()).toFile());
+			wb.write(out);
+			out.close();
+			System.out.println("Done");
+			Path src = Paths.get(resource.toURI());
+			file = new File(src.toString());
 		} catch (Exception e) {
 			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 		}
-		File file = null;
-		
+
+		System.out.println(file);
 		return file;
 	}
 }

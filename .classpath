@@ -10,5 +10,6 @@
 	<classpathentry exported="true" kind="lib" path="resource/postgresql-42.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/barcode4j-2.0.jar" sourcepath="lib/barcode4j-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/poi-3.17-beta1.jar"/>
+	<classpathentry kind="lib" path="libs/commons-collections4-4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,8 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -16,6 +18,7 @@ import java.util.regex.Pattern;
 
 import com.jfoenix.controls.JFXButton;
 
+import application.BarcodeController;
 import application.Global;
 import database.DbHandler;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -113,9 +116,14 @@ public class UsersController implements Initializable {
 							sb.append(Integer.toString((bytes[j] & 0xff) + 0x100, 16).substring(1));
 						}
 						generatedPassword = sb.toString();
-						String sql = "INSERT INTO users (username,password,fullname,type)" + "VALUES ('" + username
-								+ "','" + generatedPassword + "','" + fullname + "', '" + type + "');";
-						stmt.execute(sql);
+						String barcodeUser = String.valueOf(Instant.now().getEpochSecond());
+						String sql = "INSERT INTO users (barcodeUser,username,password,fullname,type)" + "VALUES ('"
+								+ barcodeUser + "','" + username + "','" + generatedPassword + "','" + fullname + "', '"
+								+ type + "');";
+						boolean sts = stmt.execute(sql);
+						if (sts) {
+							BarcodeController.renderBarcode(barcodeUser);
+						}
 						stmt.close();
 						connection.commit();
 						connection.close();
@@ -124,6 +132,7 @@ public class UsersController implements Initializable {
 						txtRePassword.clear();
 						txtFullname.clear();
 						comboboxType.setPromptText("Loại tài khoản");
+						buildTable();
 					} catch (Exception e) {
 						Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, e);
 					}
@@ -207,6 +216,7 @@ public class UsersController implements Initializable {
 			_table.getItems().clear();
 			_table.getColumns().clear();
 			lists.clear();
+			connection = dbHandler.getConnection();
 			String sqlUsers = "select * FROM USERS";
 			PreparedStatement pst = connection.prepareStatement(sqlUsers);
 			ResultSet rs = pst.executeQuery();

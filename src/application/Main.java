@@ -26,7 +26,7 @@ public class Main extends Application {
 			stmt.execute(sqlCreateBills);
 			String sqlCreateSales = "CREATE TABLE IF NOT EXISTS Sales (id SERIAL PRIMARY KEY NOT NULL, productId INT, quantityS INT, priceSell INT, billId INT);";
 			stmt.execute(sqlCreateSales);
-			String sqlCreate = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY NOT NULL, username VARCHAR(30), password VARCHAR(35), fullname VARCHAR(90), type INT, createdAt timestamp default current_timestamp);";
+			String sqlCreate = "CREATE TABLE IF NOT EXISTS Users (id SERIAL PRIMARY KEY NOT NULL, username VARCHAR(30), password VARCHAR(35), fullname VARCHAR(90), barcodeUser VARCHAR(10),type INT, createdAt timestamp default current_timestamp);";
 			stmt.execute(sqlCreate);
 			String sqlCreateUnknowProduct = "CREATE TABLE IF NOT EXISTS UnknowProduct (id SERIAL PRIMARY KEY NOT NULL, barcodeUnknow VARCHAR(20));";
 			stmt.execute(sqlCreateUnknowProduct);

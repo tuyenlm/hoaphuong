@@ -49,7 +49,7 @@
 				</Pane>
 				<JFXButton fx:id="btnHome" alignment="TOP_LEFT" blendMode="SRC_ATOP"
 					buttonType="RAISED" onAction="#openKinmu" prefHeight="25.0"
-					prefWidth="198.0" style="-fx-background-color: #333;" text="Home"
+					prefWidth="198.0" style="-fx-background-color: #333;" text="Thanh Toán"
 					textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP">
 					<font>
 						<Font size="14.0" />
@@ -61,7 +61,7 @@
 				<JFXButton fx:id="btnProducts" alignment="TOP_LEFT"
 					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openProducts"
 					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
-					text="Koutsuu Main" textAlignment="CENTER" textFill="WHITE"
+					text="Sản Phẩm" textAlignment="CENTER" textFill="WHITE"
 					textOverrun="CLIP">
 					<font>
 						<Font size="14.0" />
@@ -70,10 +70,22 @@
 						<Circle blendMode="SRC_ATOP" fill="YELLOW" radius="7.0" />
 					</graphic>
 				</JFXButton>
+				<JFXButton fx:id="btnWarehouse" alignment="TOP_LEFT"
+					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openWarehouse"
+					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
+					text="Kho Hàng" textAlignment="CENTER" textFill="WHITE"
+					textOverrun="CLIP">
+					<font>
+						<Font size="14.0" />
+					</font>
+					<graphic>
+						<Circle blendMode="SRC_ATOP" fill="#2AAFC7" radius="7.0" />
+					</graphic>
+				</JFXButton>
 				<JFXButton fx:id="btnUsers" alignment="TOP_LEFT"
 					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openUsers"
 					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
-					text="Koutsuu Main" textAlignment="CENTER" textFill="WHITE"
+					text="Nhân Viên" textAlignment="CENTER" textFill="WHITE"
 					textOverrun="CLIP">
 					<font>
 						<Font size="14.0" />

@@ -47,7 +47,7 @@ public class BarcodeController {
 				fis.close();
 			}
 		} catch (Exception e) {
-			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+			Logger.getLogger(BarcodeController.class.getName()).log(Level.SEVERE, null, e);
 		}
 		return outputFile;
 	}
