@@ -30,6 +30,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.jfoenix.controls.JFXButton;
 
@@ -458,7 +459,7 @@ public class HomeController implements Initializable {
 				setGraphic(btnPrint);
 				btnPrint.setOnAction(event -> {
 					try {
-						File file = exportFile();
+						File file = exportFile(tableHistoryPay.getItems().get(getIndex()).getId());
 						Desktop.getDesktop().print(file);
 					} catch (IOException e1) {
 						Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e1);
@@ -867,13 +868,31 @@ public class HomeController implements Initializable {
 		}
 	}
 
-	private File exportFile() {
+	private File exportFile(int id) {
 		File file = null;
 		try {
+			connection = handler.getConnection();
+			String query = "SELECT Bills.*, Products.nameProduct,Products.unit,Sales.quantityS,Sales.priceSell FROM Bills INNER JOIN Sales ON (Bills.id = Sales.billId) INNER JOIN Products ON (Products.id = Sales.productId) WHERE Bills.id = '"
+					+ id + "' ORDER by Sales.id asc;";
+			System.out.println(query);
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			int i = 6;
+			int k = 1;
+			HashMap<String, String> wpExportList = new HashMap<String, String>();
+			while (rs.next()) {
+				System.out.println(rs.getString("nameProduct"));
+				wpExportList.put("A" + i, String.valueOf(k));
+				wpExportList.put("B" + i, rs.getString("nameProduct"));
+				i = i + 2;
+				k++;
+			}
+			// final URL FILE_NAME = this.getClass().getResource("/files/bill.xls");
+			final String FILE_NAME = "src//files//bill.xls";
 
-			final URL FILE_NAME = this.getClass().getResource("/files/bill.xls");
-			System.out.println(FILE_NAME);
-			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME.getPath()));
+			// POIFSFileSystem fs = new POIFSFileSystem(new
+			// FileInputStream(FILE_NAME.getPath()));
+
+			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME));
 			HSSFWorkbook wb = new HSSFWorkbook(fs, true);
 			HSSFSheet sheet = wb.getSheetAt(0);
 			Iterator<Row> iterator = sheet.iterator();
@@ -882,28 +901,27 @@ public class HomeController implements Initializable {
 				Iterator<Cell> cellIterator = currentRow.iterator();
 				while (cellIterator.hasNext()) {
 					Cell currentCell = cellIterator.next();
-					if (currentRow.getRowNum() > 6) {
+					if (currentRow.getRowNum() > 4) {
 						if (currentCell.getCellTypeEnum() == CellType.BLANK) {
-
-							if (currentCell.getAddress().toString().equals("B6")) {
-								System.out.println(currentCell.getAddress());
-								System.out.println(currentCell.getStringCellValue());
-								currentCell.setCellValue("tuyen");
+							System.out.println(currentRow.getRowNum());
+							if (currentCell.getAddress().toString().equals("A" + (currentRow.getRowNum() + 1))) {
+								currentCell.setCellValue(wpExportList.get(currentCell.getAddress().toString()));
+							}
+							if (currentCell.getAddress().toString().equals("B" + (currentRow.getRowNum() + 1))) {
+								currentCell.setCellValue(wpExportList.get(currentCell.getAddress().toString()));
 							}
 						}
 					}
 
 				}
 			}
-			URL resource = this.getClass().getResource("/files/bill_copy.xls");
-			// Paths.get(resource.toURI()).toFile();
-			System.out.println(resource);
-			FileOutputStream out = new FileOutputStream(Paths.get(resource.toURI()).toFile());
+			FileOutputStream out = new FileOutputStream("src//files//bill_copy.xls");
+			System.out.println("Done");
+			Path src = Paths.get("src//files//bill_copy.xls");
+			file = new File(src.toString());
+
 			wb.write(out);
 			out.close();
-			System.out.println("Done");
-			Path src = Paths.get(resource.toURI());
-			file = new File(src.toString());
 		} catch (Exception e) {
 			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 		}
