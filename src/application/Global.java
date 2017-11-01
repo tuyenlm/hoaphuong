@@ -1,7 +1,6 @@
 package application;
 
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +10,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.util.Pair;
 
 public class Global {
@@ -21,7 +19,7 @@ public class Global {
 	public static Timestamp getTimeStampFormat() {
 		return new Timestamp(System.currentTimeMillis());
 	}
-	public DecimalFormat decimalFormat = new DecimalFormat("###,###");
+
 	public static String billNameStoreText = "TẠP HÓA HOA PHƯỢNG";
 	public static String billAddressText = "116 Vân Đồn, Đà Nẵng";
 	public static String billTelText = "0236.3848431";
@@ -29,7 +27,7 @@ public class Global {
 	public static String billTotalText = "Tổng cộng";
 	public static String billMoneyReceiveText = "Nhận tiền";
 	public static String billMoneyBackText = "Trả lại";
-	public static String billTimePayText = "Thời gian thanh toán:";
+	public static String billTimePayText = "Thời gian TT: ";
 	public static String billThanksSayText = "Cảm ơn quý khách đã mua hàng!";
 	
 	//
