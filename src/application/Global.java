@@ -1,6 +1,7 @@
 package application;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class Global {
 	public static Timestamp getTimeStampFormat() {
 		return new Timestamp(System.currentTimeMillis());
 	}
-
+	public DecimalFormat decimalFormat = new DecimalFormat("###,###");
 	public static String billNameStoreText = "TẠP HÓA HOA PHƯỢNG";
 	public static String billAddressText = "116 Vân Đồn, Đà Nẵng";
 	public static String billTelText = "0236.3848431";
