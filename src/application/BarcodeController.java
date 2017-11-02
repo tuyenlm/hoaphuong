@@ -25,19 +25,18 @@ public class BarcodeController {
 				bean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
 				bean.setWideFactor(3);
 				bean.doQuietZone(true);
-				File file = new File("barImg");
-				if (!file.exists()) {
-					if (file.mkdir()) {
-						System.out.println("Directory is created!");
-					} else {
-						System.out.println("Failed to create directory!");
-					}
+
+
+				java.net.URL url = BarcodeController.class.getResource("/barImg/");
+				File fullPathToSubfolder = new File(url.toURI()).getAbsoluteFile();
+				if (!fullPathToSubfolder.exists()) {
+					fullPathToSubfolder.mkdir();
 				}
-				outputFile = new File(file.toString() + "/" + barcode + ".png");
+				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+				outputFile = new File(classLoader.getResource("barImg").getFile() + "/" + barcode + ".png");
 				OutputStream out = new FileOutputStream(outputFile);
 				try {
-					BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi,
-							BufferedImage.TYPE_BYTE_BINARY, false, 0);
+					BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi, BufferedImage.TYPE_BYTE_BINARY, false, 0);
 					bean.generateBarcode(canvas, barcode);
 					canvas.finish();
 				} finally {

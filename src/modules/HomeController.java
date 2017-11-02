@@ -1,6 +1,7 @@
 package modules;
 
 import java.awt.Desktop;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,7 +27,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -140,8 +143,7 @@ public class HomeController implements Initializable {
 				txtBarcode.selectAll();
 			}
 		});
-		ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm", "Giá gốc",
-				"Giá bán", "Đơn vị", "Vị trí");
+		ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm", "Giá gốc", "Giá bán", "Đơn vị", "Vị trí");
 		listViewProductCount.getItems().addAll(itemLabel);
 		tabUnknowProduct.setOnSelectionChanged((event) -> {
 			if (tabUnknowProduct.isSelected()) {
@@ -191,9 +193,8 @@ public class HomeController implements Initializable {
 					if (rs.isBeforeFirst()) {
 						while (rs.next()) {
 							ObservableList<Buy> items = FXCollections.observableArrayList();
-							items.add(new Buy(rs.getInt("productId"), rs.getString("nameProduct"),
-									rs.getInt("quantitys"), rs.getInt("priceSell"),
-									(rs.getInt("priceSell") * rs.getInt("quantitys")), rs.getInt("id")));
+							items.add(new Buy(rs.getInt("productId"), rs.getString("nameProduct"), rs.getInt("quantitys"), rs.getInt("priceSell"), (rs.getInt("priceSell") * rs.getInt("quantitys")),
+									rs.getInt("id")));
 							itemBuyList.put(rs.getInt("productId"), items);
 							billId = rs.getInt("billId");
 						}
@@ -249,16 +250,13 @@ public class HomeController implements Initializable {
 							if (rs.isBeforeFirst()) {
 								while (rs.next()) {
 									System.out.println(rs.getString("nameProduct"));
-									items.add(new Buy(0, rs.getString("nameProduct"), rs.getInt("quantitys"),
-											rs.getInt("priceSell"), (rs.getInt("quantitys") * rs.getInt("priceSell")),
-											0));
+									items.add(new Buy(0, rs.getString("nameProduct"), rs.getInt("quantitys"), rs.getInt("priceSell"), (rs.getInt("quantitys") * rs.getInt("priceSell")), 0));
 
 								}
 							}
 							rs.close();
 							connection.close();
-							Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-									.parse(tableHistoryPay.getSelectionModel().getSelectedItem().getCreatedAtB());
+							Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(tableHistoryPay.getSelectionModel().getSelectedItem().getCreatedAtB());
 							Dialog<Pair<String, String>> dialog = new Dialog<>();
 							dialog.setTitle("Chi tiết thanh toán của ngày: " + date.toLocaleString());
 							setItemDetailBill(items);
@@ -267,8 +265,7 @@ public class HomeController implements Initializable {
 							dialog.getDialogPane().getButtonTypes().addAll(buttonTypePrint, ButtonType.CANCEL);
 							Node closeButton = dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
 							closeButton.setDisable(false);
-							FXMLLoader fxmlLoader = new FXMLLoader(
-									getClass().getResource("/modules/itemsForBill.fxml"));
+							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/modules/itemsForBill.fxml"));
 							Parent root = (Parent) fxmlLoader.load();
 							dialog.getDialogPane().setContent(root);
 							dialog.setResultConverter(dialogButton -> {
@@ -340,6 +337,12 @@ public class HomeController implements Initializable {
 					}
 			}
 		});
+
+		new AutoCompleteComboBoxListener<>(searchProduct);
+		searchProduct.valueProperty().addListener((a, b, c) -> {
+			if (searchProduct.getSelectionModel().getSelectedItem() != null)
+				doSearch(searchProduct.getSelectionModel().getSelectedItem(), "nameProduct");
+		});
 	}
 
 	private void changeComboboxTime() {
@@ -375,9 +378,8 @@ public class HomeController implements Initializable {
 			int sum = 0;
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
-					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"),
-							rs.getString("priceReceiveDe"), rs.getBoolean("statusBill"), rs.getString("createdAtB"),
-							rs.getString("fullname")));
+					lists.add(new Bill(rs.getInt("id"), rs.getString("barcodeBill"), rs.getString("priceTotalDe"), rs.getString("priceReceiveDe"), rs.getBoolean("statusBill"),
+							rs.getString("createdAtB"), rs.getString("fullname")));
 					sum += Integer.parseInt(rs.getString("priceTotalDe").trim().replaceAll(",", ""));
 				}
 			}
@@ -391,16 +393,14 @@ public class HomeController implements Initializable {
 		indexColumn.setMinWidth(30);
 		indexColumn.setMaxWidth(30);
 		indexColumn.setStyle("-fx-alignment: CENTER;");
-		indexColumn.setCellValueFactory(
-				column -> new ReadOnlyObjectWrapper<Number>(tableHistoryPay.getItems().indexOf(column.getValue()) + 1));
+		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(tableHistoryPay.getItems().indexOf(column.getValue()) + 1));
 		tableHistoryPay.getColumns().add(0, indexColumn);
-		tableHistoryPay.getSelectionModel().selectedItemProperty()
-				.addListener((ObservableValue<? extends Bill> observable, Bill oldValue, Bill newValue) -> {
-					if (newValue == null) {
-						return;
-					}
+		tableHistoryPay.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Bill> observable, Bill oldValue, Bill newValue) -> {
+			if (newValue == null) {
+				return;
+			}
 
-				});
+		});
 		TableColumn<Bill, String> barcodeBillCol = new TableColumn<Bill, String>("Mã Hóa Đơn");
 		barcodeBillCol.setCellValueFactory(new PropertyValueFactory<>("barcodeBill"));
 		barcodeBillCol.setCellFactory(TextFieldTableCell.<Bill>forTableColumn());
@@ -455,8 +455,7 @@ public class HomeController implements Initializable {
 					setGraphic(null);
 					return;
 				}
-				ImageView imageViewPrint = new ImageView(
-						new Image(getClass().getResourceAsStream("/icons/printer.png")));
+				ImageView imageViewPrint = new ImageView(new Image(getClass().getResourceAsStream("/icons/printer.png")));
 				imageViewPrint.setFitWidth(18);
 				imageViewPrint.setFitHeight(18);
 				JFXButton btnPrint = new JFXButton();
@@ -478,8 +477,7 @@ public class HomeController implements Initializable {
 				});
 			}
 		});
-		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, priceReceiveCol, barcodeBillCol,
-				sellerNameCol, printCol);
+		tableHistoryPay.getColumns().addAll(createdAtBCol, priceTotalCol, priceReceiveCol, barcodeBillCol, sellerNameCol, printCol);
 		tableHistoryPay.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		tableHistoryPay.getItems().addAll(lists);
 
@@ -497,15 +495,13 @@ public class HomeController implements Initializable {
 		indexColumn.setMinWidth(30);
 		indexColumn.setMaxWidth(30);
 		indexColumn.setStyle("-fx-alignment: CENTER;");
-		indexColumn.setCellValueFactory(
-				column -> new ReadOnlyObjectWrapper<Number>(tableBuyList.getItems().indexOf(column.getValue()) + 1));
+		indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(tableBuyList.getItems().indexOf(column.getValue()) + 1));
 		tableBuyList.getColumns().add(0, indexColumn);
-		tableBuyList.getSelectionModel().selectedItemProperty()
-				.addListener((ObservableValue<? extends Buy> observable, Buy oldValue, Buy newValue) -> {
-					if (newValue == null) {
-						return;
-					}
-				});
+		tableBuyList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Buy> observable, Buy oldValue, Buy newValue) -> {
+			if (newValue == null) {
+				return;
+			}
+		});
 		TableColumn<Buy, String> nameProductCol = new TableColumn<Buy, String>("Sản Phẩm");
 		nameProductCol.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
 		nameProductCol.setCellFactory(TextFieldTableCell.<Buy>forTableColumn());
@@ -550,8 +546,7 @@ public class HomeController implements Initializable {
 					txtQuatity.textProperty().addListener((a, b, c) -> {
 						if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0) {
 							// tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(c));
-							tableBuyList.getItems().get(getIndex()).setPriceTotal(
-									tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(c));
+							tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(c));
 							txtQuatity.setText(c);
 						} else {
 							txtQuatity.setText(b);
@@ -561,11 +556,8 @@ public class HomeController implements Initializable {
 					txtQuatity.setOnKeyReleased(new EventHandler<KeyEvent>() {
 						public void handle(KeyEvent ke) {
 							if (ke.getText().trim().isEmpty() && !txtQuatity.getText().trim().isEmpty()) {
-								tableBuyList.getItems().get(getIndex())
-										.setQuatity(Integer.parseInt(txtQuatity.getText()));
-								tableBuyList.getItems().get(getIndex())
-										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-												* Integer.parseInt(txtQuatity.getText()));
+								tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(txtQuatity.getText()));
+								tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(txtQuatity.getText()));
 							}
 							updateTotal();
 						}
@@ -573,28 +565,20 @@ public class HomeController implements Initializable {
 					txtQuatity.focusedProperty().addListener((a, b, c) -> {
 						if (b) {
 							tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(txtQuatity.getText()));
-							tableBuyList.getItems().get(getIndex())
-									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-											* Integer.parseInt(txtQuatity.getText()));
+							tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(txtQuatity.getText()));
 							updateTotal();
 						}
 					});
 					btnExcept.setOnAction(e -> {
 						if ((tableBuyList.getItems().get(getIndex()).getQuatity() - 1) > 0) {
-							tableBuyList.getItems().get(getIndex())
-									.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() - 1);
-							tableBuyList.getItems().get(getIndex())
-									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-											* tableBuyList.getItems().get(getIndex()).getQuatity());
+							tableBuyList.getItems().get(getIndex()).setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() - 1);
+							tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * tableBuyList.getItems().get(getIndex()).getQuatity());
 						}
 						updateTotal();
 					});
 					btnPlus.setOnAction(e -> {
-						tableBuyList.getItems().get(getIndex())
-								.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
-						tableBuyList.getItems().get(getIndex())
-								.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-										* tableBuyList.getItems().get(getIndex()).getQuatity());
+						tableBuyList.getItems().get(getIndex()).setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
+						tableBuyList.getItems().get(getIndex()).setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice() * tableBuyList.getItems().get(getIndex()).getQuatity());
 						updateTotal();
 					});
 				}
@@ -720,8 +704,7 @@ public class HomeController implements Initializable {
 			txtBarcode.setMaxWidth(395);
 			txtBarcode.requestFocus();
 			btnBarcode.setStyle("-fx-background-color: green;");
-			btnSearchProduct.setStyle(
-					"-fx-background-color: black; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;");
+			btnSearchProduct.setStyle("-fx-background-color: black; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;");
 		}
 	}
 
@@ -741,11 +724,6 @@ public class HomeController implements Initializable {
 				Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 			}
 		}
-		new AutoCompleteComboBoxListener<>(searchProduct);
-		searchProduct.valueProperty().addListener((a, b, c) -> {
-			if (searchProduct.getSelectionModel().getSelectedItem() != null)
-				doSearch(searchProduct.getSelectionModel().getSelectedItem(), "nameProduct");
-		});
 		searchProduct.setVisible(true);
 		searchProduct.setMaxWidth(395);
 		searchProduct.setMinWidth(395);
@@ -757,8 +735,7 @@ public class HomeController implements Initializable {
 			hboxBarcode.getChildren().add(0, searchProduct);
 		}
 		btnBarcode.setStyle("-fx-background-color: white;");
-		btnSearchProduct.setStyle(
-				"-fx-background-color: green; -fx-background-radius: 5; -fx-border-color: green; -fx-border-radius: 2; -fx-border-width: 1px;");
+		btnSearchProduct.setStyle("-fx-background-color: green; -fx-background-radius: 5; -fx-border-color: green; -fx-border-radius: 2; -fx-border-width: 1px;");
 	}
 
 	private void doSearch(String val, String field) {
@@ -770,22 +747,18 @@ public class HomeController implements Initializable {
 				while (rs.next()) {
 					if (!itemBuyList.containsKey(rs.getInt("id"))) {
 						ObservableList<Buy> items = FXCollections.observableArrayList();
-						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),
-								rs.getInt("priceSell"), 0));
+						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"), rs.getInt("priceSell"), 0));
 						itemBuyList.put(rs.getInt("id"), items);
 					} else {
 						if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
-							itemBuyList.get(rs.getInt("id")).get(0)
-									.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
-							itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(
-									rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+							itemBuyList.get(rs.getInt("id")).get(0).setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
+							itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
 						}
 					}
 				}
 				builTableBuy();
 				updateMoneyReturn();
 			} else {
-				System.out.println("tim ko ra");
 				setDataUnknowProduct(val);
 			}
 			txtBarcode.requestFocus();
@@ -821,16 +794,14 @@ public class HomeController implements Initializable {
 				connection = handler.getConnection();
 				stmt = connection.createStatement();
 				int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
-				int priceReceive = txtMoneyReceived.getText().isEmpty() ? 0
-						: Integer.parseInt(txtMoneyReceived.getText());
+				int priceReceive = txtMoneyReceived.getText().isEmpty() ? 0 : Integer.parseInt(txtMoneyReceived.getText());
 				boolean statusBill = true;
 				int sellerId = 1;
 				String barcodeBill = "";
 				if (billId == 0) {
 					barcodeBill = "BI-" + String.valueOf(Instant.now().getEpochSecond());
-					String sqlBills = "insert into Bills (priceTotal,priceReceive,statusBill,sellerId,barcodeBill) "
-							+ "values ('" + priceTotal + "','" + priceReceive + "','" + statusBill + "','" + sellerId
-							+ "','" + barcodeBill + "')";
+					String sqlBills = "insert into Bills (priceTotal,priceReceive,statusBill,sellerId,barcodeBill) " + "values ('" + priceTotal + "','" + priceReceive + "','" + statusBill + "','"
+							+ sellerId + "','" + barcodeBill + "')";
 					stmt.execute(sqlBills, Statement.RETURN_GENERATED_KEYS);
 					ResultSet keyset = stmt.getGeneratedKeys();
 					keyset.next();
@@ -840,14 +811,12 @@ public class HomeController implements Initializable {
 					ObservableList<Buy> value = entry.getValue();
 					Statement stmt2 = connection.createStatement();
 					if (value.get(0).getSaleId() == 0) {
-						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,billId) " + "values ('"
-								+ value.get(0).getProductId() + "','" + value.get(0).getQuatity() + "','"
+						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,billId) " + "values ('" + value.get(0).getProductId() + "','" + value.get(0).getQuatity() + "','"
 								+ value.get(0).getPrice() + "','" + billId + "')";
 						stmt2.execute(sqlInsertSale);
 					} else {
-						String sqlUpdate = "UPDATE Sales SET quantitys ='" + value.get(0).getQuatity()
-								+ "', priceSell ='" + value.get(0).getPrice() + "' WHERE id = '"
-								+ value.get(0).getSaleId() + "'; ";
+						String sqlUpdate = "UPDATE Sales SET quantitys ='" + value.get(0).getQuatity() + "', priceSell ='" + value.get(0).getPrice() + "' WHERE id = '" + value.get(0).getSaleId()
+								+ "'; ";
 						stmt.executeUpdate(sqlUpdate);
 					}
 					connection.commit();
@@ -894,12 +863,11 @@ public class HomeController implements Initializable {
 			int total2 = 0;
 			int moneyReceive = 0;
 			Date timeCreate = null;
+			String barcodeBill = "";
 			while (rs.next()) {
 				wpExportList.put("A" + i, String.valueOf(k));
 				wpExportList.put("B" + i, rs.getString("nameProduct"));
-				wpExportList.put("H" + i, rs.getString("unit"));
-				wpExportList.put("B" + g,
-						decimalFormat.format(rs.getInt("priceSell")) + " x " + rs.getInt("quantitys") + " =");
+				wpExportList.put("A" + g, decimalFormat.format(rs.getInt("priceSell")) + " x " + rs.getInt("quantitys") + "(" + rs.getString("unit") + ") =");
 				total = rs.getInt("priceSell") * rs.getInt("quantitys");
 				wpExportList.put("H" + g, decimalFormat.format(total));
 				i = i + 2;
@@ -907,7 +875,8 @@ public class HomeController implements Initializable {
 				k++;
 				total2 += total;
 				moneyReceive = rs.getInt("pricereceive");
-				timeCreate = rs.getDate("createdAtB");
+				timeCreate = rs.getTimestamp("createdAtB");
+				barcodeBill = rs.getString("barcodebill");
 			}
 			// final URL FILE_NAME =
 			// this.getClass().getResource("/files/bill.xls");
@@ -916,7 +885,7 @@ public class HomeController implements Initializable {
 			// POIFSFileSystem fs = new POIFSFileSystem(new
 			// FileInputStream(FILE_NAME.getPath()));
 			int rowRange = 4;
-
+			int say = 1;
 			POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME));
 			HSSFWorkbook wb = new HSSFWorkbook(fs, true);
 			HSSFSheet sheet = wb.getSheetAt(0);
@@ -926,45 +895,43 @@ public class HomeController implements Initializable {
 				Iterator<Cell> cellIterator = currentRow.iterator();
 				while (cellIterator.hasNext()) {
 					Cell currentCell = cellIterator.next();
-					if (currentRow.getRowNum() > 4 && currentRow.getRowNum() < (k * 2) + rowRange) {
+
+					if (currentRow.getRowNum() > 4 && currentRow.getRowNum() < ((k * 2) + rowRange)) {
 						if (currentCell.getCellTypeEnum() == CellType.BLANK) {
 							if (currentCell.getAddress().toString().equals("A" + (currentRow.getRowNum() + 1))) {
 								currentCell.setCellValue(wpExportList.get(currentCell.getAddress().toString()));
 								HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD, false);
+								currentCell.setCellStyle(style);
+								if ((currentRow.getRowNum() + 1) % 2 == 0) {
+
+								} else {
+									style = styleCell(wb, CellStyle.ALIGN_RIGHT, Font.BOLDWEIGHT_NORMAL, true);
+								}
 								currentCell.setCellStyle(style);
 							}
 							if (currentCell.getAddress().toString().equals("B" + (currentRow.getRowNum() + 1))) {
 								HSSFCellStyle style;
 								if ((currentRow.getRowNum() + 1) % 2 == 0) {
 									style = styleCell(wb, CellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD, false);
+									sheet.addMergedRegion(new CellRangeAddress(currentRow.getRowNum(), currentRow.getRowNum(), 1, 7));
 								} else {
 									style = styleCell(wb, CellStyle.ALIGN_RIGHT, Font.BOLDWEIGHT_NORMAL, true);
+									sheet.addMergedRegion(new CellRangeAddress(currentRow.getRowNum(), currentRow.getRowNum(), 0, 6));
 								}
 								currentCell.setCellStyle(style);
 								currentCell.setCellValue(wpExportList.get(currentCell.getAddress().toString()));
-								sheet.addMergedRegion(
-										new CellRangeAddress(currentRow.getRowNum(), currentRow.getRowNum(), 1, 6));
 							}
-							if (currentCell.getAddress().toString().equals("H" + (currentRow.getRowNum() + 1))
-									&& wpExportList.get(currentCell.getAddress().toString()) != null) {
+							if (currentCell.getAddress().toString().equals("H" + (currentRow.getRowNum() + 1)) && wpExportList.get(currentCell.getAddress().toString()) != null) {
 								HSSFCellStyle style;
-								if ((currentRow.getRowNum() + 1) % 2 == 0) {
-									currentCell.setCellValue(
-											"(" + wpExportList.get(currentCell.getAddress().toString()) + ")");
-									style = styleCell(wb, CellStyle.ALIGN_RIGHT, Font.BOLDWEIGHT_NORMAL, true);
-								} else {
-									currentCell.setCellValue(wpExportList.get(currentCell.getAddress().toString()));
-									style = styleCell(wb, CellStyle.ALIGN_RIGHT, Font.BOLDWEIGHT_BOLD, false);
-								}
+								currentCell.setCellValue(wpExportList.get(currentCell.getAddress().toString()));
+								style = styleCell(wb, CellStyle.ALIGN_RIGHT, Font.BOLDWEIGHT_BOLD, false);
 								currentCell.setCellStyle(style);
 							}
-
 						}
-
 					}
 					if (currentCell.getAddress().toString().equals("B" + ((k * 2) + rowRange))) {
-						sheet.addMergedRegion(new CellRangeAddress(((k * 2) + rowRange), ((k * 2) + rowRange), 1, 6));
 						currentCell.setCellValue(Global.billTotalText);
+						sheet.removeMergedRegion((k * 2) + 2);
 						HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD, false);
 						currentCell.setCellStyle(style);
 					}
@@ -1011,28 +978,43 @@ public class HomeController implements Initializable {
 							currentCell.setCellStyle(style);
 						}
 					}
-					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + 3))) {
 
-						// Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm",new Locale("vi",
-						// "VN")).parse(timeCreate);
-						String pattern = "dd-MM-yyyy hh:mm";
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
+					if (moneyReceive > 0) {
+						say = 3;
+					}
+					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say))) {
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm", new Locale("vi", "VN"));
 						String date = simpleDateFormat.format(timeCreate);
 						currentCell.setCellValue(Global.billTimePayText + date);
-						HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_NORMAL, false);
+						HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_CENTER, Font.BOLDWEIGHT_NORMAL, true);
 						currentCell.setCellStyle(style);
-						sheet.addMergedRegion(
-								new CellRangeAddress(((k * 2) + rowRange + 2), ((k * 2) + rowRange + 2), 0, 7));
+						sheet.addMergedRegion(new CellRangeAddress(((k * 2) + rowRange + say - 1), ((k * 2) + rowRange + say - 1), 0, 7));
+					}
+					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say + 1))) {
+						currentCell.setCellValue(Global.billThanksSayText);
+						HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_CENTER, Font.BOLDWEIGHT_NORMAL, true);
+						currentCell.setCellStyle(style);
+						sheet.addMergedRegion(new CellRangeAddress(((k * 2) + rowRange + say), ((k * 2) + rowRange + say), 0, 7));
+					}
+					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say + 5))) {
 
+						File fileO = new File(HomeController.class.getResource("/barImg").getFile() + "/" + barcodeBill + ".png");
+						System.out.println(fileO);
+						FileInputStream fis = new FileInputStream(fileO);
+						ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
+						int b;
+						while ((b = fis.read()) != -1)
+							img_bytes.write(b);
+						fis.close();
+						HSSFClientAnchor anchor = new HSSFClientAnchor(155, 0, 0, 255, (short) 0, ((k * 2) + rowRange + say + 1), (short) 8, ((k * 2) + rowRange + say + 2));
+						int index = wb.addPicture(img_bytes.toByteArray(), HSSFWorkbook.PICTURE_TYPE_PNG);
+						HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+						patriarch.createPicture(anchor, index);
+						anchor.setAnchorType(2);
 					}
 				}
 			}
-			if (moneyReceive > 0) {
-				wb.setPrintArea(0, "$A$1:$H$" + ((k * 2) + rowRange + 2));
-			} else {
-				wb.setPrintArea(0, "$A$1:$H$" + ((k * 2) + rowRange));
-			}
+			wb.setPrintArea(0, "$A$1:$H$" + ((k * 2) + rowRange + say + 3));
 
 			FileOutputStream out = new FileOutputStream("src//files//bill_copy.xls");
 			System.out.println("Done");
@@ -1052,7 +1034,7 @@ public class HomeController implements Initializable {
 	@SuppressWarnings("deprecation")
 	private HSSFCellStyle styleCell(HSSFWorkbook wb, short alignLeft, short boldweightBold, boolean italic) {
 		HSSFFont font = wb.createFont();
-		font.setFontHeightInPoints((short) 24);
+		font.setFontHeightInPoints((short) 22);
 		font.setFontName("Verdana");
 		font.setBoldweight(boldweightBold);
 		font.setItalic(italic);
