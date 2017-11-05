@@ -39,7 +39,7 @@ public class Main extends Application {
 
 			primaryStage.setScene(scene);
 			primaryStage.setResizable(true);
-			primaryStage.setMaximized(true);
+			primaryStage.setMaximized(false);
 			primaryStage.show();
 		} catch (Exception e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);

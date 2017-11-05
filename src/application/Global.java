@@ -61,7 +61,7 @@ public class Global {
 	public static String tsl_menu_home = "Thanh Toán";
 	public static String tsl_menu_Products = "Sản Phẩm";
 	public static String tsl_menu_Users = "Nhân Viên";
-	public static String tsl_menu_Warehouse = "Kho Hàng";
+	public static String tsl_menu_Statistical = "Thống Kê";
 	public static String tsl_menu_norimono = "乗物";
 
 	// KINMU

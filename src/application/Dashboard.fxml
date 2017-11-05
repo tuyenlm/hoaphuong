@@ -70,10 +70,10 @@
 						<Circle blendMode="SRC_ATOP" fill="YELLOW" radius="7.0" />
 					</graphic>
 				</JFXButton>
-				<JFXButton fx:id="btnWarehouse" alignment="TOP_LEFT"
-					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openWarehouse"
+				<JFXButton fx:id="btnStatistical" alignment="TOP_LEFT"
+					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openStatistical"
 					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
-					text="Kho Hàng" textAlignment="CENTER" textFill="WHITE"
+					text="Thống Kê" textAlignment="CENTER" textFill="WHITE"
 					textOverrun="CLIP">
 					<font>
 						<Font size="14.0" />

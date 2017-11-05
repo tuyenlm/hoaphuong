@@ -102,7 +102,7 @@
 													<right>
 														<HBox spacing="10.0" BorderPane.alignment="CENTER">
 															<children>
-                                                <JFXButton fx:id="btnPay" alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" onAction="#actionPay" prefHeight="30.0" style="-fx-background-color: GREEN;" text="Thanh Toán &amp; IN" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP">
+                                                <JFXButton fx:id="btnPay" alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" onAction="#actionPayPrint" prefHeight="30.0" style="-fx-background-color: GREEN;" text="Thanh Toán &amp; IN" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP">
                                                    <font>
                                                       <Font name="Arial Bold" size="13.0" />
                                                    </font>
@@ -247,14 +247,14 @@
                                     </JFXToolbar>
                                     <JFXToolbar GridPane.rowIndex="2">
                                        <right>
-                                          <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" minWidth="341.0" prefWidth="341.0" BorderPane.alignment="CENTER">
+                                          <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" minWidth="482.0" prefWidth="482.0" BorderPane.alignment="CENTER">
                                              <children>
-                                                <Label fx:id="lblSum" alignment="CENTER_RIGHT" cacheShape="false" centerShape="false" contentDisplay="RIGHT" focusTraversable="false" minWidth="100.0" prefWidth="100.0" scaleShape="false" style="-fx-background-color: #CCC; -fx-border-color: #333;" text="0" textAlignment="RIGHT">
+                                                <Label fx:id="lblSum" alignment="CENTER_RIGHT" cacheShape="false" centerShape="false" contentDisplay="RIGHT" focusTraversable="false" minWidth="101.0" prefWidth="101.0" scaleShape="false" style="-fx-background-color: #CCC; -fx-border-color: #333;" text="0" textAlignment="RIGHT">
                                                    <font>
                                                       <Font name="System Bold" size="13.0" />
                                                    </font>
                                                    <padding>
-                                                      <Insets bottom="2.0" left="20.0" right="3.0" top="2.0" />
+                                                      <Insets bottom="2.0" right="3.0" top="2.0" />
                                                    </padding>
                                                 </Label>
                                              </children>

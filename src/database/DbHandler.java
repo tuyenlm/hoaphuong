@@ -9,10 +9,10 @@ public class DbHandler {
 
 	public Connection getConnection() {
 		String host = "localhost";
-		String port = "5432";
+		String port = "5433";
 		String dbname = "hoaphuong";
 		String user = "postgres";
-		String password = "postgres";
+		String password = "abc123";
 		final String ConnectionString = "jdbc:postgresql://" + host + ":" + port + "/" + dbname;
 
 		try {

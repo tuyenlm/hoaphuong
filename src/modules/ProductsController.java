@@ -665,7 +665,7 @@ public class ProductsController implements Initializable {
 			txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 				public void handle(KeyEvent ke) {
 					if (ke.getText().trim().isEmpty() && !txtBarcode.getText().trim().isEmpty()) {
-						if(checkBarcodeIsExist(txtBarcode.getText())) {
+						if (checkBarcodeIsExist(txtBarcode.getText())) {
 							Alert alert = new Alert(AlertType.WARNING);
 							alert.setTitle(Global.tsl_lblConfirmDialog);
 							alert.setHeaderText(null);
@@ -673,7 +673,7 @@ public class ProductsController implements Initializable {
 							alert.showAndWait();
 							txtBarcode.clear();
 							txtBarcode.requestFocus();
-						}else {
+						} else {
 							File fileNewBar = BarcodeController.renderBarcode(txtBarcode.getText().trim());
 							outputFileP = fileNewBar;
 							imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
@@ -681,7 +681,7 @@ public class ProductsController implements Initializable {
 					}
 				}
 			});
-		
+
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				String barcodeDialog;

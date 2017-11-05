@@ -5,14 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.krysalis.barcode4j.impl.code39.Code39Bean;
 import org.krysalis.barcode4j.output.bitmap.BitmapCanvasProvider;
 import org.krysalis.barcode4j.tools.UnitConv;
-
-import modules.ProductsController;
 
 public class BarcodeController {
 
@@ -25,18 +24,15 @@ public class BarcodeController {
 				bean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
 				bean.setWideFactor(3);
 				bean.doQuietZone(true);
-
-
-				java.net.URL url = BarcodeController.class.getResource("/barImg/");
-				File fullPathToSubfolder = new File(url.toURI()).getAbsoluteFile();
+				File fullPathToSubfolder = new File("barImg");
 				if (!fullPathToSubfolder.exists()) {
 					fullPathToSubfolder.mkdir();
 				}
-				ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-				outputFile = new File(classLoader.getResource("barImg").getFile() + "/" + barcode + ".png");
+				outputFile = new File("barImg/" + barcode + ".png");
 				OutputStream out = new FileOutputStream(outputFile);
 				try {
-					BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi, BufferedImage.TYPE_BYTE_BINARY, false, 0);
+					BitmapCanvasProvider canvas = new BitmapCanvasProvider(out, "image/x-png", dpi,
+							BufferedImage.TYPE_BYTE_BINARY, false, 0);
 					bean.generateBarcode(canvas, barcode);
 					canvas.finish();
 				} finally {

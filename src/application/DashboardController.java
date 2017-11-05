@@ -40,10 +40,10 @@ public class DashboardController implements Initializable {
 	@FXML
 	private FlowPane containBottom;
 	@FXML
-	private JFXButton btnHome, btnProducts, btnUsers, btnWarehouse;
+	private JFXButton btnHome, btnProducts, btnUsers, btnStatistical;
 	@FXML
 	private Label lblToday;
-	private AnchorPane home, products, users, wareHouse;
+	private AnchorPane home, products, users, statistical;
 	@FXML
 	private MenuItem menuReadGolbalFile;
 
@@ -71,6 +71,7 @@ public class DashboardController implements Initializable {
 			btnHome.setText(Global.tsl_menu_home);
 			btnProducts.setText(Global.tsl_menu_Products);
 			btnUsers.setText(Global.tsl_menu_Users);
+			btnStatistical.setText(Global.tsl_menu_Statistical);
 			// tableWorks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 			home = FXMLLoader.load(getClass().getResource("/modules/Home.fxml"));
 			// users =
@@ -110,6 +111,7 @@ public class DashboardController implements Initializable {
 	private void openKinmu(ActionEvent event) {
 		btnHome.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnProducts.setStyle("-fx-background-color: #333;");
+		btnStatistical.setStyle("-fx-background-color: #333;");
 		setNode(home);
 	}
 
@@ -119,6 +121,7 @@ public class DashboardController implements Initializable {
 		btnProducts.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color: #333;");
+		btnStatistical.setStyle("-fx-background-color: #333;");
 		setNode(products);
 	}
 
@@ -128,16 +131,17 @@ public class DashboardController implements Initializable {
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnHome.setStyle("-fx-background-color: #333;");
+		btnStatistical.setStyle("-fx-background-color: #333;");
 		setNode(users);
 	}
 
 	@FXML
-	private void openWarehouse(ActionEvent event) throws IOException {
-		wareHouse = FXMLLoader.load(getClass().getResource("/modules/wareHouse.fxml"));
-		btnWarehouse.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
+	private void openStatistical(ActionEvent event) throws IOException {
+		statistical = FXMLLoader.load(getClass().getResource("/modules/Statistical.fxml"));
+		btnStatistical.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color: #333;");
-		setNode(users);
+		setNode(statistical);
 	}
 }
