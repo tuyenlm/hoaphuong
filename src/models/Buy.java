@@ -8,14 +8,16 @@ public class Buy {
 	private final SimpleStringProperty nameProduct;
 	private final SimpleIntegerProperty quatity;
 	private final SimpleIntegerProperty price;
+	private final SimpleIntegerProperty priceOrigin;
 	private final SimpleIntegerProperty priceTotal;
 	private final SimpleIntegerProperty saleId;
 
-	public Buy(int productId, String nameProduct, int quatity, int price, int priceTotal, int saleId) {
+	public Buy(int productId, String nameProduct, int quatity, int price, int priceOrigin,int priceTotal, int saleId) {
 		this.productId = new SimpleIntegerProperty(productId);
 		this.nameProduct = new SimpleStringProperty(nameProduct);
 		this.quatity = new SimpleIntegerProperty(quatity);
 		this.price = new SimpleIntegerProperty(price);
+		this.priceOrigin = new SimpleIntegerProperty(priceOrigin);
 		this.priceTotal = new SimpleIntegerProperty(priceTotal);
 		this.saleId = new SimpleIntegerProperty(saleId);
 	}
@@ -93,5 +95,20 @@ public class Buy {
 	public void setSaleId(final int saleId) {
 		this.saleIdProperty().set(saleId);
 	}
+
+	public SimpleIntegerProperty priceOriginProperty() {
+		return this.priceOrigin;
+	}
+	
+
+	public int getPriceOrigin() {
+		return this.priceOriginProperty().get();
+	}
+	
+
+	public void setPriceOrigin(final int priceOrigin) {
+		this.priceOriginProperty().set(priceOrigin);
+	}
+	
 	
 }

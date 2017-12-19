@@ -124,7 +124,7 @@ public class HomeController implements Initializable {
 	StackPane deptStackPane;
 	private ComboBox<String> searchProduct = new ComboBox<String>();
 	private HashMap<Integer, ObservableList<Buy>> itemBuyList = new HashMap<Integer, ObservableList<Buy>>();
-	private DecimalFormat decimalFormat = new DecimalFormat("###,###");
+	public static DecimalFormat decimalFormat = new DecimalFormat("###,###");
 	private int billId = 0;
 	private static ObservableList<Buy> itemsBill;
 
@@ -188,7 +188,7 @@ public class HomeController implements Initializable {
 			private void getBill(String billCode) {
 				try {
 					connection = handler.getConnection();
-					String query = "SELECT sales.id,sales.productid,sales.quantitys,sales.priceSell, sales.billId, products.nameProduct FROM bills LEFT OUTER JOIN sales ON (sales.billId = Bills.id) LEFT OUTER JOIN products ON (products.id = Sales.productid)  WHERE Bills.barcodeBill = '"
+					String query = "SELECT sales.id,sales.productid,sales.quantitys,sales.priceSell, sales.billId, products.nameProduct,products.priceOrigin FROM bills LEFT OUTER JOIN sales ON (sales.billId = Bills.id) LEFT OUTER JOIN products ON (products.id = Sales.productid)  WHERE Bills.barcodeBill = '"
 							+ billCode + "' ORDER BY Sales.id ASC";
 					ResultSet rs = connection.createStatement().executeQuery(query);
 					itemBuyList.clear();
@@ -196,7 +196,7 @@ public class HomeController implements Initializable {
 						while (rs.next()) {
 							ObservableList<Buy> items = FXCollections.observableArrayList();
 							items.add(new Buy(rs.getInt("productId"), rs.getString("nameProduct"),
-									rs.getInt("quantitys"), rs.getInt("priceSell"),
+									rs.getInt("quantitys"), rs.getInt("priceSell"), rs.getInt("priceOrigin"),
 									(rs.getInt("priceSell") * rs.getInt("quantitys")), rs.getInt("id")));
 							itemBuyList.put(rs.getInt("productId"), items);
 							billId = rs.getInt("billId");
@@ -244,7 +244,7 @@ public class HomeController implements Initializable {
 						if (tableHistoryPay.getSelectionModel().getSelectedItem() != null) {
 							int id = tableHistoryPay.getSelectionModel().getSelectedItem().getId();
 							connection = handler.getConnection();
-							String query = "SELECT sales.id,sales.quantitys,sales.priceSell,products.nameProduct FROM sales LEFT OUTER JOIN products ON (sales.productId = products.id) WHERE Sales.billId = '"
+							String query = "SELECT sales.id,sales.quantitys,sales.priceSell,products.nameProduct,products.priceOrigin FROM sales LEFT OUTER JOIN products ON (sales.productId = products.id) WHERE Sales.billId = '"
 									+ id + "' ORDER BY Sales.id ASC";
 							System.out.println(query);
 							ResultSet rs = connection.createStatement().executeQuery(query);
@@ -254,8 +254,8 @@ public class HomeController implements Initializable {
 								while (rs.next()) {
 									System.out.println(rs.getString("nameProduct"));
 									items.add(new Buy(0, rs.getString("nameProduct"), rs.getInt("quantitys"),
-											rs.getInt("priceSell"), (rs.getInt("quantitys") * rs.getInt("priceSell")),
-											0));
+											rs.getInt("priceSell"), rs.getInt("priceOrigin"),
+											(rs.getInt("quantitys") * rs.getInt("priceSell")), 0));
 
 								}
 							}
@@ -789,7 +789,7 @@ public class HomeController implements Initializable {
 				while (rs.next()) {
 					if (!itemBuyList.containsKey(rs.getInt("id"))) {
 						ObservableList<Buy> items = FXCollections.observableArrayList();
-						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),
+						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),rs.getInt("priceOrigin"),
 								rs.getInt("priceSell"), 0));
 						itemBuyList.put(rs.getInt("id"), items);
 					} else {
@@ -860,13 +860,13 @@ public class HomeController implements Initializable {
 					ObservableList<Buy> value = entry.getValue();
 					Statement stmt2 = connection.createStatement();
 					if (value.get(0).getSaleId() == 0) {
-						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,billId) " + "values ('"
+						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,priceOrigin,billId) " + "values ('"
 								+ value.get(0).getProductId() + "','" + value.get(0).getQuatity() + "','"
-								+ value.get(0).getPrice() + "','" + billId + "')";
+								+ value.get(0).getPrice() + "','"+value.get(0).getPriceOrigin()+"','" + billId + "')";
 						stmt2.execute(sqlInsertSale);
 					} else {
 						String sqlUpdate = "UPDATE Sales SET quantitys ='" + value.get(0).getQuatity()
-								+ "', priceSell ='" + value.get(0).getPrice() + "' WHERE id = '"
+								+ "', priceSell ='" + value.get(0).getPriceOrigin() + "' WHERE id = '"
 								+ value.get(0).getSaleId() + "'; ";
 						stmt.executeUpdate(sqlUpdate);
 					}
