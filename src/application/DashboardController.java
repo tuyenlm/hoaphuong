@@ -40,10 +40,10 @@ public class DashboardController implements Initializable {
 	@FXML
 	private FlowPane containBottom;
 	@FXML
-	private JFXButton btnHome, btnProducts, btnUsers, btnStatistical;
+	private JFXButton btnHome, btnProducts, btnUsers, btnStatistical,btnNhapHang;
 	@FXML
 	private Label lblToday;
-	private AnchorPane home, products, users, statistical;
+	private AnchorPane home, products, users, statistical, nhaphang;
 	@FXML
 	private MenuItem menuReadGolbalFile;
 
@@ -72,6 +72,7 @@ public class DashboardController implements Initializable {
 			btnProducts.setText(Global.tsl_menu_Products);
 			btnUsers.setText(Global.tsl_menu_Users);
 			btnStatistical.setText(Global.tsl_menu_Statistical);
+			btnNhapHang.setText(Global.tsl_menu_NhapHang);
 			// tableWorks.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 			home = FXMLLoader.load(getClass().getResource("/modules/Home.fxml"));
 			// users =
@@ -112,6 +113,7 @@ public class DashboardController implements Initializable {
 		btnHome.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
+		btnNhapHang.setStyle("-fx-background-color: #333;");
 		setNode(home);
 	}
 
@@ -122,6 +124,7 @@ public class DashboardController implements Initializable {
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
+		btnNhapHang.setStyle("-fx-background-color: #333;");
 		setNode(products);
 	}
 
@@ -132,6 +135,7 @@ public class DashboardController implements Initializable {
 		btnUsers.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
+		btnNhapHang.setStyle("-fx-background-color: #333;");
 		setNode(users);
 	}
 
@@ -142,6 +146,17 @@ public class DashboardController implements Initializable {
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color: #333;");
+		btnNhapHang.setStyle("-fx-background-color: #333;");
 		setNode(statistical);
+	}
+	@FXML
+	private void openNhapHang(ActionEvent event) throws IOException {
+		nhaphang = FXMLLoader.load(getClass().getResource("/modules/NhapHang.fxml"));
+		btnStatistical.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
+		btnProducts.setStyle("-fx-background-color: #333;");
+		btnHome.setStyle("-fx-background-color: #333;");
+		btnUsers.setStyle("-fx-background-color: #333;");
+		btnStatistical.setStyle("-fx-background-color: #333;");
+		setNode(nhaphang);
 	}
 }

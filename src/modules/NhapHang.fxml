@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane stylesheets="@home.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.NhapHangController">
+	<children>
+		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<children>
+				<SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308">
+					<items>
+						<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+							<children>
+								<StackPane minWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<children>
+										<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+											<columnConstraints>
+												<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+											</columnConstraints>
+											<rowConstraints>
+												<RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="1.7976931348623157E308" minHeight="345.0" prefHeight="372.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="81.0" prefHeight="119.0" vgrow="SOMETIMES" />
+											</rowConstraints>
+											<children>
+												<HBox alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #CCC;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+													<children>
+														<TextField fx:id="txtBarcode" maxWidth="1.7976931348623157E308" minWidth="400.0" prefHeight="29.0" prefWidth="591.0" style="-fx-border-color: white; -fx-background-insets: 1; -fx-border-radius: 3;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+													</children>
+													<padding>
+														<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+													</padding>
+												</HBox>
+												<TableView fx:id="tableImport" focusTraversable="false" prefWidth="446.0" style="-fx-background-color: #333; -fx-border-width: 0 1px 1px 1px; -fx-border-color: white;" GridPane.rowIndex="1">
+													<cursor>
+														<Cursor fx:constant="DEFAULT" />
+													</cursor>
+													<GridPane.margin>
+														<Insets left="2.0" right="2.0" />
+													</GridPane.margin>
+												</TableView>
+                                    <StackPane prefHeight="243.0" prefWidth="445.0" style="-fx-background-color: #333; -fx-background-radius: 9px; -fx-border-radius: 8px; -fx-border-color: white;" GridPane.rowIndex="2">
+                                       <children>
+                                          <GridPane>
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                                <RowConstraints maxHeight="80.0" minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <HBox>
+                                                   <children>
+                                                      <Label text="Tổng Tiền:" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="22.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                                <HBox alignment="TOP_CENTER" GridPane.rowIndex="1">
+                                                   <children>
+                                                      <Label fx:id="lblTotal" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="WHITE">
+                                                         <font>
+                                                            <Font size="62.0" />
+                                                         </font>
+                                                      </Label>
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </StackPane>
+											</children>
+										</GridPane>
+									</children>
+								</StackPane>
+							</children>
+						</AnchorPane>
+						<TabPane tabClosingPolicy="UNAVAILABLE" SplitPane.resizableWithParent="false">
+							<tabs>
+								<Tab fx:id="tabHistoryImport" text="Lịch Sử Nhập Hàng">
+									<content>
+										<GridPane>
+											<columnConstraints>
+												<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+											</columnConstraints>
+											<rowConstraints>
+												<RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
+											</rowConstraints>
+											<children>
+												<TableView fx:id="tableHistoryImport" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="495.0" prefWidth="439.0" scaleShape="false" style="-fx-background-color: #CCC;" styleClass="tableHistoryPay" />
+											</children>
+										</GridPane>
+									</content>
+								</Tab>
+								<Tab fx:id="tabNhaCungCap" text="Nhà Cung Cấp" />
+							</tabs>
+						</TabPane>
+					</items>
+				</SplitPane>
+			</children>
+		</StackPane>
+	</children>
+</AnchorPane>

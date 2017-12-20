@@ -82,6 +82,18 @@
 						<Circle blendMode="SRC_ATOP" fill="#2AAFC7" radius="7.0" />
 					</graphic>
 				</JFXButton>
+				<JFXButton fx:id="btnNhapHang" alignment="TOP_LEFT"
+					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openNhapHang"
+					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"
+					text="Nhập Hàng" textAlignment="CENTER" textFill="WHITE"
+					textOverrun="CLIP">
+					<font>
+						<Font size="14.0" />
+					</font>
+					<graphic>
+						<Circle blendMode="SRC_ATOP" fill="GREEN" radius="7.0" />
+					</graphic>
+				</JFXButton>
 				<JFXButton fx:id="btnUsers" alignment="TOP_LEFT"
 					blendMode="SRC_ATOP" buttonType="RAISED" onAction="#openUsers"
 					prefHeight="25.0" prefWidth="198.0" style="-fx-background-color: #333;"

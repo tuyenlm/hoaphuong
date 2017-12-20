@@ -169,7 +169,8 @@ public class HomeController implements Initializable {
 
 		txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent ke) {
-				if (ke.getText().trim().isEmpty() && !txtBarcode.getText().trim().isEmpty()) {
+				if (ke.getCode().toString().equals("ENTER")  && !txtBarcode.getText().trim().isEmpty()) {
+					System.out.println(txtBarcode.getText());
 					String[] barCodeSp = txtBarcode.getText().split("-");
 					if (barCodeSp.length > 1) {
 						switch (barCodeSp[0]) {
