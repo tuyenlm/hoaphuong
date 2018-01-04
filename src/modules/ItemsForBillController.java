@@ -17,7 +17,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import models.Bill;
 import models.Buy;
 
 public class ItemsForBillController implements Initializable {
@@ -37,8 +36,8 @@ public class ItemsForBillController implements Initializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void buildTable() {
-
 		TableColumn<Buy, Number> indexColumn = new TableColumn<Buy, Number>("#");
 		indexColumn.setSortable(false);
 		indexColumn.setMinWidth(30);
@@ -52,7 +51,6 @@ public class ItemsForBillController implements Initializable {
 					if (newValue == null) {
 						return;
 					}
-
 				});
 		TableColumn<Buy, String> nameProductCol = new TableColumn<Buy, String>("Mặt Hàng");
 		nameProductCol.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));

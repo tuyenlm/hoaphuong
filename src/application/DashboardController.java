@@ -26,6 +26,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.util.Duration;
+import modules.HomeController;
 
 /**
  * FXML Controller class
@@ -40,10 +41,10 @@ public class DashboardController implements Initializable {
 	@FXML
 	private FlowPane containBottom;
 	@FXML
-	private JFXButton btnHome, btnProducts, btnUsers, btnStatistical,btnNhapHang;
+	private JFXButton btnHome, btnProducts, btnUsers, btnStatistical, btnNhapHang, btnSettings;
 	@FXML
 	private Label lblToday;
-	private AnchorPane home, products, users, statistical, nhaphang;
+	private AnchorPane home, products, users, statistical, nhaphang, settings;
 	@FXML
 	private MenuItem menuReadGolbalFile;
 
@@ -63,6 +64,7 @@ public class DashboardController implements Initializable {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, new Locale("vi", "VN"));
 		String date = simpleDateFormat.format(new Date());
 		lblToday.setText(date);
+
 	}
 
 	// Load all fxml files to a cahce for swapping
@@ -88,6 +90,7 @@ public class DashboardController implements Initializable {
 			// btnUsers.setVisible(false);
 			// }
 			setNode(home);
+
 		} catch (IOException ex) {
 			Logger.getLogger(DashboardController.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -95,8 +98,9 @@ public class DashboardController implements Initializable {
 
 	// Set selected node to a content holder
 	private void setNode(Node node) {
-		if (node.toString() == "kinmu")
+		if (node.toString() == "kinmu") {
 			btnHome.setStyle("-fx-background-color:#3F51B5;");
+		}
 		containIndex.getChildren().clear();
 		containIndex.getChildren().add((Node) node);
 		FadeTransition ft = new FadeTransition(Duration.millis(1500));
@@ -109,11 +113,13 @@ public class DashboardController implements Initializable {
 	}
 
 	@FXML
-	private void openKinmu(ActionEvent event) {
+	private void openKinmu(ActionEvent event) throws IOException {
+		home = FXMLLoader.load(getClass().getResource("/modules/Home.fxml"));
 		btnHome.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
 		btnNhapHang.setStyle("-fx-background-color: #333;");
+		btnSettings.setStyle("-fx-background-color: #333;");
 		setNode(home);
 	}
 
@@ -125,6 +131,7 @@ public class DashboardController implements Initializable {
 		btnUsers.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
 		btnNhapHang.setStyle("-fx-background-color: #333;");
+		btnSettings.setStyle("-fx-background-color: #333;");
 		setNode(products);
 	}
 
@@ -136,6 +143,7 @@ public class DashboardController implements Initializable {
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
 		btnNhapHang.setStyle("-fx-background-color: #333;");
+		btnSettings.setStyle("-fx-background-color: #333;");
 		setNode(users);
 	}
 
@@ -147,16 +155,31 @@ public class DashboardController implements Initializable {
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color: #333;");
 		btnNhapHang.setStyle("-fx-background-color: #333;");
+		btnSettings.setStyle("-fx-background-color: #333;");
 		setNode(statistical);
 	}
+
 	@FXML
 	private void openNhapHang(ActionEvent event) throws IOException {
 		nhaphang = FXMLLoader.load(getClass().getResource("/modules/NhapHang.fxml"));
-		btnStatistical.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
+		btnNhapHang.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnHome.setStyle("-fx-background-color: #333;");
 		btnUsers.setStyle("-fx-background-color: #333;");
 		btnStatistical.setStyle("-fx-background-color: #333;");
+		btnSettings.setStyle("-fx-background-color: #333;");
 		setNode(nhaphang);
+	}
+
+	@FXML
+	private void openSettings(ActionEvent event) throws IOException {
+		settings = FXMLLoader.load(getClass().getResource("/modules/Settings.fxml"));
+		btnSettings.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
+		btnProducts.setStyle("-fx-background-color: #333;");
+		btnHome.setStyle("-fx-background-color: #333;");
+		btnUsers.setStyle("-fx-background-color: #333;");
+		btnStatistical.setStyle("-fx-background-color: #333;");
+		btnNhapHang.setStyle("-fx-background-color: #333;");
+		setNode(settings);
 	}
 }

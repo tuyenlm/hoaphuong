@@ -37,3 +37,11 @@
 .tableHistoryPay .column-header-background {
     -fx-background-color: #333;
 }
+
+.combo-box .cell{
+    -fx-text-fill: black; 
+}
+.combo-box .list-view .list-cell {-fx-text-fill: Black }
+.cbbThanhToan .cell{
+	  -fx-text-fill: white; 
+}

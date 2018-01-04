@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXToolbar?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="800.0" stylesheets="@tabHistoryPay.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.ItemsForHistoryPurchasController">
+	<columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints maxHeight="427.0" minHeight="10.0" prefHeight="273.0" valignment="CENTER" vgrow="SOMETIMES" />
+	</rowConstraints>
+	<children>
+		<StackPane focusTraversable="true">
+			<GridPane.margin>
+				<Insets />
+			</GridPane.margin>
+			<children>
+				<GridPane gridLinesVisible="true" style="-fx-background-color: #444;">
+					<columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
+						<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints maxHeight="245.0" minHeight="10.0" prefHeight="243.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+					</rowConstraints>
+					<children>
+                  <JFXButton fx:id="btnBack" buttonType="RAISED" maxHeight="1.7976931348623157E308" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" ripplerFill="WHITE" style="-fx-background-color: black;" />
+                  <JFXButton fx:id="btnNext" buttonType="RAISED" maxHeight="1.7976931348623157E308" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" ripplerFill="WHITE" style="-fx-background-color: black;" GridPane.columnIndex="2" />
+                  <TableView fx:id="_table" GridPane.columnIndex="1" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="30.0" spacing="5.0" style="-fx-background-color: #CCCCCC;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <padding>
+                        <Insets left="5.0" right="5.0" />
+                     </padding>
+                     <children>
+                        <JFXToolbar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="30.0" prefWidth="746.0">
+                           <right>
+                              <Label fx:id="lblTotalNumber" alignment="CENTER_RIGHT" contentDisplay="CENTER" prefHeight="17.0" prefWidth="73.0" text="Label" BorderPane.alignment="CENTER" />
+                           </right>
+                           <center>
+                              <Label text="Tổng Cộng:" BorderPane.alignment="CENTER" />
+                           </center>
+                           <left>
+                              <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="578.0" spacing="10.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Label fx:id="lblStatusPay" prefHeight="17.0" prefWidth="253.0" text="Label" />
+                                    <Label fx:id="lbSoTienThanhToan" prefHeight="17.0" prefWidth="133.0" text="Số Tiền Thanh Toán:" />
+                                    <TextField fx:id="txtPay" alignment="CENTER_RIGHT" prefHeight="29.0" prefWidth="82.0" style="-fx-background-insets: 2; -fx-border-color: #CCC; -fx-border-radius: 2;" />
+                                    <JFXButton fx:id="btnPay" onAction="#actionPay" ripplerFill="#ff4800" style="-fx-background-color: #333;" text="Thanh Toán" textFill="WHITE">
+                                       <font>
+                                          <Font size="11.0" />
+                                       </font>
+                                    </JFXButton>
+                                 </children>
+                              </HBox>
+                           </left>
+                        </JFXToolbar>
+                     </children></HBox>
+					</children>
+				</GridPane>
+			</children>
+		</StackPane>
+	</children>
+   <padding>
+      <Insets left="-3.0" right="-3.0" />
+   </padding>
+</GridPane>

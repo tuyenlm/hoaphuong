@@ -29,9 +29,9 @@ public class Global {
 	public static String billMoneyBackText = "Trả lại";
 	public static String billTimePayText = "Thời gian TT: ";
 	public static String billThanksSayText = "Cảm ơn quý khách đã mua hàng!";
-	
+
 	//
-	public static String userId;
+	public static String userId = "0";
 	public static String username;
 	public static String fullname;
 	public static String isTypeUser;
@@ -62,7 +62,7 @@ public class Global {
 	public static String tsl_menu_Products = "Sản Phẩm";
 	public static String tsl_menu_Users = "Nhân Viên";
 	public static String tsl_menu_Statistical = "Thống Kê";
-	public static String tsl_menu_NhapHang= "Nhập Hàng";
+	public static String tsl_menu_NhapHang = "Nhập Hàng";
 	public static String tsl_menu_norimono = "乗物";
 
 	// KINMU

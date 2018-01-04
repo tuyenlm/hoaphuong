@@ -6,7 +6,6 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -24,34 +23,55 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane stylesheets="@home.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
+<AnchorPane stylesheets="@home.css" AnchorPane.bottomAnchor="0.0"
+	AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+	AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.141"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="modules.HomeController">
 	<children>
-		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0"
+			AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+			AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
 				<SplitPane dividerPositions="0.5">
 					<items>
-						<AnchorPane maxWidth="1.7976931348623157E308" minWidth="500.0" prefWidth="500.0" SplitPane.resizableWithParent="false">
+						<AnchorPane maxWidth="1.7976931348623157E308" minWidth="500.0"
+							prefWidth="500.0" SplitPane.resizableWithParent="false">
 							<children>
-								<StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+								<StackPane AnchorPane.bottomAnchor="0.0"
+									AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+									AnchorPane.topAnchor="0.0">
 									<children>
 										<GridPane maxWidth="1.7976931348623157E308">
 											<columnConstraints>
-												<ColumnConstraints hgrow="SOMETIMES" minWidth="500.0" prefWidth="500.0" />
+												<ColumnConstraints hgrow="SOMETIMES"
+													minWidth="500.0" prefWidth="500.0" />
 											</columnConstraints>
 											<rowConstraints>
-												<RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="150.0" minHeight="150.0" prefHeight="150.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="37.0" minHeight="37.0"
+													prefHeight="37.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="1.7976931348623157E308"
+													vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="150.0" minHeight="150.0"
+													prefHeight="150.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="40.0" minHeight="40.0"
+													prefHeight="40.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="40.0" minHeight="40.0"
+													prefHeight="40.0" vgrow="SOMETIMES" />
 											</rowConstraints>
 											<children>
-												<HBox fx:id="hboxBarcode" alignment="CENTER_LEFT" spacing="5.0" style="-fx-background-color: #CCC;">
+												<HBox fx:id="hboxBarcode" alignment="CENTER_LEFT"
+													spacing="5.0" style="-fx-background-color: #CCC;">
 													<children>
-														<TextField fx:id="txtBarcode" prefHeight="29.0" prefWidth="400.0" style="-fx-border-color: white; -fx-background-insets: 1; -fx-border-radius: 3;" />
-														<JFXButton fx:id="btnBarcode" alignment="CENTER" contentDisplay="CENTER" onAction="#actionSwitchBarcode" prefHeight="29.0" prefWidth="0.0" ripplerFill="#00c3ff" style="-fx-background-color: white;">
+														<TextField fx:id="txtBarcode" prefHeight="29.0"
+															prefWidth="400.0"
+															style="-fx-border-color: white; -fx-background-insets: 1; -fx-border-radius: 3;" />
+														<JFXButton fx:id="btnBarcode" alignment="CENTER"
+															contentDisplay="CENTER" onAction="#actionSwitchBarcode"
+															prefHeight="29.0" prefWidth="0.0" ripplerFill="#00c3ff"
+															style="-fx-background-color: white;">
 															<graphic>
-																<ImageView fitHeight="37.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+																<ImageView fitHeight="37.0" fitWidth="37.0"
+																	pickOnBounds="true" preserveRatio="true">
 																	<image>
 																		<Image url="@../icons/barcode.png" />
 																	</image>
@@ -61,9 +81,13 @@
 																<Insets bottom="-5.0" left="1.0" right="1.0" top="-5.0" />
 															</padding>
 														</JFXButton>
-														<JFXButton fx:id="btnSearchProduct" alignment="CENTER" contentDisplay="CENTER" onAction="#actionSwitchProduct" prefHeight="27.0" prefWidth="41.0" ripplerFill="#00c3ff" style="-fx-background-color: BLACK; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;">
+														<JFXButton fx:id="btnSearchProduct" alignment="CENTER"
+															contentDisplay="CENTER" onAction="#actionSwitchProduct"
+															prefHeight="27.0" prefWidth="41.0" ripplerFill="#00c3ff"
+															style="-fx-background-color: BLACK; -fx-background-radius: 5; -fx-border-color: white; -fx-border-radius: 3; -fx-border-width: 2px;">
 															<graphic>
-																<ImageView fitHeight="21.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+																<ImageView fitHeight="21.0" fitWidth="37.0"
+																	pickOnBounds="true" preserveRatio="true">
 																	<image>
 																		<Image url="@../icons/font.png" />
 																	</image>
@@ -81,7 +105,9 @@
 														<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
 													</padding>
 												</HBox>
-												<TableView fx:id="tableBuyList" focusTraversable="false" style="-fx-background-color: #333; -fx-border-width: 0 1px 1px 1px; -fx-border-color: white;" GridPane.rowIndex="1">
+												<TableView fx:id="tableBuyList" focusTraversable="false"
+													style="-fx-background-color: #333; -fx-border-width: 0 1px 1px 1px; -fx-border-color: white;"
+													GridPane.rowIndex="1">
 													<cursor>
 														<Cursor fx:constant="DEFAULT" />
 													</cursor>
@@ -91,10 +117,16 @@
 												</TableView>
 												<JFXToolbar GridPane.rowIndex="4">
 													<left>
-														<JFXButton fx:id="btnDeletePay" contentDisplay="CENTER" maxHeight="30.0" maxWidth="1.7976931348623157E308" minHeight="30.0" onAction="#actionDeletePay" prefHeight="30.0" style="-fx-background-color: RED;" text="Hủy Thanh Toán" textAlignment="CENTER" textFill="WHITE" BorderPane.alignment="CENTER">
-                                             <font>
-                                                <Font name="Arial Bold" size="13.0" />
-                                             </font></JFXButton>
+														<JFXButton fx:id="btnDeletePay" contentDisplay="CENTER"
+															maxHeight="30.0" maxWidth="1.7976931348623157E308"
+															minHeight="30.0" onAction="#actionDeletePay" prefHeight="30.0"
+															style="-fx-background-color: RED;" text="Hủy Thanh Toán"
+															textAlignment="CENTER" textFill="WHITE"
+															BorderPane.alignment="CENTER">
+															<font>
+																<Font name="Arial Bold" size="13.0" />
+															</font>
+														</JFXButton>
 													</left>
 													<padding>
 														<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -102,34 +134,49 @@
 													<right>
 														<HBox spacing="10.0" BorderPane.alignment="CENTER">
 															<children>
-                                                <JFXButton fx:id="btnPay" alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" onAction="#actionPayPrint" prefHeight="30.0" style="-fx-background-color: GREEN;" text="Thanh Toán &amp; IN" textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP">
-                                                   <font>
-                                                      <Font name="Arial Bold" size="13.0" />
-                                                   </font>
-                                                </JFXButton>
-																<JFXButton fx:id="btnJustPay" alignment="CENTER" contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0" onAction="#actionPay" prefHeight="30.0" style="-fx-background-color: YELLOW;" text="Thanh Toán" textAlignment="CENTER" textOverrun="CLIP">
-                                                   <font>
-                                                      <Font name="Arial Bold" size="13.0" />
-                                                   </font></JFXButton>
+																<JFXButton fx:id="btnPay" alignment="CENTER"
+																	contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0"
+																	onAction="#actionPayPrint" prefHeight="30.0"
+																	style="-fx-background-color: GREEN;" text="Thanh Toán &amp; IN"
+																	textAlignment="CENTER" textFill="WHITE" textOverrun="CLIP">
+																	<font>
+																		<Font name="Arial Bold" size="13.0" />
+																	</font>
+																</JFXButton>
+																<JFXButton fx:id="btnJustPay" alignment="CENTER"
+																	contentDisplay="CENTER" maxHeight="30.0" minHeight="30.0"
+																	onAction="#actionPay" prefHeight="30.0"
+																	style="-fx-background-color: YELLOW;" text="Thanh Toán"
+																	textAlignment="CENTER" textOverrun="CLIP">
+																	<font>
+																		<Font name="Arial Bold" size="13.0" />
+																	</font>
+																</JFXButton>
 															</children>
 														</HBox>
 													</right>
-                                       <center>
-                                          <Label fx:id="lblTest" text="Label" BorderPane.alignment="CENTER" />
-                                       </center>
+													<center>
+														<Label fx:id="lblTest" text="Label"
+															BorderPane.alignment="CENTER" />
+													</center>
 												</JFXToolbar>
-												<StackPane style="-fx-background-color: #333; -fx-background-radius: 9px; -fx-border-radius: 8px; -fx-border-color: white;" GridPane.rowIndex="2">
+												<StackPane
+													style="-fx-background-color: #333; -fx-background-radius: 9px; -fx-border-radius: 8px; -fx-border-color: white;"
+													GridPane.rowIndex="2">
 													<GridPane.margin>
 														<Insets left="1.0" right="1.0" top="3.0" />
 													</GridPane.margin>
 													<children>
 														<GridPane>
 															<columnConstraints>
-																<ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+																<ColumnConstraints hgrow="SOMETIMES"
+																	maxWidth="1.7976931348623157E308" />
 															</columnConstraints>
 															<rowConstraints>
-																<RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
-																<RowConstraints maxHeight="122.0" minHeight="10.0" prefHeight="107.0" vgrow="SOMETIMES" />
+																<RowConstraints maxHeight="40.0"
+																	minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+																<RowConstraints maxHeight="122.0"
+																	minHeight="10.0" prefHeight="107.0" vgrow="SOMETIMES" />
 															</rowConstraints>
 															<children>
 																<HBox>
@@ -141,12 +188,15 @@
 																		</Label>
 																	</children>
 																	<padding>
-																		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+																		<Insets bottom="5.0" left="5.0" right="5.0"
+																			top="5.0" />
 																	</padding>
 																</HBox>
 																<HBox alignment="TOP_CENTER" GridPane.rowIndex="1">
 																	<children>
-																		<Label fx:id="lblTotal" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="WHITE">
+																		<Label fx:id="lblTotal" alignment="CENTER"
+																			contentDisplay="CENTER" text="0" textAlignment="CENTER"
+																			textFill="WHITE">
 																			<font>
 																				<Font size="81.0" />
 																			</font>
@@ -157,40 +207,49 @@
 														</GridPane>
 													</children>
 												</StackPane>
-                                    <JFXToolbar style="-fx-background-color: #333; -fx-text-fill: white; -fx-border-color: white; -fx-background-radius: 9px; -fx-border-radius: 8px;" GridPane.rowIndex="3">
-                                       <left>
-                                          <HBox alignment="CENTER_LEFT" prefHeight="33.0" prefWidth="234.0" spacing="5.0" BorderPane.alignment="CENTER">
-                                             <children>
-                                                <Label text="Tiền nhận:" textFill="WHITE">
-                                                   <font>
-                                                      <Font size="18.0" />
-                                                   </font>
-                                                </Label>
-                                                <TextField fx:id="txtMoneyReceived" nodeOrientation="RIGHT_TO_LEFT" prefHeight="29.0" prefWidth="113.0" style="-fx-background-insets: 2; -fx-border-color: #CCC; -fx-border-radius: 2;" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="5.0" right="5.0" />
-                                             </padding>
-                                          </HBox>
-                                       </left>
-                                       <right>
-                                          <Label fx:id="lblTurnedBack" alignment="CENTER_RIGHT" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="0" textFill="WHITE" BorderPane.alignment="CENTER">
-                                             <padding>
-                                                <Insets right="10.0" />
-                                             </padding>
-                                             <font>
-                                                <Font name="System Font" size="20.0" />
-                                             </font>
-                                          </Label>
-                                       </right>
-                                       <center>
-                                          <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Trả lại : " textFill="WHITE" BorderPane.alignment="CENTER">
-                                             <font>
-                                                <Font size="18.0" />
-                                             </font>
-                                          </Label>
-                                       </center>
-                                    </JFXToolbar>
+												<JFXToolbar
+													style="-fx-background-color: #333; -fx-text-fill: white; -fx-border-color: white; -fx-background-radius: 9px; -fx-border-radius: 8px;"
+													GridPane.rowIndex="3">
+													<left>
+														<HBox alignment="CENTER_LEFT" prefHeight="33.0"
+															prefWidth="234.0" spacing="5.0" BorderPane.alignment="CENTER">
+															<children>
+																<Label text="Tiền nhận:" textFill="WHITE">
+																	<font>
+																		<Font size="18.0" />
+																	</font>
+																</Label>
+																<TextField fx:id="txtMoneyReceived"
+																	nodeOrientation="RIGHT_TO_LEFT" prefHeight="29.0"
+																	prefWidth="113.0"
+																	style="-fx-background-insets: 2; -fx-border-color: #CCC; -fx-border-radius: 2;" />
+															</children>
+															<padding>
+																<Insets left="5.0" right="5.0" />
+															</padding>
+														</HBox>
+													</left>
+													<right>
+														<Label fx:id="lblTurnedBack" alignment="CENTER_RIGHT"
+															maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="0"
+															textFill="WHITE" BorderPane.alignment="CENTER">
+															<padding>
+																<Insets right="10.0" />
+															</padding>
+															<font>
+																<Font name="System Font" size="20.0" />
+															</font>
+														</Label>
+													</right>
+													<center>
+														<Label alignment="CENTER_RIGHT" contentDisplay="RIGHT"
+															text="Trả lại : " textFill="WHITE" BorderPane.alignment="CENTER">
+															<font>
+																<Font size="18.0" />
+															</font>
+														</Label>
+													</center>
+												</JFXToolbar>
 											</children>
 										</GridPane>
 									</children>
@@ -203,73 +262,98 @@
 									<content>
 										<GridPane>
 											<columnConstraints>
-												<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+												<ColumnConstraints hgrow="SOMETIMES"
+													minWidth="10.0" prefWidth="100.0" />
 											</columnConstraints>
 											<rowConstraints>
-                                    <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="20.0" minHeight="20.0" prefHeight="20.0" vgrow="SOMETIMES" />
-												<RowConstraints maxHeight="190.0" minHeight="190.0" prefHeight="190.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="40.0" minHeight="40.0"
+													prefHeight="40.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="1.7976931348623157E308"
+													vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="20.0" minHeight="20.0"
+													prefHeight="20.0" vgrow="SOMETIMES" />
+												<RowConstraints maxHeight="190.0" minHeight="190.0"
+													prefHeight="190.0" vgrow="SOMETIMES" />
 											</rowConstraints>
 											<children>
-												<TableView fx:id="tableHistoryPay" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false" style="-fx-background-color: #CCC;" styleClass="tableHistoryPay" GridPane.rowIndex="1" />
-												<StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #CCC; -fx-background-insets: 1px; -fx-border-insets: 2px; -fx-border-width: 1px; -fx-border-color: white;" GridPane.rowIndex="3">
+												<TableView fx:id="tableHistoryPay" cacheShape="false"
+													centerShape="false" focusTraversable="false" scaleShape="false"
+													style="-fx-background-color: #CCC;" styleClass="tableHistoryPay"
+													GridPane.rowIndex="1" />
+												<StackPane prefHeight="150.0" prefWidth="200.0"
+													style="-fx-background-color: #CCC; -fx-background-insets: 1px; -fx-border-insets: 2px; -fx-border-width: 1px; -fx-border-color: white;"
+													GridPane.rowIndex="3">
 													<children>
-														<ListView fx:id="listViewProductCount" cacheShape="false" centerShape="false" focusTraversable="false" scaleShape="false">
-                                             <StackPane.margin>
-                                                <Insets />
-                                             </StackPane.margin></ListView>
+														<TableView fx:id="_tableHetHang"
+															focusTraversable="false" style="-fx-background-color: #CCC;"
+															styleClass="tableHistoryPay" />
 													</children>
 												</StackPane>
-                                    <JFXToolbar>
-                                       <left>
-                                          <HBox alignment="CENTER_LEFT" spacing="5.0" BorderPane.alignment="CENTER">
-                                             <children>
-                                                <ComboBox fx:id="comCondition" maxWidth="1.7976931348623157E308" promptText="Tìm theo" />
-                                                <TextField fx:id="txtSearchHistory" prefHeight="27.0" prefWidth="135.0" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="5.0" right="5.0" />
-                                             </padding>
-                                          </HBox>
-                                       </left>
-                                       <right>
-                                          <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" spacing="5.0" BorderPane.alignment="CENTER">
-                                             <children>
-                                                <ComboBox fx:id="comYear" cacheShape="false" centerShape="false" focusTraversable="false" prefHeight="27.0" prefWidth="78.0" promptText="Năm" scaleShape="false" />
-                                                <ComboBox fx:id="comMonth" prefHeight="27.0" prefWidth="87.0" promptText="Tháng" />
-                                             </children>
-                                             <padding>
-                                                <Insets left="5.0" right="5.0" />
-                                             </padding>
-                                          </HBox>
-                                       </right>
-                                    </JFXToolbar>
-                                    <JFXToolbar GridPane.rowIndex="2">
-                                       <right>
-                                          <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" minWidth="482.0" prefWidth="482.0" BorderPane.alignment="CENTER">
-                                             <children>
-                                                <Label fx:id="lblSum" alignment="CENTER_RIGHT" cacheShape="false" centerShape="false" contentDisplay="RIGHT" focusTraversable="false" minWidth="101.0" prefWidth="101.0" scaleShape="false" style="-fx-background-color: #CCC; -fx-border-color: #333;" text="0" textAlignment="RIGHT">
-                                                   <font>
-                                                      <Font name="System Bold" size="13.0" />
-                                                   </font>
-                                                   <padding>
-                                                      <Insets bottom="2.0" right="3.0" top="2.0" />
-                                                   </padding>
-                                                </Label>
-                                             </children>
-                                          </HBox>
-                                       </right>
-                                    </JFXToolbar>
+												<JFXToolbar>
+													<left>
+														<HBox alignment="CENTER_LEFT" spacing="5.0"
+															BorderPane.alignment="CENTER">
+															<children>
+																<ComboBox fx:id="comCondition" maxWidth="1.7976931348623157E308"
+																	promptText="Tìm theo" />
+																<TextField fx:id="txtSearchHistory"
+																	prefHeight="27.0" prefWidth="135.0" />
+															</children>
+															<padding>
+																<Insets left="5.0" right="5.0" />
+															</padding>
+														</HBox>
+													</left>
+													<right>
+														<HBox alignment="CENTER" maxHeight="1.7976931348623157E308"
+															maxWidth="1.7976931348623157E308" prefHeight="100.0"
+															spacing="5.0" BorderPane.alignment="CENTER">
+															<children>
+																<ComboBox fx:id="comYear" cacheShape="false"
+																	centerShape="false" focusTraversable="false"
+																	prefHeight="27.0" prefWidth="78.0" promptText="Năm"
+																	scaleShape="false" />
+																<ComboBox fx:id="comMonth" prefHeight="27.0"
+																	prefWidth="87.0" promptText="Tháng" />
+															</children>
+															<padding>
+																<Insets left="5.0" right="5.0" />
+															</padding>
+														</HBox>
+													</right>
+												</JFXToolbar>
+												<JFXToolbar GridPane.rowIndex="2">
+													<right>
+														<HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308"
+															minWidth="482.0" prefWidth="482.0" BorderPane.alignment="CENTER">
+															<children>
+																<Label fx:id="lblSum" alignment="CENTER_RIGHT"
+																	cacheShape="false" centerShape="false" contentDisplay="RIGHT"
+																	focusTraversable="false" minWidth="101.0" prefWidth="101.0"
+																	scaleShape="false"
+																	style="-fx-background-color: #CCC; -fx-border-color: #333;"
+																	text="0" textAlignment="RIGHT">
+																	<font>
+																		<Font name="System Bold" size="13.0" />
+																	</font>
+																	<padding>
+																		<Insets bottom="2.0" right="3.0" top="2.0" />
+																	</padding>
+																</Label>
+															</children>
+														</HBox>
+													</right>
+												</JFXToolbar>
 											</children>
 										</GridPane>
 									</content>
 								</Tab>
 								<Tab fx:id="tabUnknowProduct" text="Sản Phẩm Mới">
-                           <graphic>
-                              <Circle fx:id="iconNotifiUnkknowProduct" blendMode="SRC_ATOP" fill="RED" />
-                           </graphic></Tab>
-								<Tab fx:id="tabAbc" text="ABC" />
+									<graphic>
+										<Circle fx:id="iconNotifiUnkknowProduct" blendMode="SRC_ATOP"
+											fill="RED" />
+									</graphic>
+								</Tab>
 							</tabs>
 						</TabPane>
 					</items>

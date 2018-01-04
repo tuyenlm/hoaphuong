@@ -8,21 +8,21 @@ public class Purchases {
 	private final SimpleIntegerProperty id;
 	private final SimpleStringProperty barcodePur;
 	private final SimpleIntegerProperty SupplierId;
-	private final SimpleBooleanProperty PaymentStatus;
+	private final SimpleIntegerProperty PaymentStatus;
 	private final SimpleIntegerProperty GrandTotal;
-	private final SimpleBooleanProperty Paid;
+	private final SimpleIntegerProperty Paid;
 	private final SimpleStringProperty createdAtP;
 	private final SimpleStringProperty note;
 	private final SimpleIntegerProperty userCreated;
 
-	public Purchases(int id, String barcodePur, int SupplierId, Boolean PaymentStatus, int GrandTotal, Boolean Paid,
+	public Purchases(int id, String barcodePur, int SupplierId, int PaymentStatus, int GrandTotal, int Paid,
 			String createdAtP, String note, int userCreated) {
 		this.id = new SimpleIntegerProperty(id);
 		this.barcodePur = new SimpleStringProperty(barcodePur);
 		this.SupplierId = new SimpleIntegerProperty(SupplierId);
-		this.PaymentStatus = new SimpleBooleanProperty(PaymentStatus);
+		this.PaymentStatus = new SimpleIntegerProperty(PaymentStatus);
 		this.GrandTotal = new SimpleIntegerProperty(GrandTotal);
-		this.Paid = new SimpleBooleanProperty(Paid);
+		this.Paid = new SimpleIntegerProperty(Paid);
 		this.createdAtP = new SimpleStringProperty(createdAtP);
 		this.note = new SimpleStringProperty(note);
 		this.userCreated = new SimpleIntegerProperty(userCreated);
@@ -76,18 +76,6 @@ public class Purchases {
 		this.GrandTotalProperty().set(GrandTotal);
 	}
 
-	public SimpleBooleanProperty PaidProperty() {
-		return this.Paid;
-	}
-
-	public boolean isPaid() {
-		return this.PaidProperty().get();
-	}
-
-	public void setPaid(final boolean Paid) {
-		this.PaidProperty().set(Paid);
-	}
-
 	public SimpleStringProperty createdAtPProperty() {
 		return this.createdAtP;
 	}
@@ -124,18 +112,33 @@ public class Purchases {
 		this.userCreatedProperty().set(userCreated);
 	}
 
-	public SimpleBooleanProperty PaymentStatusProperty() {
+	public SimpleIntegerProperty PaymentStatusProperty() {
 		return this.PaymentStatus;
 	}
 	
 
-	public boolean isPaymentStatus() {
+	public int getPaymentStatus() {
 		return this.PaymentStatusProperty().get();
 	}
 	
 
-	public void setPaymentStatus(final boolean PaymentStatus) {
+	public void setPaymentStatus(final int PaymentStatus) {
 		this.PaymentStatusProperty().set(PaymentStatus);
+	}
+	
+
+	public SimpleIntegerProperty PaidProperty() {
+		return this.Paid;
+	}
+	
+
+	public int getPaid() {
+		return this.PaidProperty().get();
+	}
+	
+
+	public void setPaid(final int Paid) {
+		this.PaidProperty().set(Paid);
 	}
 	
 

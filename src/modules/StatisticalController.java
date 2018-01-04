@@ -18,9 +18,11 @@ import org.omg.CosNaming._BindingIteratorImplBase;
 import com.jfoenix.controls.JFXComboBox;
 
 import database.DbHandler;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -93,6 +95,19 @@ public class StatisticalController implements Initializable {
 		} catch (Exception e) {
 			Logger.getLogger(StatisticalController.class.getName()).log(Level.SEVERE, null, e);
 		}
+
+		tabWarehouse.setOnSelectionChanged((event) -> {
+			if (tabWarehouse.isSelected()) {
+				try {
+
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("tabKhoHang.fxml"));
+					tabWarehouse.setContent(loader.load());
+
+				} catch (Exception e) {
+					Logger.getLogger(StatisticalController.class.getName()).log(Level.SEVERE, null, e);
+				}
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -105,7 +120,8 @@ public class StatisticalController implements Initializable {
 			if (dataMonth.size() > 0) {
 				dataMonth.forEach((key, value) -> {
 					System.out.println("Key : " + key + " Value : " + value);
-					lists.add(new Revenue("" + key+"/"+  comboboxMonth.getValue(), gocToltal.get(key), thuveToltal.get(key), value));
+					lists.add(new Revenue("" + key + "/" + comboboxMonth.getValue(), gocToltal.get(key),
+							thuveToltal.get(key), value));
 				});
 			}
 			timeCol = new TableColumn<Revenue, String>("Ngày");
@@ -123,11 +139,10 @@ public class StatisticalController implements Initializable {
 			timeCol.setMaxWidth(50);
 		}
 
-		
 		timeCol.setCellValueFactory(new PropertyValueFactory<>("time"));
 		timeCol.setCellFactory(TextFieldTableCell.<Revenue>forTableColumn());
-		timeCol.setStyle("-fx-alignment: CENTER-RIGHT;-fx-text-size:9pt");
-		
+		timeCol.setStyle("-fx-alignment: CENTER;-fx-text-size:9pt");
+
 		TableColumn<Revenue, Integer> originCol = new TableColumn<Revenue, Integer>("Vốn");
 		originCol.setCellValueFactory(new PropertyValueFactory<>("origin"));
 		originCol.setStyle("-fx-alignment: CENTER-RIGHT;");
@@ -194,7 +209,7 @@ public class StatisticalController implements Initializable {
 			String query = "Select bills.id,bills.pricetotal, bills.statusbill,bills.createdAtB,sales.pricesell,sales.priceOrigin, sales.quantitys"
 					+ " from bills inner join sales on (bills.id = sales.billid) inner join products on (products.id = sales.productid) "
 					+ "WHERE CAST(createdatb as TEXT) like '" + year + "-%';";
-			System.out.println("nawm "+ query);
+			System.out.println("nawm " + query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			dataMonth = new HashMap<Integer, Integer>();
 			gocToltal = new HashMap<Integer, Integer>();

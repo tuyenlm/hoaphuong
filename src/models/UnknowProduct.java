@@ -3,7 +3,7 @@ package models;
 import javafx.beans.property.SimpleStringProperty;
 
 public class UnknowProduct {
-	private final SimpleStringProperty barcodeUnknow;
+	public final SimpleStringProperty barcodeUnknow;
 
 	public UnknowProduct(String barcodeUnknow) {
 		this.barcodeUnknow = new SimpleStringProperty(barcodeUnknow);

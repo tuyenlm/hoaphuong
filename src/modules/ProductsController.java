@@ -2,7 +2,6 @@ package modules;
 
 import java.awt.List;
 import java.io.File;
-import java.io.FileInputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,8 +16,8 @@ import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
 
-import application.BarcodeController;
 import application.Global;
+import application.RenderBarcodeThread;
 import application.ValidateHandle;
 import database.DbHandler;
 import javafx.application.Platform;
@@ -74,8 +73,8 @@ public class ProductsController implements Initializable {
 	@FXML
 	private TextField txtSearchCatalog, txtSearchProduct;
 
-	private DbHandler dbHandler;
-	private Connection connection;
+	private static DbHandler dbHandler;
+	private static Connection connection;
 	private ObservableList<Catalogs> catalogList = FXCollections.observableArrayList();
 	private ObservableList<Products> productList = FXCollections.observableArrayList();
 	private Statement stmt = null;
@@ -88,18 +87,11 @@ public class ProductsController implements Initializable {
 	private ObservableList<String> checkValidate = FXCollections.observableArrayList();
 	private GridPane gridProduct, gridCatalog;
 	private File outputFileP;
+	private String textTmp = "";
 
 	public void initialize(URL url, ResourceBundle rb) {
-		dbHandler = new DbHandler();
 		try {
-			connection = dbHandler.getConnection();
-			stmt = connection.createStatement();
-			String sqlCreateCatalogs = "CREATE TABLE IF NOT EXISTS Catalogs (id SERIAL PRIMARY KEY NOT NULL, nameCatalog VARCHAR(90), descriptionCatalog VARCHAR(90), barcodeCatalog VARCHAR(20), createdAtC timestamp default current_timestamp);";
-			String sqlCreateproducts = "CREATE TABLE IF NOT EXISTS products (id SERIAL PRIMARY KEY NOT NULL, nameProduct VARCHAR(90), catalogId INT, barcodeProduct VARCHAR(20), descriptionProduct VARCHAR(100), location VARCHAR(50), priceOrigin Int, priceSell Int, unit VARCHAR(10), createdAtP timestamp default current_timestamp);";
-			stmt.execute(sqlCreateproducts);
-			connection.commit();
-			stmt.execute(sqlCreateCatalogs);
-			connection.commit();
+			dbHandler = new DbHandler();
 			BuilderCatalog(txtSearchCatalog.getText());
 			if (tableCatalog.getItems().size() > 0 && tableCatalog.getItems().get(0).getId() != 0) {
 				BuilderProduct(tableCatalog.getItems().get(0).getId(), txtSearchProduct.getText());
@@ -211,6 +203,7 @@ public class ProductsController implements Initializable {
 			indexColumn.setMinWidth(40);
 			indexColumn.setMaxWidth(40);
 			indexColumn.getStyleClass().add("my-special-column-style");
+			indexColumn.setStyle("-fx-alignment: CENTER;");
 			indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
 					tableCatalog.getItems().indexOf(column.getValue()) + 1));
 			tableCatalog.getColumns().add(0, indexColumn);
@@ -255,8 +248,8 @@ public class ProductsController implements Initializable {
 
 			TableColumn<Catalogs, Catalogs> editColumn = new TableColumn<>("Sửa");
 			editColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-			editColumn.setMinWidth(43);
-			editColumn.setMaxWidth(43);
+			editColumn.setMinWidth(50);
+			editColumn.setMaxWidth(50);
 			editColumn.getStyleClass().add("my-special-column-style");
 			editColumn.setCellFactory(param -> new TableCell<Catalogs, Catalogs>() {
 				@Override
@@ -324,8 +317,8 @@ public class ProductsController implements Initializable {
 			});
 			TableColumn<Catalogs, Catalogs> deleteColumn = new TableColumn<>("Xóa");
 			deleteColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-			deleteColumn.setMinWidth(43);
-			deleteColumn.setMaxWidth(43);
+			deleteColumn.setMinWidth(50);
+			deleteColumn.setMaxWidth(50);
 			deleteColumn.getStyleClass().add("my-special-column-style");
 			deleteColumn.setCellFactory(param -> new TableCell<Catalogs, Catalogs>() {
 				@Override
@@ -429,6 +422,7 @@ public class ProductsController implements Initializable {
 			indexColumn.setSortable(false);
 			indexColumn.setMinWidth(40);
 			indexColumn.setMaxWidth(40);
+			indexColumn.setStyle("-fx-alignment: CENTER;");
 			indexColumn.getStyleClass().add("my-special-column-style");
 			indexColumn.setCellValueFactory(column -> new ReadOnlyObjectWrapper<Number>(
 					tableProducts.getItems().indexOf(column.getValue()) + 1));
@@ -463,8 +457,8 @@ public class ProductsController implements Initializable {
 			TableColumn<Products, Products> editColumn = new TableColumn<>("Sửa");
 			editColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 			editColumn.getStyleClass().add("my-special-column-style");
-			editColumn.setMinWidth(43);
-			editColumn.setMaxWidth(43);
+			editColumn.setMinWidth(50);
+			editColumn.setMaxWidth(50);
 			editColumn.setCellFactory(param -> new TableCell<Products, Products>() {
 				@Override
 				protected void updateItem(Products item, boolean empty) {
@@ -560,8 +554,8 @@ public class ProductsController implements Initializable {
 			TableColumn<Products, Products> deleteColumn = new TableColumn<>("Xóa");
 			deleteColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 			deleteColumn.getStyleClass().add("my-special-column-style");
-			deleteColumn.setMinWidth(43);
-			deleteColumn.setMaxWidth(43);
+			deleteColumn.setMinWidth(50);
+			deleteColumn.setMaxWidth(50);
 			deleteColumn.setCellFactory(param -> new TableCell<Products, Products>() {
 				@Override
 				protected void updateItem(Products item, boolean empty) {
@@ -638,9 +632,13 @@ public class ProductsController implements Initializable {
 					if (sts == 1) {
 						BuilderCatalog(txtSearchCatalog.getText());
 					}
-					File fileNewBar = BarcodeController.renderBarcode(String.valueOf(barcodeDialog));
-					FileInputStream fis = new FileInputStream(fileNewBar);
-					fis.close();
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog));
+					barcodeThr.start();
+					// File fileNewBar = barcodeThr.getLink();
+					// System.out.println("fileNewBar " + fileNewBar);
+					// File fileNewBar = new File("barImg/" + barcodeDialog + ".png");
+					// FileInputStream fis = new FileInputStream(fileNewBar);
+					// fis.close();
 				} catch (Exception e) {
 					Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 				}
@@ -665,6 +663,9 @@ public class ProductsController implements Initializable {
 			txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 				public void handle(KeyEvent ke) {
 					if (ke.getText().trim().isEmpty() && !txtBarcode.getText().trim().isEmpty()) {
+						RenderBarcodeThread barcodeThr = new RenderBarcodeThread(
+								String.valueOf(txtBarcode.getText().trim()));
+						barcodeThr.start();
 						if (checkBarcodeIsExist(txtBarcode.getText())) {
 							Alert alert = new Alert(AlertType.WARNING);
 							alert.setTitle(Global.tsl_lblConfirmDialog);
@@ -674,14 +675,26 @@ public class ProductsController implements Initializable {
 							txtBarcode.clear();
 							txtBarcode.requestFocus();
 						} else {
-							File fileNewBar = BarcodeController.renderBarcode(txtBarcode.getText().trim());
-							outputFileP = fileNewBar;
-							imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
+							refreshImage(imgBarcode, txtBarcode.getText().trim());
 						}
 					}
 				}
 			});
-
+			txtBarcode.focusedProperty().addListener((a, b, c) -> {
+				if (b) {
+					refreshImage(imgBarcode, txtBarcode.getText().trim());
+				}
+			});
+			priceOrigin.focusedProperty().addListener((a, b, c) -> {
+				if (c) {
+					refreshImage(imgBarcode, txtBarcode.getText().trim());
+				}
+			});
+			location.focusedProperty().addListener((a, b, c) -> {
+				if (c) {
+					refreshImage(imgBarcode, txtBarcode.getText().trim());
+				}
+			});
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				String barcodeDialog;
@@ -719,7 +732,8 @@ public class ProductsController implements Initializable {
 					}
 					stmt.close();
 					connection.close();
-					BarcodeController.renderBarcode(barcodeDialog);
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog));
+					barcodeThr.start();
 				} catch (Exception e) {
 					Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 				}
@@ -731,6 +745,12 @@ public class ProductsController implements Initializable {
 		} catch (Exception e) {
 			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 		}
+	}
+
+	private void refreshImage(ImageView imgBarcode, String barCode) {
+		File fileNewBar = new File("barImg/" + barCode + ".png");
+		outputFileP = fileNewBar;
+		imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
 	}
 
 	@FXML
@@ -762,22 +782,28 @@ public class ProductsController implements Initializable {
 		saveButton.setDisable(true);
 		nameCatalog.textProperty().addListener((observable, oldValue, newValue) -> {
 			saveButton.setDisable(newValue.trim().isEmpty());
-		});
-		nameCatalog.focusedProperty().addListener((a, b, c) -> {
-			if (b) {
-				if (!nameCatalog.getText().trim().isEmpty() && checkIsExist(nameCatalog.getText(), true)) {
-					Alert alert = new Alert(AlertType.WARNING);
-					alert.setTitle(Global.tsl_lblConfirmDialog);
-					alert.setHeaderText(null);
-					alert.setContentText("Danh mục '" + nameCatalog.getText() + "' đã tồn tại?");
-					alert.showAndWait();
-					this.nameCatalog.clear();
-					nameCatalog.requestFocus();
+			if (!newValue.trim().isEmpty()) {
+				if (!oldValue.isEmpty() && !oldValue.equals(newValue)) {
+					if (!textTmp.equals(newValue) && checkIsExist(nameCatalog.getText().trim(), true)) {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle(Global.tsl_lblConfirmDialog);
+						alert.setHeaderText(null);
+						alert.setContentText("Danh mục '" + nameCatalog.getText().trim() + "' đã tồn tại?");
+						alert.showAndWait();
+						Platform.runLater(() -> {
+							this.nameCatalog.clear();
+							nameCatalog.requestFocus();
+						});
+					}
 				}
 			}
 		});
+		nameCatalog.focusedProperty().addListener((a, b, c) -> {
+			if (c)
+				textTmp = nameCatalog.getText();
+		});
 		dialogCatalog.getDialogPane().setContent(gridCatalog);
-		Platform.runLater(() -> nameCatalog.requestFocus());
+		// Platform.runLater(() -> nameCatalog.requestFocus());
 		dialogCatalog.setResultConverter(dialogButton -> {
 			if (dialogButton == saveButtonTypeButtonType) {
 				return new Pair<>(nameCatalog.getText(), descriptionCatalog.getText());
@@ -849,20 +875,28 @@ public class ProductsController implements Initializable {
 		});
 		nameProduct.textProperty().addListener((observable, oldValue, newValue) -> {
 			saveButton.setDisable(newValue.trim().isEmpty());
-		});
-		nameProduct.focusedProperty().addListener((a, b, c) -> {
-			if (b && !nameProduct.getText().trim().isEmpty() && checkIsExist(nameProduct.getText(), false)) {
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setTitle(Global.tsl_lblConfirmDialog);
-				alert.setHeaderText(null);
-				alert.setContentText("Sản phẩm '" + nameProduct.getText() + "' đã tồn tại?");
-				alert.showAndWait();
-				nameProduct.clear();
-				nameProduct.requestFocus();
+			if (!newValue.trim().isEmpty()) {
+				if (!oldValue.isEmpty() && !oldValue.equals(newValue)) {
+					if (!textTmp.equals(newValue) && checkIsExist(nameProduct.getText().trim(), false)) {
+						Alert alert = new Alert(AlertType.WARNING);
+						alert.setTitle(Global.tsl_lblConfirmDialog);
+						alert.setHeaderText(null);
+						alert.setContentText("Sản phẩm '" + nameProduct.getText().trim() + "' đã tồn tại?");
+						alert.showAndWait();
+						Platform.runLater(() -> {
+							nameProduct.clear();
+							nameProduct.requestFocus();
+						});
+					}
+				}
 			}
 		});
+		nameProduct.focusedProperty().addListener((a, b, c) -> {
+			if (c)
+				textTmp = nameProduct.getText();
+		});
 		dialogProduct.getDialogPane().setContent(gridProduct);
-		Platform.runLater(() -> nameProduct.requestFocus());
+		// Platform.runLater(() -> nameProduct.requestFocus());
 		dialogProduct.setResultConverter(dialogButton -> {
 			if (dialogButton == saveButtonTypeButtonType) {
 				List valueDialog = new List();
@@ -952,9 +986,10 @@ public class ProductsController implements Initializable {
 		}
 	}
 
-	private boolean checkIsExist(String txt, boolean type) {
+	public static boolean checkIsExist(String txt, boolean type) {
 		boolean sts = false;
 		try {
+			dbHandler = new DbHandler();
 			connection = dbHandler.getConnection();
 			String query;
 			if (type) {
@@ -962,6 +997,7 @@ public class ProductsController implements Initializable {
 			} else
 				query = "SELECT nameProduct FROM products WHERE lower(nameProduct) = '" + txt.toLowerCase() + "'";
 			ResultSet rs = connection.createStatement().executeQuery(query);
+			connection.commit();
 			if (rs.isBeforeFirst()) {
 				sts = true;
 			} else {
