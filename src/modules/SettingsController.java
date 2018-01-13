@@ -1,5 +1,6 @@
 package modules;
 
+import java.awt.RenderingHints.Key;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
@@ -15,11 +16,13 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.poi.ss.formula.functions.Value;
 import org.omg.CosNaming._BindingIteratorImplBase;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 
+import application.BarcodeController;
 import application.RenderBarcodeThread;
 import database.DbHandler;
 import javafx.application.Platform;
@@ -55,40 +58,65 @@ public class SettingsController implements Initializable {
 	@FXML
 	private TextField txtBarcode, txtBarcodeRefix;
 	@FXML
-	private JFXButton btnRandom;
+	private JFXButton btnRandom, btnCreate;
 	@FXML
 	private Pane paneImageBarcode;
+	@FXML
+	private ComboBox<String> comboboxActionList;
 
 	private ObservableList<Revenue> lists = FXCollections.observableArrayList();
 	private DbHandler dbHandler;
 	private static Connection connection;
+	private static HashMap<String, String> actionList = new HashMap<>();
 
 	public void initialize(URL url, ResourceBundle rb) {
 		dbHandler = new DbHandler();
+		actionList.put("pay", "Chỉ Thanh Toán");
+		actionList.put("printAndPay", "Thanh Toán Và In");
+		actionList.put("clear", "Xóa Thanh Toán");
+		actionList.forEach((key, value) -> {
+			System.out.println(value);
+			comboboxActionList.getItems().add(value.toString());
+		});
 	}
 
 	@FXML
 	private void actionRandom() {
 		txtBarcode.setText(String.valueOf(Instant.now().getEpochSecond()));
-		String barCode = txtBarcodeRefix.getText() + "-" + txtBarcode.getText().trim();
-		RenderBarcodeThread barcodeThr = new RenderBarcodeThread(barCode);
-		barcodeThr.start();
+		renderBarcodeImage(txtBarcodeRefix.getText() + "-" + txtBarcode.getText().trim());
+	}
 
-		try {
-			// barcodeThr.t.join();
-			File fileNewBar = new File("barImg/" + barCode + ".png");
-			System.out.println(fileNewBar.exists());
-			System.out.println(fileNewBar);
-			ImageView imgBarcode2 = new ImageView();
-			Image image2 = new Image(fileNewBar.toURI().toString());
-			imgBarcode2.setImage(image2);
-			paneImageBarcode.getChildren().add(imgBarcode2);
-		} catch (Exception ie) {
-			Logger.getLogger(SettingsController.class.getName()).log(Level.SEVERE, null, ie);
+	@FXML
+	private void actionCreate() {
+		if (!txtBarcode.getText().trim().isEmpty()) {
+			renderBarcodeImage(txtBarcodeRefix.getText() + "-" + txtBarcode.getText().trim());
 		}
 
 	}
 
+	private void renderBarcodeImage(String barcode) {
+		try {
+			File fileNewBar = BarcodeController.renderBarcode(barcode);
+			ImageView imgBarcode = new ImageView();
+			imgBarcode.setFitHeight(60);
+			imgBarcode.setStyle("-fx-border-color:#333");
+			imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
+			paneImageBarcode.getChildren().clear();
+			paneImageBarcode.getChildren().add(imgBarcode);
+		} catch (Exception ie) {
+			Logger.getLogger(SettingsController.class.getName()).log(Level.SEVERE, null, ie);
+		}
+	}
+
+	@FXML
+	private void actionSave() {
+		if (!txtBarcode.getText().isEmpty()) {
+			String barcode = txtBarcodeRefix.getText() + "-" + txtBarcode.getText().trim();
+			String action = comboboxActionList.getSelectionModel().getSelectedItem();
+			System.out.println(barcode);
+			System.err.println(action);
+		}
+	}
 	// public static void refreshImage(File _file) {
 	// try {
 	// imgBarcode.setImage(
