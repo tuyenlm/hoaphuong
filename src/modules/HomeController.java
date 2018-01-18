@@ -2,6 +2,7 @@ package modules;
 
 import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
+import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -125,7 +126,7 @@ public class HomeController implements Initializable {
 	StackPane deptStackPane;
 	private ComboBox<String> searchProduct = new ComboBox<String>();
 	private HashMap<Integer, ObservableList<Buy>> itemBuyList = new HashMap<Integer, ObservableList<Buy>>();
-	private HashMap<Integer, Integer> remainHangHoa;
+	private HashMap<Integer, Integer> remainHangHoa = null;
 	public static DecimalFormat decimalFormat = new DecimalFormat("###,###");
 	private int billId = 0;
 	private static ObservableList<Buy> itemsBill;
@@ -769,27 +770,27 @@ public class HomeController implements Initializable {
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
-					if (remainHangHoa.get(rs.getInt("id")) > 0) {
-						if (!itemBuyList.containsKey(rs.getInt("id"))) {
-							ObservableList<Buy> items = FXCollections.observableArrayList();
-							items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),
-									rs.getInt("priceOrigin"), rs.getInt("priceSell"), 0));
-							itemBuyList.put(rs.getInt("id"), items);
-						} else {
-							if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
-								itemBuyList.get(rs.getInt("id")).get(0)
-										.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
-								itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(
-										rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+						if (remainHangHoa.get(rs.getInt("id")) != null) {
+							if (!itemBuyList.containsKey(rs.getInt("id"))) {
+								ObservableList<Buy> items = FXCollections.observableArrayList();
+								items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1,
+										rs.getInt("priceSell"), rs.getInt("priceOrigin"), rs.getInt("priceSell"), 0));
+								itemBuyList.put(rs.getInt("id"), items);
+							} else {
+								if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
+									itemBuyList.get(rs.getInt("id")).get(0)
+											.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
+									itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(rs.getInt("priceSell")
+											* itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+								}
 							}
+						} else {
+							Alert alert = new Alert(AlertType.INFORMATION);
+							alert.setTitle("Thông Báo");
+							alert.setHeaderText(null);
+							alert.setContentText("'" + rs.getString("nameProduct") + "' đã hết trong kho hàng.");
+							alert.showAndWait();
 						}
-					} else {
-						Alert alert = new Alert(AlertType.INFORMATION);
-						alert.setTitle("Thông Báo");
-						alert.setHeaderText(null);
-						alert.setContentText("'" + rs.getString("nameProduct") + "' đã hết trong kho hàng.");
-						alert.showAndWait();
-					}
 				}
 				builTableBuy();
 				updateMoneyReturn();
