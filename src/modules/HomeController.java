@@ -770,27 +770,29 @@ public class HomeController implements Initializable {
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
-						if (remainHangHoa.get(rs.getInt("id")) != null) {
-							if (!itemBuyList.containsKey(rs.getInt("id"))) {
-								ObservableList<Buy> items = FXCollections.observableArrayList();
-								items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1,
-										rs.getInt("priceSell"), rs.getInt("priceOrigin"), rs.getInt("priceSell"), 0));
-								itemBuyList.put(rs.getInt("id"), items);
-							} else {
-								if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
-									itemBuyList.get(rs.getInt("id")).get(0)
-											.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
-									itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(rs.getInt("priceSell")
-											* itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
-								}
-							}
-						} else {
-							Alert alert = new Alert(AlertType.INFORMATION);
-							alert.setTitle("Thông Báo");
-							alert.setHeaderText(null);
-							alert.setContentText("'" + rs.getString("nameProduct") + "' đã hết trong kho hàng.");
-							alert.showAndWait();
+					if (!itemBuyList.containsKey(rs.getInt("id"))) {
+						ObservableList<Buy> items = FXCollections.observableArrayList();
+						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),
+								rs.getInt("priceOrigin"), rs.getInt("priceSell"), 0));
+						itemBuyList.put(rs.getInt("id"), items);
+					} else {
+						if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
+							itemBuyList.get(rs.getInt("id")).get(0)
+									.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
+							itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(
+									rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
 						}
+					}
+					// if (remainHangHoa.get(rs.getInt("id")) != null) {
+					//
+					// } else {
+					// Alert alert = new Alert(AlertType.INFORMATION);
+					// alert.setTitle("Thông Báo");
+					// alert.setHeaderText(null);
+					// alert.setContentText("'" + rs.getString("nameProduct") + "' đã hết trong kho
+					// hàng.");
+					// alert.showAndWait();
+					// }
 				}
 				builTableBuy();
 				updateMoneyReturn();
@@ -1117,6 +1119,11 @@ public class HomeController implements Initializable {
 					remainHangHoa.put(rs.getInt("productId"), rs.getInt("remainingAmount"));
 				}
 			}
+
+			remainHangHoa.forEach((key, value) -> {
+				System.out.println("key " + key);
+				System.out.println("value " + value);
+			});
 			rs.close();
 			connection.close();
 			TableColumn<Warehourse, Number> indexColumn = new TableColumn<Warehourse, Number>("#");
