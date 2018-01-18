@@ -884,8 +884,10 @@ public class HomeController implements Initializable {
 					barcodeThr.start();
 				}
 				if (isPrinted) {
-					PrintThread prunt = new PrintThread(billId);
-					prunt.start();
+//					PrintThread prunt = new PrintThread(billId);
+//					prunt.start();
+					File file = HomeController.exportFile(billId);
+					Desktop.getDesktop().print(file);
 				}
 				billId = 0;
 				buildTableHetHang();
