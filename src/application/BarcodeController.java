@@ -20,7 +20,7 @@ public class BarcodeController {
 			if (!barcode.isEmpty()) {
 				Code39Bean bean = new Code39Bean();
 				final int dpi = 203;
-				bean.setModuleWidth(UnitConv.in2mm(0.5f / dpi));
+				bean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
 				bean.setWideFactor(3);
 				bean.doQuietZone(true);
 				File fullPathToSubfolder = new File("barImg");

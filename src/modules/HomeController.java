@@ -1060,21 +1060,21 @@ public class HomeController implements Initializable {
 						sheet.addMergedRegion(
 								new CellRangeAddress(((k * 2) + rowRange + say), ((k * 2) + rowRange + say), 0, 7));
 					}
-					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say + 5))) {
-						File fileO = new File("barImg" + "/" + barcodeBill + ".png");
-						FileInputStream fis = new FileInputStream(fileO);
-						ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
-						int b;
-						while ((b = fis.read()) != -1)
-							img_bytes.write(b);
-						fis.close();
-						HSSFClientAnchor anchor = new HSSFClientAnchor(155, 0, 0, 255, (short) 0,
-								((k * 2) + rowRange + say + 1), (short) 8, ((k * 2) + rowRange + say + 2));
-						int index = wb.addPicture(img_bytes.toByteArray(), HSSFWorkbook.PICTURE_TYPE_PNG);
-						HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-						patriarch.createPicture(anchor, index);
-						anchor.setAnchorType(2);
-					}
+//					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say + 5))) {
+//						File fileO = new File("barImg" + "/" + barcodeBill + ".png");
+//						FileInputStream fis = new FileInputStream(fileO);
+//						ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
+//						int b;
+//						while ((b = fis.read()) != -1)
+//							img_bytes.write(b);
+//						fis.close();
+//						HSSFClientAnchor anchor = new HSSFClientAnchor(155, 0, 0, 255, (short) 0,
+//								((k * 2) + rowRange + say + 1), (short) 8, ((k * 2) + rowRange + say + 2));
+//						int index = wb.addPicture(img_bytes.toByteArray(), HSSFWorkbook.PICTURE_TYPE_PNG);
+//						HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+//						patriarch.createPicture(anchor, index);
+//						anchor.setAnchorType(2);
+//					}
 				}
 			}
 			wb.setPrintArea(0, "$A$1:$H$" + ((k * 2) + rowRange + say + 3));
