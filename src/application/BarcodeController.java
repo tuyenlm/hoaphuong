@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +19,7 @@ public class BarcodeController {
 		try {
 			if (!barcode.isEmpty()) {
 				Code39Bean bean = new Code39Bean();
-				final int dpi = 100;
+				final int dpi = 203;
 				bean.setModuleWidth(UnitConv.in2mm(1.0f / dpi));
 				bean.setWideFactor(3);
 				bean.doQuietZone(true);
