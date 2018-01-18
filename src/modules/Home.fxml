@@ -73,7 +73,7 @@
 																<ImageView fitHeight="37.0" fitWidth="37.0"
 																	pickOnBounds="true" preserveRatio="true">
 																	<image>
-																		<Image url="@../icons/barcode.png" />
+																		<Image url="@/icons/barcode.png" />
 																	</image>
 																</ImageView>
 															</graphic>
@@ -89,7 +89,7 @@
 																<ImageView fitHeight="21.0" fitWidth="37.0"
 																	pickOnBounds="true" preserveRatio="true">
 																	<image>
-																		<Image url="@../icons/font.png" />
+																		<Image url="@/icons/font.png" />
 																	</image>
 																</ImageView>
 															</graphic>
