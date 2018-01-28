@@ -483,11 +483,12 @@ public class ProductsController implements Initializable {
 								gridProduct.add(txtBarcode, 1, 2);
 								ImageView imgBarcode = new ImageView();
 								imgBarcode.setFitHeight(50);
-								gridProduct.add(imgBarcode, 1, 3);
+
 								connection = dbHandler.getConnection();
 								String query = "SELECT products.*,catalogs.nameCatalog FROM products LEFT OUTER JOIN catalogs ON (products.catalogid = catalogs.id) WHERE products.id = '"
 										+ id + "'";
 								ResultSet rs = connection.createStatement().executeQuery(query);
+								File f = null;
 								while (rs.next()) {
 									nameProduct.setText(rs.getString("nameProduct"));
 									comCatalogId.setValue(rs.getString("nameCatalog"));
@@ -497,9 +498,15 @@ public class ProductsController implements Initializable {
 									priceSell.setText(String.valueOf(rs.getInt("priceSell")));
 									unit.setText(rs.getString("unit"));
 									txtBarcode.setText(rs.getString("barcodeProduct"));
-									imgBarcode.setImage(
-											new Image(new File("barImg/" + rs.getString("barcodeProduct") + ".png")
-													.toURI().toString()));
+									f = new File("barImg/" + rs.getString("barcodeProduct") + ".png");
+									if (f.exists()) {
+										imgBarcode.setImage(
+												new Image(new File("barImg/" + rs.getString("barcodeProduct") + ".png")
+														.toURI().toString()));
+									}
+								}
+								if (f.exists()) {
+									gridProduct.add(imgBarcode, 1, 3);
 								}
 								// Platform.runLater(new Runnable() {
 								// @Override
@@ -657,15 +664,15 @@ public class ProductsController implements Initializable {
 			gridProduct.add(new Label("Mã Barcode:"), 0, 2);
 			gridProduct.add(txtBarcode, 1, 2);
 
-			ImageView imgBarcode = new ImageView();
-			imgBarcode.setFitHeight(50);
-			gridProduct.add(imgBarcode, 1, 3);
+			// ImageView imgBarcode = new ImageView();
+			// imgBarcode.setFitHeight(50);
+			// gridProduct.add(imgBarcode, 1, 3);
 			txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 				public void handle(KeyEvent ke) {
 					if (ke.getText().trim().isEmpty() && !txtBarcode.getText().trim().isEmpty()) {
-						RenderBarcodeThread barcodeThr = new RenderBarcodeThread(
-								String.valueOf(txtBarcode.getText().trim()));
-						barcodeThr.start();
+						// RenderBarcodeThread barcodeThr = new RenderBarcodeThread(
+						// String.valueOf(txtBarcode.getText().trim()));
+						// barcodeThr.start();
 						if (checkBarcodeIsExist(txtBarcode.getText())) {
 							Alert alert = new Alert(AlertType.WARNING);
 							alert.setTitle(Global.tsl_lblConfirmDialog);
@@ -674,32 +681,35 @@ public class ProductsController implements Initializable {
 							alert.showAndWait();
 							txtBarcode.clear();
 							txtBarcode.requestFocus();
-						} else {
-							refreshImage(imgBarcode, txtBarcode.getText().trim());
 						}
+						// else {
+						// refreshImage(imgBarcode, txtBarcode.getText().trim());
+						// }
 					}
 				}
 			});
-			txtBarcode.focusedProperty().addListener((a, b, c) -> {
-				if (b) {
-					refreshImage(imgBarcode, txtBarcode.getText().trim());
-				}
-			});
-			priceOrigin.focusedProperty().addListener((a, b, c) -> {
-				if (c) {
-					refreshImage(imgBarcode, txtBarcode.getText().trim());
-				}
-			});
-			location.focusedProperty().addListener((a, b, c) -> {
-				if (c) {
-					refreshImage(imgBarcode, txtBarcode.getText().trim());
-				}
-			});
+			// txtBarcode.focusedProperty().addListener((a, b, c) -> {
+			// if (b) {
+			// refreshImage(imgBarcode, txtBarcode.getText().trim());
+			// }
+			// });
+			// priceOrigin.focusedProperty().addListener((a, b, c) -> {
+			// if (c) {
+			// refreshImage(imgBarcode, txtBarcode.getText().trim());
+			// }
+			// });
+			// location.focusedProperty().addListener((a, b, c) -> {
+			// if (c) {
+			// refreshImage(imgBarcode, txtBarcode.getText().trim());
+			// }
+			// });
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				String barcodeDialog;
 				if (txtBarcode.getText().trim().isEmpty()) {
 					barcodeDialog = String.valueOf(Instant.now().getEpochSecond());
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog));
+					barcodeThr.start();
 				} else
 					barcodeDialog = txtBarcode.getText().trim();
 				List value = result.get();
@@ -732,8 +742,7 @@ public class ProductsController implements Initializable {
 					}
 					stmt.close();
 					connection.close();
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog));
-					barcodeThr.start();
+
 				} catch (Exception e) {
 					Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 				}
@@ -747,11 +756,11 @@ public class ProductsController implements Initializable {
 		}
 	}
 
-	private void refreshImage(ImageView imgBarcode, String barCode) {
-		File fileNewBar = new File("barImg/" + barCode + ".png");
-		outputFileP = fileNewBar;
-		imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
-	}
+	// private void refreshImage(ImageView imgBarcode, String barCode) {
+	// File fileNewBar = new File("barImg/" + barCode + ".png");
+	// outputFileP = fileNewBar;
+	// imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
+	// }
 
 	@FXML
 	private void actionPrint() {

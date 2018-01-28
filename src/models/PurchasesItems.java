@@ -7,6 +7,7 @@ public class PurchasesItems {
 	private final SimpleStringProperty id;
 	private final SimpleIntegerProperty purchasesId;
 	private final SimpleStringProperty productName;
+	private final SimpleIntegerProperty remainingAmount;
 	private final SimpleStringProperty productId;
 	private final SimpleIntegerProperty quantityPur;
 	private final SimpleIntegerProperty originCost;
@@ -14,11 +15,12 @@ public class PurchasesItems {
 	private final SimpleIntegerProperty subTotal;
 	private final SimpleStringProperty barcodePur;
 
-	public PurchasesItems(String id, int purchasesId, String productName, String productId, int quantityPur,
-			int originCost, int sellCost, int subTotal, String barcodePur) {
+	public PurchasesItems(String id, int purchasesId, String productName, int remainingAmount, String productId,
+			int quantityPur, int originCost, int sellCost, int subTotal, String barcodePur) {
 		this.id = new SimpleStringProperty(id);
 		this.purchasesId = new SimpleIntegerProperty(purchasesId);
 		this.productName = new SimpleStringProperty(productName);
+		this.remainingAmount = new SimpleIntegerProperty(remainingAmount);
 		this.productId = new SimpleStringProperty(productId);
 		this.quantityPur = new SimpleIntegerProperty(quantityPur);
 		this.originCost = new SimpleIntegerProperty(originCost);
@@ -126,16 +128,27 @@ public class PurchasesItems {
 	public SimpleStringProperty barcodePurProperty() {
 		return this.barcodePur;
 	}
-	
 
 	public String getBarcodePur() {
 		return this.barcodePurProperty().get();
 	}
-	
 
 	public void setBarcodePur(final String barcodePur) {
 		this.barcodePurProperty().set(barcodePur);
 	}
+
+	public SimpleIntegerProperty remainingAmountProperty() {
+		return this.remainingAmount;
+	}
 	
 
+	public int getRemainingAmount() {
+		return this.remainingAmountProperty().get();
+	}
+	
+
+	public void setRemainingAmount(final int remainingAmount) {
+		this.remainingAmountProperty().set(remainingAmount);
+	}
+	
 }

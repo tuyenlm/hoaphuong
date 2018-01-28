@@ -132,9 +132,9 @@ public class NhapHangController implements Initializable {
 								int soluong = tableImport.getSelectionModel().getSelectedItem().getQuantityPur();
 								int giagoc = Integer.parseInt(datas.get("priceOriginDialog"));
 								ObservableList<PurchasesItems> items = FXCollections.observableArrayList();
-								items.add(new PurchasesItems("0", 0, datas.get("nameProduct"), datas.get("productId"),
-										soluong, giagoc, Integer.parseInt(datas.get("priceSell")), soluong * giagoc,
-										barcode));
+								items.add(new PurchasesItems("0", 0, datas.get("nameProduct"), 0,
+										datas.get("productId"), soluong, giagoc,
+										Integer.parseInt(datas.get("priceSell")), soluong * giagoc, barcode));
 
 								itemsList.put(datas.get("productId"), items);
 								itemsList.remove(barcode);
@@ -170,9 +170,9 @@ public class NhapHangController implements Initializable {
 						if (rs.isBeforeFirst()) {
 							while (rs.next()) {
 								items.add(new PurchasesItems(String.valueOf(id), rs.getInt("purchasesId"),
-										rs.getString("nameProduct"), rs.getString("productId"),
-										rs.getInt("quantityPur"), rs.getInt("originCost"), rs.getInt("sellCost"),
-										rs.getInt("subTotal"), ""));
+										rs.getString("nameProduct"), rs.getInt("remainingAmount"),
+										rs.getString("productId"), rs.getInt("quantityPur"), rs.getInt("originCost"),
+										rs.getInt("sellCost"), rs.getInt("subTotal"), ""));
 								itemsHistoriesEx.add(String.valueOf(rs.getInt("paymentStatus")));
 								itemsHistoriesEx.add(String.valueOf(rs.getInt("grandTotal")));
 								itemsHistoriesEx.add(String.valueOf(rs.getInt("paid")));
@@ -226,7 +226,8 @@ public class NhapHangController implements Initializable {
 			RenderBarcodeThread barcodeThr = new RenderBarcodeThread(val);
 			barcodeThr.start();
 			connection = handler.getConnection();
-			String query = "SELECT * FROM products WHERE barcodeProduct = '" + val + "'";
+			String query = "SELECT products.*,warehouse.remainingAmount FROM products LEFT JOIN warehouse ON (warehouse.productId = products.id)  WHERE products.barcodeProduct = '"
+					+ val + "'";
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
@@ -234,7 +235,7 @@ public class NhapHangController implements Initializable {
 					selectItem = productId;
 					if (!itemsList.containsKey(productId)) {
 						ObservableList<PurchasesItems> items = FXCollections.observableArrayList();
-						items.add(new PurchasesItems("0", 0, rs.getString("nameProduct"),
+						items.add(new PurchasesItems("0", 0, rs.getString("nameProduct"), rs.getInt("remainingAmount"),
 								String.valueOf(rs.getInt("id")), 1, rs.getInt("priceOrigin"), rs.getInt("priceSell"),
 								rs.getInt("priceOrigin"), val));
 						itemsList.put(productId, items);
@@ -252,7 +253,7 @@ public class NhapHangController implements Initializable {
 				selectItem = val;
 				if (!itemsList.containsKey(val)) {
 					ObservableList<PurchasesItems> items = FXCollections.observableArrayList();
-					items.add(new PurchasesItems(val, 0, val, val, 1, 1, 1, 1, val));
+					items.add(new PurchasesItems(val, 0, val, 0, val, 1, 1, 1, 1, val));
 					itemsList.put(val, items);
 				} else {
 					if (itemsList.get(val).get(0).getProductId().equals(val)) {
@@ -370,7 +371,28 @@ public class NhapHangController implements Initializable {
 					}
 				}
 			});
+			TableColumn<PurchasesItems, Integer> soluonghientaiCol = new TableColumn<PurchasesItems, Integer>(
+					"SL Hiện tại");
+			soluonghientaiCol.setCellValueFactory(new PropertyValueFactory<>("remainingAmount"));
+			soluonghientaiCol.setMinWidth(90);
+			soluonghientaiCol.setMaxWidth(90);
+			soluonghientaiCol.setStyle("-fx-alignment: CENTER-LEFT;");
+			soluonghientaiCol.setCellFactory(column -> new TableCell<PurchasesItems, Integer>() {
 
+				@Override
+				public void updateItem(Integer item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null || empty) {
+						setText(null);
+					} else {
+						setText(item.toString());
+						if (tableImport.getItems().get(getIndex()).getProductId().equals(selectItem))
+							setStyle("-fx-background-color: #58C9FF; -fx-text-fill: black;-fx-alignment: CENTER;");
+						else
+							setStyle("-fx-alignment: CENTER;");
+					}
+				}
+			});
 			TableColumn<PurchasesItems, Integer> quatityCol = new TableColumn<PurchasesItems, Integer>("Số Lượng");
 			quatityCol.setCellValueFactory(new PropertyValueFactory<>("quantityPur"));
 			quatityCol.setMinWidth(110);
@@ -568,8 +590,8 @@ public class NhapHangController implements Initializable {
 					});
 				}
 			});
-			tableImport.getColumns().addAll(nameProductCol, sellCol, originCol, quatityCol, priceTotalCol,
-					deleteColumn);
+			tableImport.getColumns().addAll(nameProductCol, soluonghientaiCol, sellCol, originCol, quatityCol,
+					priceTotalCol, deleteColumn);
 			tableImport.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 			int val = 0;
 			for (Map.Entry<String, ObservableList<PurchasesItems>> entry : itemsList.entrySet()) {

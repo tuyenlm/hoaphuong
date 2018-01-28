@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
@@ -125,6 +126,7 @@ public class HomeController implements Initializable {
 	ResultSet rs = null;
 	StackPane deptStackPane;
 	private ComboBox<String> searchProduct = new ComboBox<String>();
+	private ComboBox<String> searchBarcode = new ComboBox<String>();
 	private HashMap<Integer, ObservableList<Buy>> itemBuyList = new HashMap<Integer, ObservableList<Buy>>();
 	private HashMap<Integer, Integer> remainHangHoa = null;
 	public static DecimalFormat decimalFormat = new DecimalFormat("###,###");
@@ -146,8 +148,14 @@ public class HomeController implements Initializable {
 				txtBarcode.requestFocus();
 				txtBarcode.selectAll();
 				buildTableHetHang();
+
 			}
 		});
+		searchBarcode.setVisible(false);
+		searchBarcode.setMinWidth(100);
+		searchBarcode.setPrefWidth(100);
+		new AutoCompleteComboBoxListener<>(searchBarcode);
+		hboxBarcode.getChildren().add(1, searchBarcode);
 		tabUnknowProduct.setOnSelectionChanged((event) -> {
 			if (tabUnknowProduct.isSelected()) {
 				try {
@@ -169,17 +177,61 @@ public class HomeController implements Initializable {
 		txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent ke) {
 				if (ke.getCode().toString().equals("ENTER") && !txtBarcode.getText().trim().isEmpty()) {
-					String[] barCodeSp = txtBarcode.getText().split("-");
-					if (barCodeSp.length > 1) {
-						switch (barCodeSp[0]) {
-						case "BI":
-							getBill(txtBarcode.getText().trim());
-							break;
-						default:
-							break;
+
+					if (txtBarcode.getText().trim().toLowerCase().contains("t-")) {
+						connection = handler.getConnection();
+						try {
+							String[] brsp = txtBarcode.getText().trim().split("-");
+							String query = "SELECT nameproduct,barcodeproduct FROM products WHERE RIGHT(barcodeproduct, 4) = '"
+									+ brsp[1] + "';";
+							Statement s = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+									ResultSet.CONCUR_READ_ONLY);
+							ResultSet rs = s.executeQuery(query);
+							rs.last();
+							int count = rs.getRow();
+							rs.beforeFirst();
+							if (count > 1) {
+								searchBarcode.getItems().clear();
+								if (rs.isBeforeFirst()) {
+									while (rs.next()) {
+										searchBarcode.getItems().add(rs.getString("nameProduct"));
+									}
+								}
+								searchBarcode.setVisible(true);
+								txtBarcode.setMinWidth(200);
+								searchBarcode.setMinWidth(100);
+								searchBarcode.setPrefWidth(100);
+								searchBarcode.requestFocus();
+								searchBarcode.show();
+								searchBarcode.valueProperty().addListener((a, b, c) -> {
+									if (searchBarcode.getSelectionModel().getSelectedItem() != null)
+										doSearch(searchBarcode.getSelectionModel().getSelectedItem(), "nameProduct");
+								});
+
+							} else {
+								if (rs.isBeforeFirst()) {
+									while (rs.next()) {
+										doSearch(rs.getString("barcodeProduct"), "barcodeProduct");
+									}
+
+								}
+							}
+						} catch (Exception e) {
+							Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 						}
 					} else {
-						doSearch(txtBarcode.getText().trim(), "barcodeProduct");
+						String[] barCodeSp = txtBarcode.getText().split("-");
+						if (barCodeSp.length > 1) {
+							switch (barCodeSp[0]) {
+							case "BI":
+								getBill(txtBarcode.getText().trim());
+								break;
+							default:
+								break;
+							}
+						} else {
+							doSearch(txtBarcode.getText().trim(), "barcodeProduct");
+						}
 					}
 				}
 			}
@@ -210,6 +262,17 @@ public class HomeController implements Initializable {
 				}
 			}
 
+		});
+		txtBarcode.focusedProperty().addListener((a, b, c) -> {
+			if (!b) {
+				searchBarcode.setVisible(false);
+				searchBarcode.setMaxWidth(0);
+				searchBarcode.setMinWidth(0);
+				searchBarcode.setPrefWidth(0);
+				txtBarcode.setPrefWidth(400);
+				txtBarcode.setMaxWidth(400);
+				txtBarcode.setMinWidth(400);
+			}
 		});
 		txtSearchHistory.textProperty().addListener((a, b, c) -> {
 			if (c != null && comCondition.getValue() != null) {
@@ -305,7 +368,8 @@ public class HomeController implements Initializable {
 			comMonth.getItems().add(String.valueOf(i));
 		}
 		comMonth.setValue(String.valueOf(month));
-		comCondition.getItems().addAll("Thời gian", "Mã Hóa Đơn");
+		comCondition.getItems().addAll("Mã Hóa Đơn", "Thời gian");
+		comCondition.getSelectionModel().select(0);
 		comYear.valueProperty().addListener((a, b, c) -> {
 			changeComboboxTime();
 		});
@@ -333,14 +397,25 @@ public class HomeController implements Initializable {
 		txtMoneyReceived.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (!newValue.isEmpty() && newValue.length() < 9)
-					if (newValue.matches("\\d*")) {
-						int value = Integer.parseInt(newValue);
+				String gh = newValue.replace(",", "");
+				if (!gh.isEmpty() && gh.length() < 9) {
+
+					if (gh.matches("\\d*")) {
+
+						int value = Integer.parseInt(gh);
 						int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
 						lblTurnedBack.setText(decimalFormat.format(value - priceTotal));
+						NumberFormat numberFormatter = new DecimalFormat("#,###,###");
+						String formattedNumber = numberFormatter.format(value);
+
+						txtMoneyReceived.setText(formattedNumber);
 					} else {
+
 						txtMoneyReceived.setText(oldValue);
 					}
+				} else {
+					lblTurnedBack.setText("");
+				}
 			}
 		});
 
@@ -349,6 +424,7 @@ public class HomeController implements Initializable {
 			if (searchProduct.getSelectionModel().getSelectedItem() != null)
 				doSearch(searchProduct.getSelectionModel().getSelectedItem(), "nameProduct");
 		});
+
 	}
 
 	private void changeComboboxTime() {
@@ -590,13 +666,15 @@ public class HomeController implements Initializable {
 						}
 					});
 					btnPlus.setOnAction(e -> {
-						if (tableBuyList.getItems().get(getIndex()).getQuatity() < remainHangHoa.get(productId)) {
-							tableBuyList.getItems().get(getIndex())
-									.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
-							tableBuyList.getItems().get(getIndex())
-									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-											* tableBuyList.getItems().get(getIndex()).getQuatity());
-						}
+						tableBuyList.getItems().get(getIndex())
+								.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
+						tableBuyList.getItems().get(getIndex())
+								.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+										* tableBuyList.getItems().get(getIndex()).getQuatity());
+						// if (tableBuyList.getItems().get(getIndex()).getQuatity() <
+						// remainHangHoa.get(productId)) {
+						//
+						// }
 					});
 					updateTotal();
 				}
@@ -833,7 +911,7 @@ public class HomeController implements Initializable {
 				stmt = connection.createStatement();
 				int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
 				int priceReceive = txtMoneyReceived.getText().isEmpty() ? 0
-						: Integer.parseInt(txtMoneyReceived.getText());
+						: Integer.parseInt(txtMoneyReceived.getText().replace(",", ""));
 				boolean statusBill = true;
 				int sellerId = 1;
 				String barcodeBill = "";
@@ -884,8 +962,8 @@ public class HomeController implements Initializable {
 					barcodeThr.start();
 				}
 				if (isPrinted) {
-//					PrintThread prunt = new PrintThread(billId);
-//					prunt.start();
+					// PrintThread prunt = new PrintThread(billId);
+					// prunt.start();
 					File file = HomeController.exportFile(billId);
 					Desktop.getDesktop().print(file);
 				}
@@ -899,7 +977,7 @@ public class HomeController implements Initializable {
 
 	private void updateMoneyReturn() {
 		if (!txtMoneyReceived.getText().trim().isEmpty()) {
-			int value = Integer.parseInt(txtMoneyReceived.getText());
+			int value = Integer.parseInt(txtMoneyReceived.getText().replace(",", ""));
 			int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
 			lblTurnedBack.setText(decimalFormat.format(value - priceTotal));
 		}
@@ -1058,23 +1136,32 @@ public class HomeController implements Initializable {
 						HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_CENTER, Font.BOLDWEIGHT_NORMAL, true);
 						currentCell.setCellStyle(style);
 						sheet.addMergedRegion(
-								new CellRangeAddress(((k * 2) + rowRange + say), ((k * 2) + rowRange + say), 0, 7));
+								new CellRangeAddress((k * 2) + rowRange + say, (k * 2) + rowRange + say, 0, 7));
 					}
-//					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say + 5))) {
-//						File fileO = new File("barImg" + "/" + barcodeBill + ".png");
-//						FileInputStream fis = new FileInputStream(fileO);
-//						ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
-//						int b;
-//						while ((b = fis.read()) != -1)
-//							img_bytes.write(b);
-//						fis.close();
-//						HSSFClientAnchor anchor = new HSSFClientAnchor(155, 0, 0, 255, (short) 0,
-//								((k * 2) + rowRange + say + 1), (short) 8, ((k * 2) + rowRange + say + 2));
-//						int index = wb.addPicture(img_bytes.toByteArray(), HSSFWorkbook.PICTURE_TYPE_PNG);
-//						HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
-//						patriarch.createPicture(anchor, index);
-//						anchor.setAnchorType(2);
-//					}
+					if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange + say + 2))) {
+						currentCell.setCellValue("Mã Hóa Đơn: " + barcodeBill);
+						HSSFCellStyle style = styleCell(wb, CellStyle.ALIGN_CENTER, Font.BOLDWEIGHT_NORMAL, true);
+						currentCell.setCellStyle(style);
+						sheet.addMergedRegion(new CellRangeAddress(((k * 2) + rowRange + say + 1),
+								((k * 2) + rowRange + say + 1), 0, 7));
+					}
+					// if (currentCell.getAddress().toString().equals("A" + ((k * 2) + rowRange +
+					// say + 5))) {
+					// File fileO = new File("barImg" + "/" + barcodeBill + ".png");
+					// FileInputStream fis = new FileInputStream(fileO);
+					// ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
+					// int b;
+					// while ((b = fis.read()) != -1)
+					// img_bytes.write(b);
+					// fis.close();
+					// HSSFClientAnchor anchor = new HSSFClientAnchor(155, 0, 0, 255, (short) 0,
+					// ((k * 2) + rowRange + say + 1), (short) 8, ((k * 2) + rowRange + say + 2));
+					// int index = wb.addPicture(img_bytes.toByteArray(),
+					// HSSFWorkbook.PICTURE_TYPE_PNG);
+					// HSSFPatriarch patriarch = sheet.createDrawingPatriarch();
+					// patriarch.createPicture(anchor, index);
+					// anchor.setAnchorType(2);
+					// }
 				}
 			}
 			wb.setPrintArea(0, "$A$1:$H$" + ((k * 2) + rowRange + say + 3));

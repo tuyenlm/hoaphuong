@@ -114,11 +114,12 @@ public class TabUnknowProductController implements Initializable {
 			txtBarcode.setDisable(true);
 			gridProduct.add(new Label("Mã Barcode:"), 0, 2);
 			gridProduct.add(txtBarcode, 1, 2);
-			ImageView imgBarcode = new ImageView();
-			imgBarcode.setFitHeight(50);
-			gridProduct.add(imgBarcode, 1, 3);
+			// ImageView imgBarcode = new ImageView();
+			// imgBarcode.setFitHeight(50);
+			// gridProduct.add(imgBarcode, 1, 3);
 			String barcodeDialog = bar.trim();
-			imgBarcode.setImage(new Image(new File("barImg/" + barcodeDialog + ".png").toURI().toString()));
+			// imgBarcode.setImage(new Image(new File("barImg/" + barcodeDialog +
+			// ".png").toURI().toString()));
 
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
@@ -267,7 +268,7 @@ public class TabUnknowProductController implements Initializable {
 				}
 			}
 		});
-		
+
 		// nameProduct.textProperty().addListener((observable, oldValue, newValue) -> {
 		// saveButton.setDisable(newValue.trim().isEmpty());
 		// });
@@ -375,8 +376,8 @@ public class TabUnknowProductController implements Initializable {
 					connection.commit();
 					stmt.close();
 					connection.close();
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(itemUnknowLis);
-					barcodeThr.start();
+					// RenderBarcodeThread barcodeThr = new RenderBarcodeThread(itemUnknowLis);
+					// barcodeThr.start();
 				} catch (Exception e) {
 					Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
 				}

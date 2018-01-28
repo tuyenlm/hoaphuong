@@ -157,14 +157,16 @@
 					<right>
 						<HBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
 							<children>
-								<MenuButton alignment="CENTER" contentDisplay="TOP"
+								<!-- <MenuButton alignment="CENTER" contentDisplay="TOP"
 									depthTest="ENABLE" mnemonicParsing="false" fx:id="menuConfig"
 									style="-fx-background-color: #333;" text="MenuButton" textFill="WHITE"
 									textOverrun="CLIP">
 
-								</MenuButton>
+								</MenuButton> -->
 								<JFXButton blendMode="SRC_ATOP" style="-fx-background-color: #333;"
-									text="Exit" textFill="WHITE" />
+									text="Reload" textFill="WHITE" onAction="#actionReload" />
+								<JFXButton blendMode="SRC_ATOP" style="-fx-background-color: #333;"
+									text="Exit" textFill="WHITE" onAction="#actionExit" />
 							</children>
 							<opaqueInsets>
 								<Insets />

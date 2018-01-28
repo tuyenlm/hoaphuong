@@ -5,9 +5,14 @@
  */
 package application;
 
+import java.awt.Desktop;
+import java.awt.List;
+import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -25,6 +30,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.Window;
 import javafx.util.Duration;
 import modules.HomeController;
 
@@ -181,5 +187,19 @@ public class DashboardController implements Initializable {
 		btnStatistical.setStyle("-fx-background-color: #333;");
 		btnNhapHang.setStyle("-fx-background-color: #333;");
 		setNode(settings);
+	}
+
+	@FXML
+	private void actionReload() throws IOException {
+		// File path = new
+		// File(DashboardController.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		Desktop.getDesktop().open(new File("/Users/leminhtuyen/eclipse-workspace/hoaphuong/hoaphuong.jar"));
+		System.exit(0);
+
+	}
+
+	@FXML
+	private void actionExit() {
+		System.exit(0);
 	}
 }
