@@ -1,8 +1,7 @@
 package modules;
 
 import java.awt.Desktop;
-import java.io.ByteArrayOutputStream;
-import java.io.Console;
+import java.awt.List;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +17,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,9 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
@@ -43,6 +41,7 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.controlsfx.control.textfield.TextFields;
 
 import com.jfoenix.controls.JFXButton;
 
@@ -125,8 +124,9 @@ public class HomeController implements Initializable {
 	Statement stmt = null;
 	ResultSet rs = null;
 	StackPane deptStackPane;
-	private ComboBox<String> searchProduct = new ComboBox<String>();
+	private TextField searchProduct = new TextField();
 	private ComboBox<String> searchBarcode = new ComboBox<String>();
+	// private ComboBox<String> searchProduct = new ComboBox<String>();
 	private HashMap<Integer, ObservableList<Buy>> itemBuyList = new HashMap<Integer, ObservableList<Buy>>();
 	private HashMap<Integer, Integer> remainHangHoa = null;
 	public static DecimalFormat decimalFormat = new DecimalFormat("###,###");
@@ -148,7 +148,6 @@ public class HomeController implements Initializable {
 				txtBarcode.requestFocus();
 				txtBarcode.selectAll();
 				buildTableHetHang();
-
 			}
 		});
 		searchBarcode.setVisible(false);
@@ -205,13 +204,14 @@ public class HomeController implements Initializable {
 								searchBarcode.show();
 								searchBarcode.valueProperty().addListener((a, b, c) -> {
 									if (searchBarcode.getSelectionModel().getSelectedItem() != null)
-										doSearch(searchBarcode.getSelectionModel().getSelectedItem(), "nameProduct");
+										doSearch(searchBarcode.getSelectionModel().getSelectedItem(), "nameProduct",
+												false);
 								});
 
 							} else {
 								if (rs.isBeforeFirst()) {
 									while (rs.next()) {
-										doSearch(rs.getString("barcodeProduct"), "barcodeProduct");
+										doSearch(rs.getString("barcodeProduct"), "barcodeProduct", true);
 									}
 
 								}
@@ -230,7 +230,7 @@ public class HomeController implements Initializable {
 								break;
 							}
 						} else {
-							doSearch(txtBarcode.getText().trim(), "barcodeProduct");
+							doSearch(txtBarcode.getText().trim(), "barcodeProduct", true);
 						}
 					}
 				}
@@ -397,39 +397,47 @@ public class HomeController implements Initializable {
 		txtMoneyReceived.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				String gh = newValue.replace(",", "");
-				if (!gh.isEmpty() && gh.length() < 9) {
+				try {
+					String gh = newValue.replace(",", "");
+					if (!gh.isEmpty() && gh.length() < 9) {
+						System.out.println("<9");
+						if (gh.matches("\\d*")) {
+							int value = Integer.parseInt(gh);
+							int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
+							lblTurnedBack.setText(decimalFormat.format(value - priceTotal));
+							NumberFormat numberFormatter = new DecimalFormat("#,###,###");
+							String formattedNumber = numberFormatter.format(value);
 
-					if (gh.matches("\\d*")) {
+							txtMoneyReceived.setText(formattedNumber);
+							// Platform.runLater(() -> {
+							//
+							// });
+						} else {
 
-						int value = Integer.parseInt(gh);
-						int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
-						lblTurnedBack.setText(decimalFormat.format(value - priceTotal));
-						NumberFormat numberFormatter = new DecimalFormat("#,###,###");
-						String formattedNumber = numberFormatter.format(value);
-
-						txtMoneyReceived.setText(formattedNumber);
+							txtMoneyReceived.setText(oldValue);
+						}
 					} else {
-
-						txtMoneyReceived.setText(oldValue);
+						lblTurnedBack.setText("");
 					}
-				} else {
-					lblTurnedBack.setText("");
+				} catch (Exception e) {
+					Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 				}
 			}
 		});
 
-		new AutoCompleteComboBoxListener<>(searchProduct);
-		searchProduct.valueProperty().addListener((a, b, c) -> {
-			if (searchProduct.getSelectionModel().getSelectedItem() != null)
-				doSearch(searchProduct.getSelectionModel().getSelectedItem(), "nameProduct");
-		});
+		// new AutoCompleteComboBoxListener<>(searchProduct);
+		// searchProduct.valueProperty().addListener((a, b, c) -> {
+		// System.out.println(b);
+		// if (searchProduct.getSelectionModel().getSelectedItem() != null)
+		// doSearch(searchProduct.getSelectionModel().getSelectedItem(), "nameProduct");
+		// });
 
 	}
 
 	private void changeComboboxTime() {
 		String yearCom = comYear.getValue();
-		String monthCom = comMonth.getValue();
+		int ff = Integer.parseInt(comMonth.getValue());
+		String monthCom = String.format("%02d", ff);
 		buildTableHistoryPay(yearCom + "-" + monthCom, "CAST(createdatb as TEXT)");
 	}
 
@@ -455,6 +463,7 @@ public class HomeController implements Initializable {
 			} else {
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
 			}
+			System.out.println(query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			int sum = 0;
 			if (rs.isBeforeFirst()) {
@@ -812,19 +821,32 @@ public class HomeController implements Initializable {
 
 	@FXML
 	private void actionSwitchProduct() {
-		if (searchProduct.getItems().size() == 0) {
-			connection = handler.getConnection();
-			try {
-				String query = "SELECT nameProduct FROM products";
-				ResultSet rs = connection.createStatement().executeQuery(query);
-				if (rs.isBeforeFirst()) {
-					while (rs.next()) {
-						searchProduct.getItems().add(rs.getString("nameProduct"));
-					}
-				}
-			} catch (Exception e) {
-				Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				searchProduct.requestFocus();
+				searchProduct.selectAll();
 			}
+		});
+		connection = handler.getConnection();
+		try {
+			ArrayList<String> ar = new ArrayList<String>();
+			String query = "SELECT nameProduct FROM products";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			if (rs.isBeforeFirst()) {
+				while (rs.next()) {
+					ar.add(rs.getString("nameProduct"));
+				}
+			}
+			TextFields.bindAutoCompletion(searchProduct, ar);
+			searchProduct.textProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+					doSearch(newValue, "nameProduct", false);
+				}
+			});
+		} catch (Exception e) {
+			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 		}
 		searchProduct.setVisible(true);
 		searchProduct.setMaxWidth(395);
@@ -841,7 +863,7 @@ public class HomeController implements Initializable {
 				"-fx-background-color: green; -fx-background-radius: 5; -fx-border-color: green; -fx-border-radius: 2; -fx-border-width: 1px;");
 	}
 
-	private void doSearch(String val, String field) {
+	private void doSearch(String val, String field, boolean isAdd) {
 		try {
 			connection = handler.getConnection();
 			String query = "SELECT * FROM products WHERE " + field + " = '" + val + "'";
@@ -875,7 +897,11 @@ public class HomeController implements Initializable {
 				builTableBuy();
 				updateMoneyReturn();
 			} else {
-				setDataUnknowProduct(val);
+				System.out.println("isAdd "+isAdd);
+				if (isAdd) {
+
+					setDataUnknowProduct(val);
+				}
 			}
 			txtBarcode.requestFocus();
 			txtBarcode.selectAll();
