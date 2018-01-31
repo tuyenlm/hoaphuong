@@ -89,6 +89,7 @@ import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import models.Bill;
 import models.Buy;
+import models.Cmd;
 import models.Warehourse;
 
 /**
@@ -221,10 +222,14 @@ public class HomeController implements Initializable {
 						}
 					} else {
 						String[] barCodeSp = txtBarcode.getText().split("-");
+						System.out.println("txtBarcode.setOnKeyReleased  " + barCodeSp[0]);
 						if (barCodeSp.length > 1) {
 							switch (barCodeSp[0]) {
 							case "BI":
 								getBill(txtBarcode.getText().trim());
+								break;
+							case "cmd":
+								doActionCMD(txtBarcode.getText().trim());
 								break;
 							default:
 								break;
@@ -233,6 +238,41 @@ public class HomeController implements Initializable {
 							doSearch(txtBarcode.getText().trim(), "barcodeProduct", true);
 						}
 					}
+				}
+			}
+
+			private void doActionCMD(String trim) {
+				try {
+
+					connection = handler.getConnection();
+					String query = "SELECT action FROM BarcodeCmd WHERE barcodecmd = '" + trim + "' ORDER BY id asc";
+					ResultSet rs = connection.createStatement().executeQuery(query);
+					System.out.println(query);
+					if (rs.isBeforeFirst()) {
+						while (rs.next()) {
+							System.out.println("doActionCMD |" + rs.getString("action") + "|");
+							switch (rs.getString("action")) {
+							case "pay":
+								System.out.println("pay ne");
+								actionPay();
+								break;
+							case "printAndPay":
+								System.out.println("printAndPay ne");
+								actionPayPrint();
+								break;
+							case "clear":
+								System.out.println("clear ne");
+								actionDeletePay();
+								break;
+							default:
+								break;
+							}
+						}
+					}
+					rs.close();
+					connection.close();
+				} catch (Exception e) {
+					Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 				}
 			}
 
@@ -788,6 +828,7 @@ public class HomeController implements Initializable {
 		if (action.get() == ButtonType.OK) {
 			itemBuyList.clear();
 			tableBuyList.getItems().clear();
+			lblTotal.setText("0");
 			statusDisableButton();
 		}
 	}
@@ -897,7 +938,7 @@ public class HomeController implements Initializable {
 				builTableBuy();
 				updateMoneyReturn();
 			} else {
-				System.out.println("isAdd "+isAdd);
+				System.out.println("isAdd " + isAdd);
 				if (isAdd) {
 
 					setDataUnknowProduct(val);
@@ -931,6 +972,7 @@ public class HomeController implements Initializable {
 	}
 
 	private void createBill(boolean isPrinted) {
+		System.out.println("createBill createBill");
 		if (itemBuyList.size() > 0) {
 			try {
 				connection = handler.getConnection();

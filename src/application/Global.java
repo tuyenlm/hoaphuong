@@ -29,7 +29,9 @@ public class Global {
 	public static String billMoneyBackText = "Trả lại";
 	public static String billTimePayText = "Thời gian TT: ";
 	public static String billThanksSayText = "Cảm ơn quý khách đã mua hàng!";
-
+	public static Pair<String, String> pay = new Pair<>("pay", "Chỉ Thanh Toán");
+	public static Pair<String, String> printAndPay = new Pair<>("printAndPay", "Thanh Toán Và In");
+	public static Pair<String, String> clear = new Pair<>("clear", "Xóa Thanh Toán");
 	//
 	public static String userId = "0";
 	public static String username;

@@ -4,16 +4,19 @@ import java.awt.List;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
+import com.sun.javafx.scene.control.GlobalMenuAdapter;
 
 import application.BarcodeController;
 import application.Global;
@@ -24,6 +27,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
@@ -62,7 +66,6 @@ public class SettingsController implements Initializable {
 	private ObservableList<Cmd> lists = FXCollections.observableArrayList();
 	private DbHandler dbHandler;
 	private static Connection connection;
-	private static HashMap<String, String> actionList = new HashMap<>();
 	private ImageView imgBarcode = new ImageView();
 	private boolean isEdit = false;
 	private int idEdit;
@@ -71,13 +74,9 @@ public class SettingsController implements Initializable {
 
 		dbHandler = new DbHandler();
 		buildTable();
-		actionList.put("pay", "Chỉ Thanh Toán");
-		actionList.put("printAndPay", "Thanh Toán Và In");
-		actionList.put("clear", "Xóa Thanh Toán");
-		actionList.forEach((key, value) -> {
-			System.out.println(value);
-			comboboxActionList.getItems().add(value.toString());
-		});
+		comboboxActionList.getItems().add(Global.pay.getValue());
+		comboboxActionList.getItems().add(Global.printAndPay.getValue());
+		comboboxActionList.getItems().add(Global.clear.getValue());
 		imgBarcode.setFitHeight(60);
 		imgBarcode.setStyle("-fx-border-color:#333");
 		paneImageBarcode.getChildren().clear();
@@ -88,7 +87,19 @@ public class SettingsController implements Initializable {
 				edit(newSelection.getId());
 			}
 		});
+	}
 
+	private String convertAction(String sf) {
+		if (Global.pay.getValue().equals(sf)) {
+			sf = Global.pay.getKey();
+		}
+		if (Global.printAndPay.getValue().equals(sf)) {
+			sf = Global.printAndPay.getKey();
+		}
+		if (Global.clear.getValue().equals(sf)) {
+			sf = Global.clear.getKey();
+		}
+		return sf;
 	}
 
 	private void edit(int id) {
@@ -184,6 +195,28 @@ public class SettingsController implements Initializable {
 								"-fx-background-color: #0073B7;-fx-text-fill: WHITE; -fx-effect: dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.15), 6.0, 0.7, 0.0,1.5); -fx-background-radius: 4;");
 						setGraphic(btnDelete);
 						btnDelete.setOnAction(event -> {
+							try {
+								Alert alert = new Alert(AlertType.CONFIRMATION);
+								alert.setTitle(Global.tsl_lblConfirmDialog);
+								alert.setHeaderText(null);
+								alert.setContentText("Bạn có muốn xóa '" + item.getAction() + "' không?");
+								Optional<ButtonType> action = alert.showAndWait();
+								if (action.get() == ButtonType.OK) {
+									connection = dbHandler.getConnection();
+									PreparedStatement ps = connection
+											.prepareStatement("DELETE FROM BarcodeCmd WHERE id = ?;");
+									ps.setInt(1, item.getId());
+									int sts = ps.executeUpdate();
+									connection.commit();
+									ps.close();
+									if (sts == 1) {
+										buildTable();
+									}
+								}
+
+							} catch (Exception e) {
+								Logger.getLogger(SettingsController.class.getName()).log(Level.SEVERE, null, e);
+							}
 						});
 					}
 				}
@@ -225,6 +258,7 @@ public class SettingsController implements Initializable {
 			String barcode = txtBarcodeRefix.getText() + "-" + txtBarcode.getText().trim();
 			String action = comboboxActionList.getSelectionModel().getSelectedItem();
 			String desc = txtDescription.getText();
+			String cvAction = convertAction(action);
 			ArrayList<String> asf = new ArrayList<String>();
 			connection = dbHandler.getConnection();
 			try {
@@ -237,10 +271,10 @@ public class SettingsController implements Initializable {
 					}
 				}
 				if (isEdit) {
-					addData(barcode.toLowerCase(), action, desc);
+					addData(barcode.toLowerCase(), cvAction, desc);
 				} else {
-					if (!asf.contains(action))
-						addData(barcode.toLowerCase(), action, desc);
+					if (!asf.contains(cvAction))
+						addData(barcode.toLowerCase(), cvAction, desc);
 					else {
 						Alert alert = new Alert(AlertType.WARNING);
 						alert.setTitle(Global.tsl_lblConfirmDialog);
@@ -249,7 +283,6 @@ public class SettingsController implements Initializable {
 						alert.showAndWait();
 					}
 				}
-
 				rs.close();
 				connection.close();
 			} catch (Exception e) {
