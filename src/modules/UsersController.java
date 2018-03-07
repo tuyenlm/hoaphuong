@@ -55,7 +55,7 @@ public class UsersController implements Initializable {
 
 	private DbHandler dbHandler;
 	private Connection connection;
-	private boolean saveStatus = true;
+//	private boolean saveStatus = true;
 	private int userId = 0;
 
 	public void initialize(URL url, ResourceBundle rb) {
@@ -71,7 +71,7 @@ public class UsersController implements Initializable {
 				Global.showDialogAlert(AlertType.WARNING, Global.tsl_lblConfirmDialog, null,
 						"Tên đăng nhập không sử dụng ký tự lạ. Độ dài ít nhất là " + Global.UserMinLength
 								+ ", dài nhất là " + Global.UserMaxLength + " ký tự. Ví dụ: abc123");
-				saveStatus = false;
+//				saveStatus = false;
 			}
 		});
 		txtPassword.focusedProperty().addListener((ov, oldValue, newValue) -> {
@@ -80,7 +80,7 @@ public class UsersController implements Initializable {
 				Global.showDialogAlert(AlertType.WARNING, Global.tsl_lblConfirmDialog, null,
 						"Mật khẩu không sử dụng ký tự lạ. Độ dài ít nhất là " + Global.UserMinLength + ", dài nhất là "
 								+ Global.UserMaxLength + " ký tự.");
-				saveStatus = false;
+//				saveStatus = false;
 			}
 		});
 		txtRePassword.focusedProperty().addListener((ov, oldValue, newValue) -> {
@@ -90,11 +90,10 @@ public class UsersController implements Initializable {
 							"Mật khẩu không trùng nhau.");
 					txtRePassword.clear();
 				}
-				saveStatus = false;
+//				saveStatus = false;
 			}
 		});
 		btnSave.setOnAction(event -> {
-			System.out.println(userId);
 			if (userId == 0) {
 				if (!txtUsername.getText().isEmpty() && !txtPassword.getText().isEmpty()
 						&& comboboxType.getSelectionModel().getSelectedItem() != null) {
@@ -120,7 +119,7 @@ public class UsersController implements Initializable {
 								+ type + "');";
 						boolean sts = stmt.execute(sql);
 						if (sts) {
-							BarcodeController.renderBarcode(barcodeUser);
+							BarcodeController.renderBarcode(barcodeUser,true);
 						}
 						stmt.close();
 						connection.commit();

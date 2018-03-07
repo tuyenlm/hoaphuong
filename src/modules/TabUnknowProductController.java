@@ -13,9 +13,10 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.jfoenix.controls.JFXButton;
+
 import application.Global;
-import application.RenderBarcodeThread;
 import application.ValidateHandle;
 import database.DbHandler;
 import javafx.application.Platform;
@@ -46,9 +47,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import models.UnknowProduct;
@@ -66,7 +64,7 @@ public class TabUnknowProductController implements Initializable {
 	private static ComboBox<String> comCatalogId;
 	private static TextArea description;
 	private static ObservableList<String> checkValidate = FXCollections.observableArrayList();
-	private static File outputFileP;
+	
 	// private TableView<Products> tableUnknowProduct;
 	private static HashMap<String, String> itemUnknowList = new HashMap<String, String>();
 	@FXML
@@ -108,19 +106,12 @@ public class TabUnknowProductController implements Initializable {
 	public HashMap<String, String> addProduct(String bar, String type) {
 		HashMap<String, String> rtdata = new HashMap<>();
 		try {
-			outputFileP = null;
 			Dialog<List> dialg = renderDialogProduct();
 			TextField txtBarcode = new TextField(bar);
 			txtBarcode.setDisable(true);
 			gridProduct.add(new Label("Mã Barcode:"), 0, 2);
 			gridProduct.add(txtBarcode, 1, 2);
-			// ImageView imgBarcode = new ImageView();
-			// imgBarcode.setFitHeight(50);
-			// gridProduct.add(imgBarcode, 1, 3);
 			String barcodeDialog = bar.trim();
-			// imgBarcode.setImage(new Image(new File("barImg/" + barcodeDialog +
-			// ".png").toURI().toString()));
-
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				List value = result.get();
@@ -376,8 +367,6 @@ public class TabUnknowProductController implements Initializable {
 					connection.commit();
 					stmt.close();
 					connection.close();
-					// RenderBarcodeThread barcodeThr = new RenderBarcodeThread(itemUnknowLis);
-					// barcodeThr.start();
 				} catch (Exception e) {
 					Logger.getLogger(TabUnknowProductController.class.getName()).log(Level.SEVERE, null, e);
 				}

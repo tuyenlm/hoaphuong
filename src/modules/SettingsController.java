@@ -1,6 +1,5 @@
 package modules;
 
-import java.awt.List;
 import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
@@ -9,14 +8,12 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.jfoenix.controls.JFXButton;
-import com.sun.javafx.scene.control.GlobalMenuAdapter;
 
 import application.BarcodeController;
 import application.Global;
@@ -27,8 +24,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
@@ -89,7 +86,7 @@ public class SettingsController implements Initializable {
 		});
 	}
 
-	private String convertAction(String sf) {
+	private String convertValueToKey(String sf) {
 		if (Global.pay.getValue().equals(sf)) {
 			sf = Global.pay.getKey();
 		}
@@ -98,6 +95,19 @@ public class SettingsController implements Initializable {
 		}
 		if (Global.clear.getValue().equals(sf)) {
 			sf = Global.clear.getKey();
+		}
+		return sf;
+	}
+
+	private String convertKeyToValue(String sf) {
+		if (Global.pay.getKey().equals(sf)) {
+			sf = Global.pay.getValue();
+		}
+		if (Global.printAndPay.getKey().equals(sf)) {
+			sf = Global.printAndPay.getValue();
+		}
+		if (Global.clear.getKey().equals(sf)) {
+			sf = Global.clear.getValue();
 		}
 		return sf;
 	}
@@ -113,7 +123,7 @@ public class SettingsController implements Initializable {
 							rs.getString("descriptionCmd")));
 					String[] barSp = rs.getString("BarcodeCmd").split("-");
 					txtBarcode.setText(barSp[1]);
-					comboboxActionList.setValue(rs.getString("action"));
+					comboboxActionList.setValue(convertKeyToValue(rs.getString("action")));
 					txtDescription.setText(rs.getString("descriptionCmd"));
 					isEdit = true;
 					idEdit = rs.getInt("id");
@@ -164,12 +174,24 @@ public class SettingsController implements Initializable {
 			barcodeCol.setMaxWidth(150);
 
 			TableColumn<Cmd, String> actionCol = new TableColumn<Cmd, String>("Action");
-			actionCol.setCellValueFactory(new PropertyValueFactory<>("action"));
+			actionCol.setCellValueFactory(new PropertyValueFactory<>("action"));	
 			actionCol.getStyleClass().add("my-special-column-style");
 			actionCol.setStyle("-fx-alignment: CENTER;");
-			actionCol.setCellFactory(TextFieldTableCell.<Cmd>forTableColumn());
+			// actionCol.setCellFactory(TextFieldTableCell.<Cmd>forTableColumn());
 			actionCol.setMinWidth(150);
 			actionCol.setMaxWidth(150);
+			actionCol.setCellFactory(param -> new TableCell<Cmd, String>() {
+				@Override
+				protected void updateItem(String item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null) {
+						setGraphic(null);
+						return;
+					} else {
+						setText(convertKeyToValue(item));
+					}
+				}
+			});
 
 			TableColumn<Cmd, String> descCol = new TableColumn<Cmd, String>("Mô Tả");
 			descCol.setCellValueFactory(new PropertyValueFactory<>("desc"));
@@ -245,7 +267,7 @@ public class SettingsController implements Initializable {
 
 	private void renderBarcodeImage(String barcode) {
 		try {
-			File fileNewBar = BarcodeController.renderBarcode(barcode.toLowerCase());
+			File fileNewBar = BarcodeController.renderBarcode(barcode.toLowerCase(),false);
 			imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
 		} catch (Exception ie) {
 			Logger.getLogger(SettingsController.class.getName()).log(Level.SEVERE, null, ie);
@@ -258,7 +280,7 @@ public class SettingsController implements Initializable {
 			String barcode = txtBarcodeRefix.getText() + "-" + txtBarcode.getText().trim();
 			String action = comboboxActionList.getSelectionModel().getSelectedItem();
 			String desc = txtDescription.getText();
-			String cvAction = convertAction(action);
+			String cvAction = convertValueToKey(action);
 			ArrayList<String> asf = new ArrayList<String>();
 			connection = dbHandler.getConnection();
 			try {
@@ -319,4 +341,5 @@ public class SettingsController implements Initializable {
 		txtDescription.clear();
 		imgBarcode.setImage(null);
 	}
+
 }

@@ -1,7 +1,5 @@
 package modules;
 
-import java.awt.Desktop;
-import java.awt.List;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -89,7 +87,6 @@ import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import models.Bill;
 import models.Buy;
-import models.Cmd;
 import models.Warehourse;
 
 /**
@@ -221,27 +218,29 @@ public class HomeController implements Initializable {
 							Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 						}
 					} else {
-						String[] barCodeSp = txtBarcode.getText().split("-");
+						String bcode = txtBarcode.getText().trim().toLowerCase();
+						String[] barCodeSp = bcode.split("-");
 						System.out.println("txtBarcode.setOnKeyReleased  " + barCodeSp[0]);
 						if (barCodeSp.length > 1) {
 							switch (barCodeSp[0]) {
 							case "BI":
-								getBill(txtBarcode.getText().trim());
+								getBill(bcode);
 								break;
 							case "cmd":
-								doActionCMD(txtBarcode.getText().trim());
+								doActionCMD(bcode, false);
 								break;
 							default:
 								break;
 							}
 						} else {
-							doSearch(txtBarcode.getText().trim(), "barcodeProduct", true);
+							doSearch(bcode, "barcodeProduct", true);
 						}
 					}
 				}
+
 			}
 
-			private void doActionCMD(String trim) {
+			private void doActionCMD(String trim, boolean isAlert) {
 				try {
 
 					connection = handler.getConnection();
@@ -262,7 +261,7 @@ public class HomeController implements Initializable {
 								break;
 							case "clear":
 								System.out.println("clear ne");
-								actionDeletePay();
+								DeletePay(isAlert);
 								break;
 							default:
 								break;
@@ -472,6 +471,33 @@ public class HomeController implements Initializable {
 		// doSearch(searchProduct.getSelectionModel().getSelectedItem(), "nameProduct");
 		// });
 
+		try {
+			connection = handler.getConnection();
+			ArrayList<String> ar = new ArrayList<String>();
+			if (ar.size() == 0) {
+				String query = "SELECT nameProduct FROM products";
+				ResultSet rs = connection.createStatement().executeQuery(query);
+				if (rs.isBeforeFirst()) {
+					while (rs.next()) {
+						ar.add(rs.getString("nameProduct"));
+					}
+				}
+			}
+			TextFields.bindAutoCompletion(searchProduct, ar);
+			searchProduct.textProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+					if (!newValue.isEmpty()) {
+						doSearch(newValue, "nameProduct", false);
+						
+					}
+						
+				}
+			});
+		} catch (Exception e) {
+			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
+		}
+
 	}
 
 	private void changeComboboxTime() {
@@ -503,7 +529,6 @@ public class HomeController implements Initializable {
 			} else {
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
 			}
-			System.out.println(query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			int sum = 0;
 			if (rs.isBeforeFirst()) {
@@ -820,17 +845,33 @@ public class HomeController implements Initializable {
 
 	@FXML
 	private void actionDeletePay() {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle(Global.tsl_lblConfirmDialog);
-		alert.setHeaderText(null);
-		alert.setContentText("Có muốn hủy thanh toán này không?");
-		Optional<ButtonType> action = alert.showAndWait();
-		if (action.get() == ButtonType.OK) {
+		DeletePay(true);
+	}
+
+	private void DeletePay(boolean isAlert) {
+		if (isAlert) {
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle(Global.tsl_lblConfirmDialog);
+			alert.setHeaderText(null);
+			alert.setContentText("Có muốn hủy thanh toán này không?");
+			Optional<ButtonType> action = alert.showAndWait();
+			if (action.get() == ButtonType.OK) {
+				itemBuyList.clear();
+				tableBuyList.getItems().clear();
+				lblTotal.setText("0");
+				statusDisableButton();
+				txtBarcode.setText("");
+				txtBarcode.requestFocus();
+			}
+		} else {
 			itemBuyList.clear();
 			tableBuyList.getItems().clear();
 			lblTotal.setText("0");
 			statusDisableButton();
+			txtBarcode.setText("");
+			txtBarcode.requestFocus();
 		}
+
 	}
 
 	private void updateTotal() {
@@ -862,6 +903,7 @@ public class HomeController implements Initializable {
 
 	@FXML
 	private void actionSwitchProduct() {
+
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -869,26 +911,7 @@ public class HomeController implements Initializable {
 				searchProduct.selectAll();
 			}
 		});
-		connection = handler.getConnection();
-		try {
-			ArrayList<String> ar = new ArrayList<String>();
-			String query = "SELECT nameProduct FROM products";
-			ResultSet rs = connection.createStatement().executeQuery(query);
-			if (rs.isBeforeFirst()) {
-				while (rs.next()) {
-					ar.add(rs.getString("nameProduct"));
-				}
-			}
-			TextFields.bindAutoCompletion(searchProduct, ar);
-			searchProduct.textProperty().addListener(new ChangeListener<String>() {
-				@Override
-				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-					doSearch(newValue, "nameProduct", false);
-				}
-			});
-		} catch (Exception e) {
-			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
-		}
+
 		searchProduct.setVisible(true);
 		searchProduct.setMaxWidth(395);
 		searchProduct.setMinWidth(395);
@@ -937,10 +960,10 @@ public class HomeController implements Initializable {
 				}
 				builTableBuy();
 				updateMoneyReturn();
+				searchProduct.setText("");
 			} else {
 				System.out.println("isAdd " + isAdd);
 				if (isAdd) {
-
 					setDataUnknowProduct(val);
 				}
 			}
@@ -1030,13 +1053,14 @@ public class HomeController implements Initializable {
 					barcodeThr.start();
 				}
 				if (isPrinted) {
-					// PrintThread prunt = new PrintThread(billId);
-					// prunt.start();
-					File file = HomeController.exportFile(billId);
-					Desktop.getDesktop().print(file);
+					System.out.println("billId" + billId);
+					PrintThread prunt = new PrintThread(billId);
+					prunt.start();
+					// File file = HomeController.exportFile(billId);
+					// Desktop.getDesktop().print(file);
 				}
 				billId = 0;
-				buildTableHetHang();
+//				buildTableHetHang();
 			} catch (Exception e) {
 				Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 			}
@@ -1058,7 +1082,7 @@ public class HomeController implements Initializable {
 			connection = handler.getConnection();
 			String query = "SELECT Bills.*, Products.nameProduct,Products.unit,Sales.quantityS,Sales.priceSell FROM Bills INNER JOIN Sales ON (Bills.id = Sales.billId) INNER JOIN Products ON (Products.id = Sales.productId) WHERE Bills.id = '"
 					+ id + "' ORDER by Sales.id asc;";
-			System.out.println(query);
+			System.out.println("queyerer====== " + query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			int i = 6, k = 1, g = 7;
 			HashMap<String, String> wpExportList = new HashMap<String, String>();
@@ -1082,6 +1106,8 @@ public class HomeController implements Initializable {
 				timeCreate = rs.getTimestamp("createdAtB");
 				barcodeBill = rs.getString("barcodebill");
 			}
+			rs.close();
+			connection.close(); 
 			// final URL FILE_NAME =
 			// this.getClass().getResource("/files/bill.xls");
 			final String FILE_NAME = "files/bill.xls";

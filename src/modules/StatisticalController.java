@@ -3,22 +3,17 @@ package modules;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.omg.CosNaming._BindingIteratorImplBase;
-
 import com.jfoenix.controls.JFXComboBox;
 
 import database.DbHandler;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -35,7 +30,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
-import models.Bill;
 import models.Revenue;
 
 public class StatisticalController implements Initializable {
@@ -284,7 +278,6 @@ public class StatisticalController implements Initializable {
 			dataMonth = new HashMap<Integer, Integer>();
 			gocToltal = new HashMap<Integer, Integer>();
 			thuveToltal = new HashMap<Integer, Integer>();
-			int ori = 0, sel = 0;
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
 					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd");

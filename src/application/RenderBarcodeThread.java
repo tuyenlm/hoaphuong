@@ -17,7 +17,7 @@ public class RenderBarcodeThread implements Runnable {
 		try {
 			File f = new File("barImg/" + _barcode + ".png");
 			if (!f.exists()) {
-				BarcodeController.renderBarcode(_barcode);
+				BarcodeController.renderBarcode(_barcode,true);
 			}
 		} catch (Exception e) {
 			Logger.getLogger(RenderBarcodeThread.class.getName()).log(Level.SEVERE, null, e);

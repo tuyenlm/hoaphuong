@@ -78,9 +78,9 @@ public class NhapHangController implements Initializable {
 	private HashMap<String, ObservableList<PurchasesItems>> itemsList = new HashMap<String, ObservableList<PurchasesItems>>();
 	private DbHandler handler;
 	private static Connection connection;
-	private HashMap<Integer, Integer> dataMonth;
-	private HashMap<Integer, Integer> gocToltal;
-	private HashMap<Integer, Integer> thuveToltal;
+//	private HashMap<Integer, Integer> dataMonth;
+//	private HashMap<Integer, Integer> gocToltal;
+//	private HashMap<Integer, Integer> thuveToltal;
 	private String selectItem;
 	private HashMap<String, Boolean> stsSuccess = new HashMap<>();
 	private static ObservableList<PurchasesItems> itemsHistories;
@@ -223,8 +223,6 @@ public class NhapHangController implements Initializable {
 
 	private void doSearch(String val) {
 		try {
-			RenderBarcodeThread barcodeThr = new RenderBarcodeThread(val);
-			barcodeThr.start();
 			connection = handler.getConnection();
 			String query = "SELECT products.*,warehouse.remainingAmount FROM products LEFT JOIN warehouse ON (warehouse.productId = products.id)  WHERE products.barcodeProduct = '"
 					+ val + "'";

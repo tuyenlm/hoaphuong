@@ -1,7 +1,12 @@
 package modules;
 
+import java.awt.Desktop;
 import java.awt.List;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,8 +19,21 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.jfoenix.controls.JFXButton;
+import org.apache.poi.hssf.usermodel.HSSFHeader;
+import org.apache.poi.hssf.usermodel.HSSFPatriarch;
+import org.apache.poi.hssf.usermodel.HSSFPicture;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.util.IOUtils;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
+
+import application.BarcodeController;
 import application.Global;
 import application.RenderBarcodeThread;
 import application.ValidateHandle;
@@ -46,6 +64,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
@@ -55,6 +74,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 import models.Catalogs;
+import models.Print;
 import models.Products;
 
 public class ProductsController implements Initializable {
@@ -63,7 +83,9 @@ public class ProductsController implements Initializable {
 	@FXML
 	private TableView<Products> tableProducts;
 	@FXML
-	private JFXButton btnAddCatalog, btnAddProduct, btnEditProduct;
+	private TableView<Print> tablePrint;
+	@FXML
+	private JFXButton btnAddCatalog, btnAddProduct, btnEditProduct, btnPrintAll, btnOpenFolder;
 	@FXML
 	private ListView<String> lvLabel;
 	@FXML
@@ -72,6 +94,8 @@ public class ProductsController implements Initializable {
 	private Label labelBarCode;
 	@FXML
 	private TextField txtSearchCatalog, txtSearchProduct;
+	@FXML
+	private JFXCheckBox isCheckPrint;
 
 	private static DbHandler dbHandler;
 	private static Connection connection;
@@ -85,9 +109,12 @@ public class ProductsController implements Initializable {
 	private Dialog<List> dialogProduct;
 	private Dialog<Pair<String, String>> dialogCatalog;
 	private ObservableList<String> checkValidate = FXCollections.observableArrayList();
+	private HashMap<String, ObservableList<Print>> printList = new HashMap<String, ObservableList<Print>>();
+	private ObservableList<Print> gg = FXCollections.observableArrayList();
 	private GridPane gridProduct, gridCatalog;
 	private File outputFileP;
 	private String textTmp = "";
+	private HSSFWorkbook wb;
 
 	public void initialize(URL url, ResourceBundle rb) {
 		try {
@@ -147,10 +174,11 @@ public class ProductsController implements Initializable {
 				connection.commit();
 				if (rsP != null) {
 					while (rsP.next()) {
-						ImageView as = new ImageView(new Image(
-								new File("barImg/" + rsP.getString("barcodeProduct") + ".png").toURI().toString()));
-						as.setFitHeight(60);
-						labelBarCode.setGraphic(as);
+						// ImageView as = new ImageView(new Image(
+						// new File("barImg/" + rsP.getString("barcodeProduct") +
+						// ".png").toURI().toString()));
+						// as.setFitHeight(60);
+						// labelBarCode.setGraphic(as);
 						// Text text = new Text(rsP.getString("description"));
 						// text.setStyle("-fx-text-fill: red");
 						// text.wrappingWidthProperty().bind(lvDetail.widthProperty());
@@ -552,7 +580,6 @@ public class ProductsController implements Initializable {
 									Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 								}
 							});
-
 						});
 					}
 				}
@@ -572,6 +599,7 @@ public class ProductsController implements Initializable {
 						return;
 					} else {
 						JFXButton btnDelete = new JFXButton("Xóa");
+
 						btnDelete.setStyle(
 								"-fx-background-color: #0073B7;-fx-text-fill: WHITE; -fx-effect: dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.15), 6.0, 0.7, 0.0,1.5); -fx-background-radius: 4;");
 						setGraphic(btnDelete);
@@ -610,10 +638,158 @@ public class ProductsController implements Initializable {
 					}
 				}
 			});
-			tableProducts.setEditable(true);
+			TableColumn<Products, Products> printAddColumn = new TableColumn<>("IN");
+			printAddColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+			printAddColumn.getStyleClass().add("my-special-column-style");
+			printAddColumn.setMinWidth(45);
+			printAddColumn.setMaxWidth(45);
+			printAddColumn.setCellFactory(param -> new TableCell<Products, Products>() {
+				@Override
+				protected void updateItem(Products item, boolean empty) {
+					super.updateItem(item, empty);
+					if (item == null) {
+						setGraphic(null);
+						return;
+					} else {
+						ImageView imageViewPrint = new ImageView(
+								new Image(getClass().getResourceAsStream("/icons/printer.png")));
+						imageViewPrint.setFitWidth(18);
+						imageViewPrint.setFitHeight(18);
+						JFXButton btnPrint = new JFXButton();
+						btnPrint.setTooltip(new Tooltip("In"));
+						btnPrint.setGraphic(imageViewPrint);
+						btnPrint.setStyle("-fx-background-color: #333;-fx-padding: -5px");
+						btnPrint.setMaxHeight(21);
+						btnPrint.setMinHeight(21);
+						btnPrint.setMaxWidth(30);
+						btnPrint.setMinWidth(30);
+						setGraphic(btnPrint);
+						btnPrint.setOnAction(event -> {
+							// PrintThread prunt = new
+							// PrintThread(tableHistoryPay.getItems().get(getIndex()).getId());
+							// prunt.start();
+							int productId = tableProducts.getItems().get(getIndex()).getId();
+							String nameP = tableProducts.getItems().get(getIndex()).getNameProduct();
+							String barP = tableProducts.getItems().get(getIndex()).getBarcodeProduct();
+							int quanPrint = 1;
+							if (!printList.containsKey(barP)) {
+
+								gg.add(new Print(productId, nameP, barP, quanPrint));
+								printList.put(barP, gg);
+								buildPrintTable();
+							}
+
+						});
+					}
+				}
+			});
+			tableProducts.setEditable(false);
 			tableProducts.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-			tableProducts.getColumns().addAll(nameProductCol, editColumn, deleteColumn);
+			tableProducts.getColumns().addAll(nameProductCol, editColumn, deleteColumn, printAddColumn);
 			tableProducts.getItems().addAll(productList);
+		} catch (Exception e) {
+			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void buildPrintTable() {
+		tablePrint.getItems().clear();
+		tablePrint.getColumns().clear();
+		TableColumn<Print, Number> indexColumn = new TableColumn<Print, Number>("#");
+		indexColumn.setSortable(false);
+		indexColumn.setMinWidth(40);
+		indexColumn.setMaxWidth(40);
+		indexColumn.setStyle("-fx-alignment: CENTER;");
+		indexColumn.getStyleClass().add("my-special-column-style");
+		indexColumn.setCellValueFactory(
+				column -> new ReadOnlyObjectWrapper<Number>(tablePrint.getItems().indexOf(column.getValue()) + 1));
+		tablePrint.getColumns().add(0, indexColumn);
+
+		TableColumn<Print, String> nameProductCol = new TableColumn<Print, String>("Tên sản phẩm");
+		nameProductCol.setCellValueFactory(new PropertyValueFactory<>("nameProduct"));
+		nameProductCol.getStyleClass().add("my-special-column-style");
+		nameProductCol.setCellFactory(TextFieldTableCell.<Print>forTableColumn());
+
+		TableColumn<Print, Integer> quatityCol = new TableColumn<Print, Integer>("S.Lượng");
+		quatityCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+		quatityCol.setMinWidth(70);
+		quatityCol.setMaxWidth(70);
+		quatityCol.setCellFactory(column -> new TableCell<Print, Integer>() {
+
+			@Override
+			public void updateItem(Integer item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setGraphic(null);
+				} else {
+					TextField txtQuatity = new TextField();
+					txtQuatity.setStyle("-fx-padding: 1px 5px 1px 5px;");
+					txtQuatity.setText(item.toString());
+					setGraphic(txtQuatity);
+					txtQuatity.textProperty().addListener((a, b, c) -> {
+						if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0) {
+							tablePrint.getItems().get(getIndex()).setQuantity(Integer.parseInt(c));
+							txtQuatity.setText(c);
+						} else {
+							txtQuatity.setText(b);
+						}
+					});
+					txtQuatity.setOnKeyReleased(new EventHandler<KeyEvent>() {
+						public void handle(KeyEvent ke) {
+							if (ke.getText().trim().isEmpty() && !txtQuatity.getText().trim().isEmpty()) {
+								tablePrint.getItems().get(getIndex())
+										.setQuantity(Integer.parseInt(txtQuatity.getText()));
+							}
+						}
+					});
+					txtQuatity.focusedProperty().addListener((a, b, c) -> {
+						if (b) {
+							tablePrint.getItems().get(getIndex()).setQuantity(Integer.parseInt(txtQuatity.getText()));
+						}
+					});
+				}
+			}
+		});
+		TableColumn<Print, Print> deleteColumn = new TableColumn<>("Xóa");
+		deleteColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		deleteColumn.getStyleClass().add("my-special-column-style");
+		deleteColumn.setMinWidth(50);
+		deleteColumn.setMaxWidth(50);
+		deleteColumn.setCellFactory(param -> new TableCell<Print, Print>() {
+			@Override
+			protected void updateItem(Print item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null) {
+					setGraphic(null);
+					return;
+				} else {
+					JFXButton btnDelete = new JFXButton("Xóa");
+					btnDelete.setStyle(
+							"-fx-background-color: #0073B7;-fx-text-fill: WHITE; -fx-effect: dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.15), 6.0, 0.7, 0.0,1.5); -fx-background-radius: 4;");
+					setGraphic(btnDelete);
+					btnDelete.setOnAction(event -> {
+						try {
+							gg.remove(tablePrint.getItems().get(getIndex()));
+							printList.remove(tablePrint.getItems().get(getIndex()).getBarcode());
+							buildPrintTable();
+						} catch (Exception e) {
+							Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+						}
+					});
+				}
+			}
+		});
+		tablePrint.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		tablePrint.getColumns().addAll(nameProductCol, quatityCol, deleteColumn);
+		tablePrint.getItems().addAll(gg);
+	}
+
+	@FXML
+	private void actionOpenFolder() {
+		try {
+			System.out.println(System.getProperty("user.dir"));
+			Desktop.getDesktop().open(new File(System.getProperty("user.dir") + "/files/printFiles"));
 		} catch (Exception e) {
 			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 		}
@@ -656,6 +832,70 @@ public class ProductsController implements Initializable {
 	}
 
 	@FXML
+	private void actionPrintAll() {
+		System.out.println(gg.size());
+		if (gg.size() > 0) {
+			final String FILE_NAME = "files/printBarcode.xls";
+			try {
+				boolean isPrint = isCheckPrint.isSelected();
+				for (Print item : gg) {
+					System.out.println(item.getBarcode() + " " + item.getQuantity());
+					String barcodeBill = item.getBarcode() ;
+					File fileO;
+
+					fileO = new File("barImg" + "/" + barcodeBill + ".png");
+					if (!fileO.exists()) {
+						BarcodeController.renderBarcode(barcodeBill, true);
+					}
+
+					POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME));
+					wb = new HSSFWorkbook(fs, true);
+					HSSFSheet sheet = wb.getSheetAt(0);
+					HSSFHeader header = sheet.getHeader();
+					header.setLeft(item.getNameProduct());
+
+					FileInputStream fis = new FileInputStream(fileO);
+					ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
+					int b;
+					while ((b = fis.read()) != -1)
+						img_bytes.write(b);
+					fis.close();
+					InputStream inputStream = new FileInputStream("barImg" + "/" + barcodeBill + ".png");
+					byte[] bytes = IOUtils.toByteArray(inputStream);
+					int pictureIdx = wb.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+					CreationHelper helper = wb.getCreationHelper();
+
+					HSSFPatriarch drawing = sheet.createDrawingPatriarch();
+					for (int i = 0; i < 17; i++) {
+						for (int j = 0; j < 6; j++) {
+							ClientAnchor anchor = helper.createClientAnchor();
+							anchor.setCol1(j);
+							anchor.setRow1(i);
+							anchor.setDx1(20);
+							anchor.setDy1(10);
+							HSSFPicture pict = drawing.createPicture(anchor, pictureIdx);
+							pict.resize(1);
+						}
+					}
+					File file1 = new File("files/printFiles/printBarcode_" + item.getNameProduct() + ".xls");
+					FileOutputStream out = new FileOutputStream(file1);
+					wb.write(out);
+					if (isPrint) {
+						for (int i = 0; i < item.getQuantity(); i++) {
+							Desktop.getDesktop().print(file1);
+						}
+						file1.delete();
+					}
+				}
+				gg.clear();
+				buildPrintTable();
+			} catch (Exception e) {
+				Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+			}
+		}
+	}
+
+	@FXML
 	private void addProduct() {
 		try {
 			outputFileP = null;
@@ -670,9 +910,6 @@ public class ProductsController implements Initializable {
 			txtBarcode.setOnKeyReleased(new EventHandler<KeyEvent>() {
 				public void handle(KeyEvent ke) {
 					if (ke.getText().trim().isEmpty() && !txtBarcode.getText().trim().isEmpty()) {
-						// RenderBarcodeThread barcodeThr = new RenderBarcodeThread(
-						// String.valueOf(txtBarcode.getText().trim()));
-						// barcodeThr.start();
 						if (checkBarcodeIsExist(txtBarcode.getText())) {
 							Alert alert = new Alert(AlertType.WARNING);
 							alert.setTitle(Global.tsl_lblConfirmDialog);
@@ -682,34 +919,15 @@ public class ProductsController implements Initializable {
 							txtBarcode.clear();
 							txtBarcode.requestFocus();
 						}
-						// else {
-						// refreshImage(imgBarcode, txtBarcode.getText().trim());
-						// }
 					}
 				}
 			});
-			// txtBarcode.focusedProperty().addListener((a, b, c) -> {
-			// if (b) {
-			// refreshImage(imgBarcode, txtBarcode.getText().trim());
-			// }
-			// });
-			// priceOrigin.focusedProperty().addListener((a, b, c) -> {
-			// if (c) {
-			// refreshImage(imgBarcode, txtBarcode.getText().trim());
-			// }
-			// });
-			// location.focusedProperty().addListener((a, b, c) -> {
-			// if (c) {
-			// refreshImage(imgBarcode, txtBarcode.getText().trim());
-			// }
-			// });
 			Optional<List> result = dialg.showAndWait();
 			if (result.isPresent()) {
 				String barcodeDialog;
 				if (txtBarcode.getText().trim().isEmpty()) {
-					barcodeDialog = String.valueOf(Instant.now().getEpochSecond());
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog));
-					barcodeThr.start();
+					barcodeDialog = BarcodeController
+							.calculateCodeWithcheckSum("89" + String.valueOf(Instant.now().getEpochSecond()));
 				} else
 					barcodeDialog = txtBarcode.getText().trim();
 				List value = result.get();
@@ -765,6 +983,29 @@ public class ProductsController implements Initializable {
 	@FXML
 	private void actionPrint() {
 
+	}
+
+	@FXML
+	private void actionFixBarcode() {
+		try {
+			connection = dbHandler.getConnection();
+			String query = "SELECT * FROM products WHERE barcodeproduct LIKE '00%'";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			while (rs.next()) {
+				System.out.println( rs.getString("nameProduct"));
+				stmt = connection.createStatement();
+				String abc = rs.getString("barcodeProduct").substring(2, 13);
+				String barG = BarcodeController.calculateCodeWithcheckSum("8" + abc);
+				String sql3 = "UPDATE products SET barcodeProduct = '" + barG + "'  WHERE id = '" + rs.getInt("id")
+						+ "'";
+				stmt.executeUpdate(sql3);
+				connection.commit();
+			}
+			rs.close();
+			connection.close();
+		} catch (Exception e) {
+			Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+		}
 	}
 
 	public Dialog<Pair<String, String>> renderDialogCatalog() {
