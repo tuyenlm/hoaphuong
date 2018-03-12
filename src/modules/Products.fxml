@@ -74,7 +74,7 @@
                                        </graphic>
                                     </JFXButton>
                                     <TextField fx:id="txtSearchProduct" prefWidth="210.0" />
-                                    <JFXButton buttonType="RAISED" onAction="#actionFixBarcode" style="-fx-background-color: red;" text="Fix barcode"/>
+                                    <JFXButton visible="false" buttonType="RAISED" onAction="#actionFixBarcode" style="-fx-background-color: red;" text="Fix barcode"/>
                                  </children>
                               </HBox>
                               <TableView fx:id="tableCatalog" style="-fx-border-color: #333;" styleClass="tableHistoryPay" GridPane.rowIndex="1" />

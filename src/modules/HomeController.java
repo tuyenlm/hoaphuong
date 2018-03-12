@@ -212,6 +212,12 @@ public class HomeController implements Initializable {
 										doSearch(rs.getString("barcodeProduct"), "barcodeProduct", true);
 									}
 
+								} else {
+									Alert alert = new Alert(AlertType.WARNING);
+									alert.setTitle(Global.tsl_lblConfirmDialog);
+									alert.setHeaderText(null);
+									alert.setContentText("Không tìm thấy mã " + brsp[1]);
+									alert.showAndWait();
 								}
 							}
 						} catch (Exception e) {
@@ -489,9 +495,9 @@ public class HomeController implements Initializable {
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 					if (!newValue.isEmpty()) {
 						doSearch(newValue, "nameProduct", false);
-						
+
 					}
-						
+
 				}
 			});
 		} catch (Exception e) {
@@ -1060,7 +1066,7 @@ public class HomeController implements Initializable {
 					// Desktop.getDesktop().print(file);
 				}
 				billId = 0;
-//				buildTableHetHang();
+				// buildTableHetHang();
 			} catch (Exception e) {
 				Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 			}
@@ -1107,7 +1113,7 @@ public class HomeController implements Initializable {
 				barcodeBill = rs.getString("barcodebill");
 			}
 			rs.close();
-			connection.close(); 
+			connection.close();
 			// final URL FILE_NAME =
 			// this.getClass().getResource("/files/bill.xls");
 			final String FILE_NAME = "files/bill.xls";

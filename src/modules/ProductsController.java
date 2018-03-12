@@ -672,11 +672,17 @@ public class ProductsController implements Initializable {
 							String nameP = tableProducts.getItems().get(getIndex()).getNameProduct();
 							String barP = tableProducts.getItems().get(getIndex()).getBarcodeProduct();
 							int quanPrint = 1;
-							if (!printList.containsKey(barP)) {
+							if (barP.length() == 13 && !printList.containsKey(barP)) {
 
 								gg.add(new Print(productId, nameP, barP, quanPrint));
 								printList.put(barP, gg);
 								buildPrintTable();
+							} else {
+								Alert alert = new Alert(AlertType.WARNING);
+								alert.setTitle(Global.tsl_lblConfirmDialog);
+								alert.setHeaderText(null);
+								alert.setContentText("Mã sản phẩm không đúng tiêu chuẩn.");
+								alert.showAndWait();
 							}
 
 						});
@@ -840,7 +846,7 @@ public class ProductsController implements Initializable {
 				boolean isPrint = isCheckPrint.isSelected();
 				for (Print item : gg) {
 					System.out.println(item.getBarcode() + " " + item.getQuantity());
-					String barcodeBill = item.getBarcode() ;
+					String barcodeBill = item.getBarcode();
 					File fileO;
 
 					fileO = new File("barImg" + "/" + barcodeBill + ".png");
@@ -877,7 +883,8 @@ public class ProductsController implements Initializable {
 							pict.resize(1);
 						}
 					}
-					File file1 = new File("files/printFiles/printBarcode_" + item.getNameProduct() + ".xls");
+					File file1 = new File("files/printFiles/printBarcode_"
+							+ item.getNameProduct().replaceAll("[^a-zA-Z0-9]", "") + ".xls");
 					FileOutputStream out = new FileOutputStream(file1);
 					wb.write(out);
 					if (isPrint) {
@@ -888,6 +895,7 @@ public class ProductsController implements Initializable {
 					}
 				}
 				gg.clear();
+				printList.clear();
 				buildPrintTable();
 			} catch (Exception e) {
 				Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
@@ -992,10 +1000,10 @@ public class ProductsController implements Initializable {
 			String query = "SELECT * FROM products WHERE barcodeproduct LIKE '00%'";
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			while (rs.next()) {
-				System.out.println( rs.getString("nameProduct"));
+				System.out.println(rs.getString("nameProduct"));
 				stmt = connection.createStatement();
-				String abc = rs.getString("barcodeProduct").substring(2, 13);
-				String barG = BarcodeController.calculateCodeWithcheckSum("8" + abc);
+				String abc = rs.getString("barcodeProduct").substring(2, 12);
+				String barG = BarcodeController.calculateCodeWithcheckSum("89" + abc);
 				String sql3 = "UPDATE products SET barcodeProduct = '" + barG + "'  WHERE id = '" + rs.getInt("id")
 						+ "'";
 				stmt.executeUpdate(sql3);
