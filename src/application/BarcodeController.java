@@ -23,8 +23,8 @@ public class BarcodeController {
 				if (isE13) {
 					try {
 						EAN13Bean e13 = new EAN13Bean();
-						int resolution = 160;
-						e13.setModuleWidth(UnitConv.in2mm(1.7f / resolution));
+						int resolution = 250;
+						e13.setModuleWidth(UnitConv.in2mm(4.0f / resolution));
 						e13.setBarHeight(8);
 						e13.setFontSize(2);
 						e13.setQuietZone(3.5);
