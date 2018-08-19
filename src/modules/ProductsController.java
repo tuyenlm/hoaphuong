@@ -1127,7 +1127,7 @@ public class ProductsController implements Initializable {
 			}
 		} else {
 			if (_QId != 0) {
-				String sql = "UPDATE QuantityPrice SET quantity = '0',sellCost  = '0',enable = false  WHERE id = '"
+				String sql = "UPDATE QuantityPrice SET enable = false  WHERE id = '"
 						+ _QId + "'";
 				int sts = stmt.executeUpdate(sql);
 				connection.commit();

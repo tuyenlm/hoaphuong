@@ -33,6 +33,7 @@ public class BarcodeController {
 						OutputStream out2 = new FileOutputStream(outputFile);
 						BitmapCanvasProvider canvas3 = new BitmapCanvasProvider(out2, "image/x-png", resolution,
 								BufferedImage.TYPE_BYTE_BINARY, false, 0);
+						System.out.println("barcode"+ barcode);
 						e13.generateBarcode(canvas3, barcode);
 						canvas3.finish();
 						out2.close();

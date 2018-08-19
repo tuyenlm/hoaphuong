@@ -339,7 +339,7 @@ public class HomeController implements Initializable {
 				}
 			}
 		});
-		
+
 		tableHistoryPay.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -1121,7 +1121,7 @@ public class HomeController implements Initializable {
 				int sellerId = 1;
 				String barcodeBill = "";
 				if (billId == 0) {
-					barcodeBill = "BI-" + String.valueOf(Instant.now().getEpochSecond());
+					barcodeBill = "00" + String.valueOf(Instant.now().getEpochSecond());
 					String sqlBills = "insert into Bills (priceTotal,priceReceive,statusBill,sellerId,barcodeBill) "
 							+ "values ('" + priceTotal + "','" + priceReceive + "','" + statusBill + "','" + sellerId
 							+ "','" + barcodeBill + "')";
@@ -1167,6 +1167,7 @@ public class HomeController implements Initializable {
 				txtMoneyReceived.clear();
 				lblTurnedBack.setText("0");
 				if (!barcodeBill.isEmpty()) {
+					System.out.println("barcodeBill.isEmpty()|" + barcodeBill.isEmpty());
 					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(barcodeBill);
 					barcodeThr.start();
 				}
