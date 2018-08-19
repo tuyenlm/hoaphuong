@@ -27,7 +27,7 @@
 	<children>
 		<StackPane layoutX="6.0" prefHeight="530.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 			<children>
-				<SplitPane dividerPositions="0.6">
+				<SplitPane dividerPositions="0.4">
 					<items>
 						<AnchorPane maxWidth="1.7976931348623157E308" minWidth="500.0" prefWidth="500.0" SplitPane.resizableWithParent="false">
 							<children>
