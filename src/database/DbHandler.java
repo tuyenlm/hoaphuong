@@ -12,7 +12,7 @@ public class DbHandler {
 		String port = "5432";
 		String dbname = "hoaphuong";
 		String user = "postgres";
-		String password = "postgres";
+		String password = "abc123";
 		final String ConnectionString = "jdbc:postgresql://" + host + ":" + port + "/" + dbname;
 
 		try {
