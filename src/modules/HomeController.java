@@ -1024,8 +1024,6 @@ public class HomeController implements Initializable {
 	private void doSearch(String val, String field, boolean isAdd) {
 		try {
 			connection = handler.getConnection();
-//			String queyr2 = "SELECT products.*,QuantityPrice.* FROM products LEFT JOIN QuantityPrice ON products.id = QuantityPrice.productId WHERE products."
-//					+ field + "='" + val + "'";
 			String query = "SELECT products.*,QuantityPrice.* FROM products LEFT JOIN QuantityPrice ON products.id = QuantityPrice.productId WHERE products."
 					+ field + "='" + val + "'";
 			System.out.println(query);
@@ -1115,13 +1113,14 @@ public class HomeController implements Initializable {
 				connection = handler.getConnection();
 				stmt = connection.createStatement();
 				int priceTotal = Integer.parseInt(lblTotal.getText().replaceAll(",", ""));
+				System.out.println("priceTotal|" + priceTotal);
 				int priceReceive = txtMoneyReceived.getText().isEmpty() ? 0
 						: Integer.parseInt(txtMoneyReceived.getText().replace(",", ""));
 				boolean statusBill = true;
 				int sellerId = 1;
 				String barcodeBill = "";
 				if (billId == 0) {
-					barcodeBill = "00" + String.valueOf(Instant.now().getEpochSecond());
+					barcodeBill = "BI-" + String.valueOf(Instant.now().getEpochSecond());
 					String sqlBills = "insert into Bills (priceTotal,priceReceive,statusBill,sellerId,barcodeBill) "
 							+ "values ('" + priceTotal + "','" + priceReceive + "','" + statusBill + "','" + sellerId
 							+ "','" + barcodeBill + "')";
@@ -1135,10 +1134,26 @@ public class HomeController implements Initializable {
 					ObservableList<Buy> value = entry.getValue();
 					Statement stmt2 = connection.createStatement();
 					if (value.get(0).getSaleId() == 0) {
-						String sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,priceOrigin,billId) "
-								+ "values ('" + value.get(0).getProductId() + "','" + value.get(0).getQuatity() + "','"
-								+ value.get(0).getPrice() + "','" + value.get(0).getPriceOrigin() + "','" + billId
-								+ "')";
+						String sqlInsertSale;
+						if (value.get(0).isEnable()) {
+							if (value.get(0).getQuatity() >= value.get(0).getQuantityQ()) {
+								sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,priceOrigin,billId) "
+										+ "values ('" + value.get(0).getProductId() + "','" + value.get(0).getQuatity()
+										+ "','" + value.get(0).getPriceQ() + "','" + value.get(0).getPriceOrigin()
+										+ "','" + billId + "')";
+							} else {
+								sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,priceOrigin,billId) "
+										+ "values ('" + value.get(0).getProductId() + "','" + value.get(0).getQuatity()
+										+ "','" + value.get(0).getPrice() + "','" + value.get(0).getPriceOrigin()
+										+ "','" + billId + "')";
+							}
+						} else {
+							sqlInsertSale = "insert into Sales (productId,quantityS,priceSell,priceOrigin,billId) "
+									+ "values ('" + value.get(0).getProductId() + "','" + value.get(0).getQuatity()
+									+ "','" + value.get(0).getPrice() + "','" + value.get(0).getPriceOrigin() + "','"
+									+ billId + "')";
+						}
+
 						stmt2.execute(sqlInsertSale);
 					} else {
 						String sqlUpdate = "UPDATE Sales SET quantitys ='" + value.get(0).getQuatity()
@@ -1168,7 +1183,7 @@ public class HomeController implements Initializable {
 				lblTurnedBack.setText("0");
 				if (!barcodeBill.isEmpty()) {
 					System.out.println("barcodeBill.isEmpty()|" + barcodeBill.isEmpty());
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(barcodeBill);
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(barcodeBill, false);
 					barcodeThr.start();
 				}
 				if (isPrinted) {
@@ -1215,6 +1230,7 @@ public class HomeController implements Initializable {
 				wpExportList.put("B" + i, rs.getString("nameProduct"));
 				wpExportList.put("A" + g, decimalFormat.format(rs.getInt("priceSell")) + " x " + rs.getInt("quantitys")
 						+ "(" + rs.getString("unit") + ") =");
+//				total = rs.getInt("priceTotal");
 				total = rs.getInt("priceSell") * rs.getInt("quantitys");
 				wpExportList.put("H" + g, decimalFormat.format(total));
 				i = i + 2;

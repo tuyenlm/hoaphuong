@@ -928,7 +928,7 @@ public class ProductsController implements Initializable {
 					if (sts == 1) {
 						BuilderCatalog(txtSearchCatalog.getText());
 					}
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog));
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog),true);
 					barcodeThr.start();
 					// File fileNewBar = barcodeThr.getLink();
 					// System.out.println("fileNewBar " + fileNewBar);

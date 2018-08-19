@@ -247,8 +247,8 @@
 													</right>
 												</JFXToolbar>
 												<JFXToolbar GridPane.rowIndex="2">
-													<right>
-														<HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" minWidth="482.0" prefWidth="482.0" BorderPane.alignment="CENTER">
+                                       <left>
+														<HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
 															<children>
 																<Label fx:id="lblSum" alignment="CENTER_RIGHT" cacheShape="false" centerShape="false" contentDisplay="RIGHT" focusTraversable="false" minWidth="101.0" prefWidth="101.0" scaleShape="false" style="-fx-background-color: #CCC; -fx-border-color: #333;" text="0" textAlignment="RIGHT">
 																	<font>
@@ -259,8 +259,11 @@
 																	</padding>
 																</Label>
 															</children>
+                                             <padding>
+                                                <Insets left="530.0" />
+                                             </padding>
 														</HBox>
-													</right>
+                                       </left>
 												</JFXToolbar>
 											</children>
 										</GridPane>
