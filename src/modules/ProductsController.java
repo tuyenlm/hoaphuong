@@ -11,6 +11,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class ProductsController implements Initializable {
 	@FXML
 	private TableView<Print> tablePrint;
 	@FXML
-	private JFXButton btnAddCatalog, btnAddProduct, btnEditProduct, btnPrintAll, btnOpenFolder;
+	private JFXButton btnAddCatalog, btnAddProduct, btnEditProduct, btnPrintAll, btnOpenFolder, btnSaveQ;
 	@FXML
 	private ListView<String> lvLabel;
 	@FXML
@@ -93,9 +94,9 @@ public class ProductsController implements Initializable {
 	@FXML
 	private Label labelBarCode;
 	@FXML
-	private TextField txtSearchCatalog, txtSearchProduct;
+	private TextField txtSearchCatalog, txtSearchProduct, txtQuatityQ, txtPriceQ;
 	@FXML
-	private JFXCheckBox isCheckPrint;
+	private JFXCheckBox isCheckPrint, isEnable;
 
 	private static DbHandler dbHandler;
 	private static Connection connection;
@@ -115,6 +116,8 @@ public class ProductsController implements Initializable {
 	private File outputFileP;
 	private String textTmp = "";
 	private HSSFWorkbook wb;
+	private int _productId;
+	private int _QId = 0;
 
 	public void initialize(URL url, ResourceBundle rb) {
 		try {
@@ -127,6 +130,22 @@ public class ProductsController implements Initializable {
 			if (tableProducts.getItems().size() > 0 && tableProducts.getItems().get(0).getId() != 0) {
 				tableProducts.getSelectionModel().selectFirst();
 				loadProduct(tableProducts.getItems().get(0).getId());
+				_productId = tableProducts.getItems().get(0).getId();
+				connection = dbHandler.getConnection();
+				String query = "SELECT * FROM QuantityPrice WHERE productId = '" + _productId + "'";
+				ResultSet rs = connection.createStatement().executeQuery(query);
+				if (rs.isBeforeFirst())
+					while (rs.next()) {
+						_QId = rs.getInt("id");
+						isEnable.setSelected(rs.getBoolean("enable"));
+						txtPriceQ.setText(String.valueOf(rs.getInt("sellCost")));
+						txtQuatityQ.setText(String.valueOf(rs.getInt("quantity")));
+					}
+				else
+					isEnable.setSelected(false);
+				rs.close();
+				connection.close();
+
 			}
 			tableCatalog.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
@@ -136,6 +155,46 @@ public class ProductsController implements Initializable {
 			tableProducts.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
 					loadProduct(observable.getValue().getId());
+					_productId = observable.getValue().getId();
+					System.out.println("_productId" + _productId);
+					String query = "SELECT * FROM QuantityPrice WHERE productId = '" + _productId + "'";
+					ResultSet rs;
+					try {
+						connection = dbHandler.getConnection();
+						rs = connection.createStatement().executeQuery(query);
+						if (rs.isBeforeFirst())
+							while (rs.next()) {
+								_QId = rs.getInt("id");
+								isEnable.setSelected(rs.getBoolean("enable"));
+								System.out.println("====>" + rs.getInt("sellCost"));
+								System.out.println("====>" + rs.getInt("quantity"));
+								txtPriceQ.setText(String.valueOf(rs.getInt("sellCost")));
+								txtQuatityQ.setText(String.valueOf(rs.getInt("quantity")));
+							}
+						else {
+							_QId = 0;
+							isEnable.setSelected(false);
+						}
+
+						rs.close();
+						connection.close();
+						System.out.println(isEnable.isSelected());
+						if (isEnable.isSelected()) {
+							System.out.println("szo 1");
+							txtPriceQ.setDisable(false);
+							txtQuatityQ.setDisable(false);
+						} else {
+							System.out.println(" szo2");
+
+							txtPriceQ.setText("");
+							txtQuatityQ.setText("");
+
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 				}
 			});
 			ObservableList<String> itemLabel = FXCollections.observableArrayList("Mã Barcode", "Tên sản phẩm",
@@ -155,6 +214,54 @@ public class ProductsController implements Initializable {
 							txtSearchProduct.getText());
 				} else {
 					BuilderProduct(0, txtSearchProduct.getText());
+				}
+			});
+			isEnable.selectedProperty().addListener((observable, wasSelected, isSelected) -> {
+				if (isSelected) {
+					connection = dbHandler.getConnection();
+					String query = "SELECT * FROM QuantityPrice WHERE productId = '" + _productId + "'";
+					ResultSet rs;
+					try {
+						rs = connection.createStatement().executeQuery(query);
+						if (rs.isBeforeFirst())
+							while (rs.next()) {
+								txtPriceQ.setText(String.valueOf(rs.getInt("sellCost")));
+								txtQuatityQ.setText(String.valueOf(rs.getInt("quantity")));
+							}
+						rs.close();
+						connection.close();
+					} catch (SQLException e) {
+						Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
+						e.printStackTrace();
+					}
+					txtPriceQ.setDisable(false);
+					txtQuatityQ.setDisable(false);
+				} else {
+					txtPriceQ.setDisable(true);
+					txtQuatityQ.setDisable(true);
+					txtPriceQ.setText("");
+					txtQuatityQ.setText("");
+				}
+			});
+
+			txtQuatityQ.textProperty().addListener((a, b, c) -> {
+				System.out.println("txtQuatityQ b|" + b + "|");
+				if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0) {
+					txtQuatityQ.setText(c);
+				} else {
+					txtQuatityQ.setText("");
+
+				}
+
+			});
+
+			txtPriceQ.textProperty().addListener((a, b, c) -> {
+				System.out.println("txtPriceQ b|" + b + "|");
+				if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0) {
+					txtPriceQ.setText(c);
+				} else {
+					txtPriceQ.setText("");
+
 				}
 			});
 		} catch (Exception e) {
@@ -338,7 +445,6 @@ public class ProductsController implements Initializable {
 									Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 								}
 							});
-
 						});
 					}
 				}
@@ -482,6 +588,7 @@ public class ProductsController implements Initializable {
 					}
 				}
 			});
+
 			TableColumn<Products, Products> editColumn = new TableColumn<>("Sửa");
 			editColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 			editColumn.getStyleClass().add("my-special-column-style");
@@ -987,6 +1094,55 @@ public class ProductsController implements Initializable {
 	// outputFileP = fileNewBar;
 	// imgBarcode.setImage(new Image(fileNewBar.toURI().toString()));
 	// }
+
+	@FXML
+	private void actionSaveQ() throws SQLException {
+		connection = dbHandler.getConnection();
+		stmt = connection.createStatement();
+		if (isEnable.isSelected()) {
+			if (!txtPriceQ.getText().isEmpty() && !txtQuatityQ.getText().isEmpty()) {
+				String sql;
+				if (_QId == 0) {
+					sql = "insert into QuantityPrice (productId,quantity,sellCost,enable) " + "values ('" + _productId
+							+ "','" + txtQuatityQ.getText() + "','" + txtPriceQ.getText() + "'," + isEnable.isSelected()
+							+ ")";
+				} else
+					sql = "UPDATE QuantityPrice SET quantity = '" + txtQuatityQ.getText() + "',sellCost  = '"
+							+ txtPriceQ.getText() + "',enable = true WHERE id = '" + _QId + "'";
+				int sts = stmt.executeUpdate(sql);
+				connection.commit();
+				stmt.close();
+				connection.close();
+				if (sts == 1) {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setHeaderText(null);
+					alert.setContentText("Lưu thành công!");
+					alert.showAndWait();
+				}
+			} else {
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setHeaderText(null);
+				alert.setContentText("Số lượng và Giá không được trống!");
+				alert.showAndWait();
+			}
+		} else {
+			if (_QId != 0) {
+				String sql = "UPDATE QuantityPrice SET quantity = '0',sellCost  = '0',enable = false  WHERE id = '"
+						+ _QId + "'";
+				int sts = stmt.executeUpdate(sql);
+				connection.commit();
+				stmt.close();
+				connection.close();
+				if (sts == 1) {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setHeaderText(null);
+					alert.setContentText("Lưu thành công!");
+					alert.showAndWait();
+				}
+			}
+		}
+
+	}
 
 	@FXML
 	private void actionPrint() {

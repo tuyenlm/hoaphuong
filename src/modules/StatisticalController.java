@@ -46,6 +46,7 @@ public class StatisticalController implements Initializable {
 	private DbHandler dbHandler;
 	private static Connection connection;
 	private HashMap<Integer, Integer> dataMonth;
+	private HashMap<Integer, Integer> dataYear;
 	private HashMap<Integer, Integer> gocToltal;
 	private HashMap<Integer, Integer> thuveToltal;
 
@@ -111,6 +112,8 @@ public class StatisticalController implements Initializable {
 		lists.clear();
 		TableColumn<Revenue, String> timeCol;
 		if (type.equals("month")) {
+			System.out.println("month type : " +type);
+			System.out.println("dataMonth.size(): " +dataMonth.size());
 			if (dataMonth.size() > 0) {
 				dataMonth.forEach((key, value) -> {
 					System.out.println("Key : " + key + " Value : " + value);
@@ -122,8 +125,8 @@ public class StatisticalController implements Initializable {
 			timeCol.setMinWidth(45);
 			timeCol.setMaxWidth(45);
 		} else {
-			if (dataMonth.size() > 0) {
-				dataMonth.forEach((key, value) -> {
+			if (dataYear.size() > 0) {
+				dataYear.forEach((key, value) -> {
 					System.out.println("Key : " + key + " Value : " + value);
 					lists.add(new Revenue("" + key, gocToltal.get(key), thuveToltal.get(key), value));
 				});
@@ -205,7 +208,7 @@ public class StatisticalController implements Initializable {
 					+ "WHERE CAST(createdatb as TEXT) like '" + year + "-%';";
 			System.out.println("nawm " + query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
-			dataMonth = new HashMap<Integer, Integer>();
+			dataYear = new HashMap<Integer, Integer>();
 			gocToltal = new HashMap<Integer, Integer>();
 			thuveToltal = new HashMap<Integer, Integer>();
 			if (rs.isBeforeFirst()) {
@@ -216,18 +219,18 @@ public class StatisticalController implements Initializable {
 							- rs.getInt("priceOrigin") * rs.getInt("quantitys");
 					int gocc = rs.getInt("priceOrigin") * rs.getInt("quantitys");
 					int thuvee = rs.getInt("priceSell") * rs.getInt("quantitys");
-					if (dataMonth.get(Integer.parseInt(date)) == null) {
-						dataMonth.put(Integer.parseInt(date), loinhuan);
+					if (dataYear.get(Integer.parseInt(date)) == null) {
+						dataYear.put(Integer.parseInt(date), loinhuan);
 						gocToltal.put(Integer.parseInt(date), gocc);
 						thuveToltal.put(Integer.parseInt(date), thuvee);
 					} else {
-						int gt = dataMonth.get(Integer.parseInt(date));
+						int gt = dataYear.get(Integer.parseInt(date));
 						int goc = gocToltal.get(Integer.parseInt(date));
 						int thuve = thuveToltal.get(Integer.parseInt(date));
 						gt += loinhuan;
 						goc += gocc;
 						thuve += thuvee;
-						dataMonth.put(Integer.parseInt(date), gt);
+						dataYear.put(Integer.parseInt(date), gt);
 						gocToltal.put(Integer.parseInt(date), goc);
 						thuveToltal.put(Integer.parseInt(date), thuve);
 					}
@@ -239,8 +242,8 @@ public class StatisticalController implements Initializable {
 			XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
 			series.setName("Lợi Nhuận Năm " + year);
 			for (int i = 0; i <= 11; i++) {
-				if (dataMonth.get(i) != null)
-					series.getData().add(new XYChart.Data(i, dataMonth.get(i)));
+				if (dataYear.get(i) != null)
+					series.getData().add(new XYChart.Data(i, dataYear.get(i)));
 			}
 			lineChart.getData().add(series);
 			lineChart.setStyle("-fx-border-color:#333;-fx-border-radius:5px");
@@ -272,8 +275,8 @@ public class StatisticalController implements Initializable {
 			connection = dbHandler.getConnection();
 			String query = "Select bills.id, bills.pricetotal, bills.statusbill, bills.createdAtB,sales.pricesell,sales.priceOrigin, sales.quantitys"
 					+ " from bills inner join sales on (bills.id = sales.billid) inner join products on (products.id = sales.productid) "
-					+ "WHERE CAST(createdatb as TEXT) like '" + year + "-" + month + "-%';";
-			System.out.println(query);
+					+ "WHERE CAST(createdatb as TEXT) like '" + year + "-" + String.format("%02d", month )+ "-%';";
+			System.out.println("thang "+query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			dataMonth = new HashMap<Integer, Integer>();
 			gocToltal = new HashMap<Integer, Integer>();

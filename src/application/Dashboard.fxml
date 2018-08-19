@@ -19,8 +19,8 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 
-<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-	minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+<GridPane GridPane.hgrow="always" GridPane.vgrow="always"
+	 prefHeight="600.0" maxHeight="Infinity" maxWidth="Infinity"
 	prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.102" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="application.DashboardController">
 	<columnConstraints>

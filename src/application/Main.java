@@ -43,6 +43,8 @@ public class Main extends Application {
 			stmt.execute(sqlWarehouse);
 			String sqlBarcodeCMD = "CREATE TABLE IF NOT EXISTS BarcodeCmd(id SERIAL PRIMARY KEY NOT NULL, BarcodeCmd VARCHAR(30), action VARCHAR(30), descriptionCmd VARCHAR(100))";
 			stmt.execute(sqlBarcodeCMD);
+			String sqlCreateQuantityPrice = "CREATE TABLE IF NOT EXISTS QuantityPrice (id SERIAL PRIMARY KEY NOT NULL, productId INT, quantity INT, sellCost INT, enable boolean);";
+			stmt.execute(sqlCreateQuantityPrice);
 			connection.commit();
 			stmt.close();
 			connection.close();
@@ -52,7 +54,7 @@ public class Main extends Application {
 
 			primaryStage.setScene(scene);
 			primaryStage.setResizable(true);
-			primaryStage.setMaximized(false);
+			primaryStage.setMaximized(true);
 			primaryStage.show();
 		} catch (Exception e) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);

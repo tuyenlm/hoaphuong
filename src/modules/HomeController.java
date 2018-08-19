@@ -47,7 +47,6 @@ import application.AutoCompleteComboBoxListener;
 import application.Global;
 import application.PrintThread;
 import application.RenderBarcodeThread;
-import application.ValidateHandle;
 import database.DbHandler;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -179,7 +178,7 @@ public class HomeController implements Initializable {
 						connection = handler.getConnection();
 						try {
 							String[] brsp = txtBarcode.getText().trim().split("-");
-							String query = "SELECT nameproduct,barcodeproduct FROM products WHERE RIGHT(barcodeproduct, 4) = '"
+							String query = "SELECT nameproduct,barcodeproduct FROM products WHERE RIGHT(barcodeproduct, 5) = '"
 									+ brsp[1] + "';";
 							Statement s = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 									ResultSet.CONCUR_READ_ONLY);
@@ -293,7 +292,7 @@ public class HomeController implements Initializable {
 							ObservableList<Buy> items = FXCollections.observableArrayList();
 							items.add(new Buy(rs.getInt("productId"), rs.getString("nameProduct"),
 									rs.getInt("quantitys"), rs.getInt("priceSell"), rs.getInt("priceOrigin"),
-									(rs.getInt("priceSell") * rs.getInt("quantitys")), rs.getInt("id")));
+									(rs.getInt("priceSell") * rs.getInt("quantitys")), rs.getInt("id"), 0, 0, false));
 							itemBuyList.put(rs.getInt("productId"), items);
 							billId = rs.getInt("billId");
 						}
@@ -340,7 +339,7 @@ public class HomeController implements Initializable {
 				}
 			}
 		});
-		buildTableHistoryPay("", "");
+		
 		tableHistoryPay.setOnMousePressed(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -359,7 +358,7 @@ public class HomeController implements Initializable {
 								while (rs.next()) {
 									items.add(new Buy(0, rs.getString("nameProduct"), rs.getInt("quantitys"),
 											rs.getInt("priceSell"), rs.getInt("priceOrigin"),
-											(rs.getInt("quantitys") * rs.getInt("priceSell")), 0));
+											(rs.getInt("quantitys") * rs.getInt("priceSell")), 0, 0, 0, false));
 								}
 							}
 							rs.close();
@@ -413,6 +412,7 @@ public class HomeController implements Initializable {
 			comMonth.getItems().add(String.valueOf(i));
 		}
 		comMonth.setValue(String.valueOf(month));
+		buildTableHistoryPay(String.valueOf(year) + "-" + String.format("%02d", month), "CAST(createdatb as TEXT)");
 		comCondition.getItems().addAll("Mã Hóa Đơn", "Thời gian");
 		comCondition.getSelectionModel().select(0);
 		comYear.valueProperty().addListener((a, b, c) -> {
@@ -530,9 +530,11 @@ public class HomeController implements Initializable {
 			connection = handler.getConnection();
 			String query;
 			if (!text.isEmpty() && !field.isEmpty()) {
+				System.out.println("11111");
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) WHERE "
 						+ field + " ILIKE '%" + text + "%' ORDER BY bills.id DESC";
 			} else {
+				System.out.println("22222");
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
 			}
 			ResultSet rs = connection.createStatement().executeQuery(query);
@@ -706,51 +708,113 @@ public class HomeController implements Initializable {
 					hbQ.getChildren().addAll(btnExcept, txtQuatity, btnPlus);
 					hbQ.setSpacing(5);
 					setGraphic(hbQ);
-					int productId = tableBuyList.getItems().get(getIndex()).getProductId();
-					txtQuatity.textProperty().addListener((a, b, c) -> {
-						if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0
-								&& Integer.parseInt(c) <= remainHangHoa.get(productId)) {
-							tableBuyList.getItems().get(getIndex()).setPriceTotal(
-									tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(c));
-							txtQuatity.setText(c);
-						} else {
-							txtQuatity.setText(b);
-						}
-					});
+//					int productId = tableBuyList.getItems().get(getIndex()).getProductId();
+//					txtQuatity.textProperty().addListener((a, b, c) -> {
+//						System.out.println("=================c|" + c);
+//						System.out.println("remain|" + remainHangHoa.get(productId));
+//						if (ValidateHandle.isNumericInteger(c) && Integer.parseInt(c) > 0
+//								&& (remainHangHoa.get(productId) != null && Integer.parseInt(c) <= remainHangHoa.get(productId))) {
+//							System.out.println("dzo 1");
+//							tableBuyList.getItems().get(getIndex()).setPriceTotal(
+//									tableBuyList.getItems().get(getIndex()).getPrice() * Integer.parseInt(c));
+//							txtQuatity.setText(c);
+//						} else {
+//							System.out.println("dzo day");
+//							txtQuatity.setText(b);
+//						}
+//					});
 					txtQuatity.setOnKeyReleased(new EventHandler<KeyEvent>() {
 						public void handle(KeyEvent ke) {
 							if (ke.getText().trim().isEmpty() && !txtQuatity.getText().trim().isEmpty()) {
 								tableBuyList.getItems().get(getIndex())
 										.setQuatity(Integer.parseInt(txtQuatity.getText()));
-								tableBuyList.getItems().get(getIndex())
-										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-												* Integer.parseInt(txtQuatity.getText()));
+								if (tableBuyList.getItems().get(getIndex()).isEnable()) {
+									if (tableBuyList.getItems().get(getIndex()).getQuatity() >= tableBuyList.getItems()
+											.get(getIndex()).getQuantityQ()) {
+										tableBuyList.getItems().get(getIndex())
+												.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPriceQ()
+														* tableBuyList.getItems().get(getIndex()).getQuatity());
+									} else {
+										tableBuyList.getItems().get(getIndex())
+												.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+														* tableBuyList.getItems().get(getIndex()).getQuatity());
+									}
+
+								} else {
+									tableBuyList.getItems().get(getIndex())
+											.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+													* tableBuyList.getItems().get(getIndex()).getQuatity());
+								}
 							}
 						}
 					});
 					txtQuatity.focusedProperty().addListener((a, b, c) -> {
 						if (b) {
 							tableBuyList.getItems().get(getIndex()).setQuatity(Integer.parseInt(txtQuatity.getText()));
-							tableBuyList.getItems().get(getIndex())
-									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-											* Integer.parseInt(txtQuatity.getText()));
+							if (tableBuyList.getItems().get(getIndex()).isEnable()) {
+								if (tableBuyList.getItems().get(getIndex()).getQuatity() >= tableBuyList.getItems()
+										.get(getIndex()).getQuantityQ()) {
+									tableBuyList.getItems().get(getIndex())
+											.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPriceQ()
+													* tableBuyList.getItems().get(getIndex()).getQuatity());
+								} else {
+									tableBuyList.getItems().get(getIndex())
+											.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+													* tableBuyList.getItems().get(getIndex()).getQuatity());
+								}
+
+							} else {
+								tableBuyList.getItems().get(getIndex())
+										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+												* tableBuyList.getItems().get(getIndex()).getQuatity());
+							}
 						}
 					});
 					btnExcept.setOnAction(e -> {
 						if ((tableBuyList.getItems().get(getIndex()).getQuatity() - 1) > 0) {
 							tableBuyList.getItems().get(getIndex())
 									.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() - 1);
+							if (tableBuyList.getItems().get(getIndex()).isEnable()) {
+								if (tableBuyList.getItems().get(getIndex()).getQuatity() >= tableBuyList.getItems()
+										.get(getIndex()).getQuantityQ()) {
+									tableBuyList.getItems().get(getIndex())
+											.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPriceQ()
+													* tableBuyList.getItems().get(getIndex()).getQuatity());
+								} else {
+									tableBuyList.getItems().get(getIndex())
+											.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+													* tableBuyList.getItems().get(getIndex()).getQuatity());
+								}
+
+							} else {
+								tableBuyList.getItems().get(getIndex())
+										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+												* tableBuyList.getItems().get(getIndex()).getQuatity());
+							}
+						}
+					});
+					btnPlus.setOnAction(e -> {
+
+						tableBuyList.getItems().get(getIndex())
+								.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
+						if (tableBuyList.getItems().get(getIndex()).isEnable()) {
+							if (tableBuyList.getItems().get(getIndex()).getQuatity() >= tableBuyList.getItems()
+									.get(getIndex()).getQuantityQ()) {
+								tableBuyList.getItems().get(getIndex())
+										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPriceQ()
+												* tableBuyList.getItems().get(getIndex()).getQuatity());
+							} else {
+								tableBuyList.getItems().get(getIndex())
+										.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
+												* tableBuyList.getItems().get(getIndex()).getQuatity());
+							}
+
+						} else {
 							tableBuyList.getItems().get(getIndex())
 									.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
 											* tableBuyList.getItems().get(getIndex()).getQuatity());
 						}
-					});
-					btnPlus.setOnAction(e -> {
-						tableBuyList.getItems().get(getIndex())
-								.setQuatity(tableBuyList.getItems().get(getIndex()).getQuatity() + 1);
-						tableBuyList.getItems().get(getIndex())
-								.setPriceTotal(tableBuyList.getItems().get(getIndex()).getPrice()
-										* tableBuyList.getItems().get(getIndex()).getQuatity());
+
 						// if (tableBuyList.getItems().get(getIndex()).getQuatity() <
 						// remainHangHoa.get(productId)) {
 						//
@@ -777,6 +841,30 @@ public class HomeController implements Initializable {
 				}
 			}
 		});
+		TableColumn<Buy, Integer> priceQCol = new TableColumn<Buy, Integer>("Giá Giảm");
+		priceQCol.setCellValueFactory(new PropertyValueFactory<>("priceQ"));
+		priceQCol.setMinWidth(70);
+		priceQCol.setMaxWidth(70);
+		priceQCol.setStyle("-fx-alignment: CENTER-RIGHT;");
+		priceQCol.setCellFactory(column -> new TableCell<Buy, Integer>() {
+
+			@Override
+			public void updateItem(Integer item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setText(null);
+				} else {
+					if (tableBuyList.getItems().get(getIndex()).isEnable()) {
+						setText(decimalFormat.format(item) + "/"
+								+ tableBuyList.getItems().get(getIndex()).getQuantityQ());
+						setStyle("-fx-text-fill: Green; -fx-alignment: center;");
+					} else
+						setText("");
+
+				}
+			}
+		});
+
 		TableColumn<Buy, Integer> priceTotalCol = new TableColumn<Buy, Integer>("Thành Tiền");
 		priceTotalCol.setCellValueFactory(new PropertyValueFactory<>("priceTotal"));
 		priceTotalCol.setMinWidth(80);
@@ -828,7 +916,7 @@ public class HomeController implements Initializable {
 			}
 		});
 
-		tableBuyList.getColumns().addAll(nameProductCol, priceCol, quatityCol, priceTotalCol, deleteColumn);
+		tableBuyList.getColumns().addAll(nameProductCol, priceCol, priceQCol, quatityCol, priceTotalCol, deleteColumn);
 		tableBuyList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		int val = 0;
 		for (Map.Entry<Integer, ObservableList<Buy>> entry : itemBuyList.entrySet()) {
@@ -936,21 +1024,41 @@ public class HomeController implements Initializable {
 	private void doSearch(String val, String field, boolean isAdd) {
 		try {
 			connection = handler.getConnection();
-			String query = "SELECT * FROM products WHERE " + field + " = '" + val + "'";
+//			String queyr2 = "SELECT products.*,QuantityPrice.* FROM products LEFT JOIN QuantityPrice ON products.id = QuantityPrice.productId WHERE products."
+//					+ field + "='" + val + "'";
+			String query = "SELECT products.*,QuantityPrice.* FROM products LEFT JOIN QuantityPrice ON products.id = QuantityPrice.productId WHERE products."
+					+ field + "='" + val + "'";
+			System.out.println(query);
 			ResultSet rs = connection.createStatement().executeQuery(query);
 			if (rs.isBeforeFirst()) {
 				while (rs.next()) {
 					if (!itemBuyList.containsKey(rs.getInt("id"))) {
 						ObservableList<Buy> items = FXCollections.observableArrayList();
 						items.add(new Buy(rs.getInt("id"), rs.getString("nameProduct"), 1, rs.getInt("priceSell"),
-								rs.getInt("priceOrigin"), rs.getInt("priceSell"), 0));
+								rs.getInt("priceOrigin"), rs.getInt("priceSell"), 0, rs.getInt("quantity"),
+								rs.getInt("sellCost"), rs.getBoolean("enable")));
 						itemBuyList.put(rs.getInt("id"), items);
 					} else {
+
 						if (itemBuyList.get(rs.getInt("id")).get(0).getProductId() == rs.getInt("id")) {
 							itemBuyList.get(rs.getInt("id")).get(0)
 									.setQuatity(itemBuyList.get(rs.getInt("id")).get(0).getQuatity() + 1);
-							itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(
-									rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+							if (rs.getBoolean("enable")) {
+								System.out.println("++++++++++++");
+								System.out.println(itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+								System.out.println(rs.getInt("quantity"));
+								if (itemBuyList.get(rs.getInt("id")).get(0).getQuatity() >= rs.getInt("quantity")) {
+									itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(rs.getInt("sellCost")
+											* itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+								} else {
+									itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(rs.getInt("priceSell")
+											* itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+								}
+							} else {
+								itemBuyList.get(rs.getInt("id")).get(0).setPriceTotal(
+										rs.getInt("priceSell") * itemBuyList.get(rs.getInt("id")).get(0).getQuatity());
+							}
+
 						}
 					}
 					// if (remainHangHoa.get(rs.getInt("id")) != null) {
@@ -1051,7 +1159,11 @@ public class HomeController implements Initializable {
 				tabHistoryPay.isSelected();
 				txtBarcode.setText("");
 				txtBarcode.requestFocus();
-				buildTableHistoryPay("", "");
+
+				String yearCom = comYear.getValue();
+				int ff = Integer.parseInt(comMonth.getValue());
+				String monthCom = String.format("%02d", ff);
+				buildTableHistoryPay(yearCom + "-" + monthCom, "CAST(createdatb as TEXT)");
 				txtMoneyReceived.clear();
 				lblTurnedBack.setText("0");
 				if (!barcodeBill.isEmpty()) {
