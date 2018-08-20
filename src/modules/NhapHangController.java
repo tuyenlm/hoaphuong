@@ -780,7 +780,7 @@ public class NhapHangController implements Initializable {
 					}
 					stmt2.close();
 					connection.close();
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(_barcodePur));
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(_barcodePur),true);
 					barcodeThr.start();
 					buildTableHistories();
 				}

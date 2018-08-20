@@ -94,7 +94,7 @@ public class ProductsController implements Initializable {
 	@FXML
 	private Label labelBarCode;
 	@FXML
-	private TextField txtSearchCatalog, txtSearchProduct, txtQuatityQ, txtPriceQ;
+	private TextField txtSearchCatalog, txtSearchProduct, txtQuatityQ, txtPriceQ, txtSearchBarcodeP;
 	@FXML
 	private JFXCheckBox isCheckPrint, isEnable;
 
@@ -124,7 +124,8 @@ public class ProductsController implements Initializable {
 			dbHandler = new DbHandler();
 			BuilderCatalog(txtSearchCatalog.getText());
 			if (tableCatalog.getItems().size() > 0 && tableCatalog.getItems().get(0).getId() != 0) {
-				BuilderProduct(tableCatalog.getItems().get(0).getId(), txtSearchProduct.getText());
+				BuilderProduct(tableCatalog.getItems().get(0).getId(), txtSearchProduct.getText(),
+						txtSearchBarcodeP.getText());
 				tableCatalog.getSelectionModel().selectFirst();
 			}
 			if (tableProducts.getItems().size() > 0 && tableProducts.getItems().get(0).getId() != 0) {
@@ -149,7 +150,8 @@ public class ProductsController implements Initializable {
 			}
 			tableCatalog.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				if (newValue != null) {
-					BuilderProduct(observable.getValue().getId(), txtSearchProduct.getText());
+					BuilderProduct(observable.getValue().getId(), txtSearchProduct.getText(),
+							txtSearchBarcodeP.getText());
 				}
 			});
 			tableProducts.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -207,15 +209,28 @@ public class ProductsController implements Initializable {
 			txtSearchProduct.textProperty().addListener((a, b, c) -> {
 				System.out.println(
 						tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex()).getId());
+			
 				if (txtSearchProduct.getText().isEmpty() && tableCatalog.getItems()
 						.get(tableCatalog.getSelectionModel().getSelectedIndex()).getId() != 0) {
 					BuilderProduct(
 							tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex()).getId(),
-							txtSearchProduct.getText());
+							txtSearchProduct.getText(), "");
 				} else {
-					BuilderProduct(0, txtSearchProduct.getText());
+					BuilderProduct(0, txtSearchProduct.getText(), "");
 				}
 			});
+
+			txtSearchBarcodeP.textProperty().addListener((a, b, c) -> {
+				if (txtSearchBarcodeP.getText().isEmpty() && tableCatalog.getItems()
+						.get(tableCatalog.getSelectionModel().getSelectedIndex()).getId() != 0) {
+					BuilderProduct(
+							tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex()).getId(),
+							"", txtSearchBarcodeP.getText());
+				} else {
+					BuilderProduct(0, "", txtSearchBarcodeP.getText());
+				}
+			});
+
 			isEnable.selectedProperty().addListener((observable, wasSelected, isSelected) -> {
 				if (isSelected) {
 					connection = dbHandler.getConnection();
@@ -359,9 +374,9 @@ public class ProductsController implements Initializable {
 							int sts = stmt.executeUpdate(sql3);
 							connection.commit();
 							if (sts == 1) {
-								BuilderProduct(id, txtSearchProduct.getText());
+								BuilderProduct(id, txtSearchProduct.getText(), "");
 								if (tableCatalog.getItems().size() > 0) {
-									BuilderProduct(id, txtSearchProduct.getText());
+									BuilderProduct(id, txtSearchProduct.getText(), "");
 									tableCatalog.getSelectionModel().select(t.getTablePosition().getRow());
 								}
 								if (tableProducts.getItems().size() > 0
@@ -437,7 +452,7 @@ public class ProductsController implements Initializable {
 									connection.commit();
 									if (sts == 1) {
 										BuilderCatalog(txtSearchCatalog.getText());
-										BuilderProduct(id, txtSearchProduct.getText());
+										BuilderProduct(id, txtSearchProduct.getText(), "");
 									}
 									stmt.close();
 									connection.close();
@@ -491,11 +506,11 @@ public class ProductsController implements Initializable {
 									ps.close();
 									if (sts == 1) {
 										BuilderCatalog(txtSearchCatalog.getText());
-										BuilderProduct(item.getId(), txtSearchProduct.getText());
+										BuilderProduct(item.getId(), txtSearchProduct.getText(), "");
 										if (tableCatalog.getItems().size() > 0
 												&& tableCatalog.getItems().get(0).getId() != 0) {
 											BuilderProduct(tableCatalog.getItems().get(0).getId(),
-													txtSearchProduct.getText());
+													txtSearchProduct.getText(), "");
 											tableCatalog.getSelectionModel().selectFirst();
 										}
 										if (tableProducts.getItems().size() > 0
@@ -531,7 +546,7 @@ public class ProductsController implements Initializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void BuilderProduct(int catalogId, String nameSearch) {
+	public void BuilderProduct(int catalogId, String nameSearch, String barcode) {
 		try {
 			tableProducts.getItems().clear();
 			tableProducts.getColumns().clear();
@@ -539,7 +554,11 @@ public class ProductsController implements Initializable {
 			connection = dbHandler.getConnection();
 			String query;
 			if (nameSearch.isEmpty()) {
-				query = "SELECT * FROM products WHERE catalogId = '" + catalogId + "' ORDER BY id ASC";
+				if (barcode.isEmpty()) {
+					query = "SELECT * FROM products WHERE catalogId = '" + catalogId + "' ORDER BY id ASC";
+				} else {
+					query = "SELECT * FROM products WHERE barcodeProduct = '" + barcode + "' ORDER BY id ASC";
+				}
 			} else {
 				query = "SELECT * FROM products WHERE nameProduct ILIKE '%" + nameSearch + "%' ORDER BY id ASC";
 			}
@@ -678,7 +697,7 @@ public class ProductsController implements Initializable {
 									int sts = stmt.executeUpdate(sql3);
 									connection.commit();
 									if (sts == 1) {
-										BuilderProduct(hmCatalog.get(catalogIdDialog), txtSearchProduct.getText());
+										BuilderProduct(hmCatalog.get(catalogIdDialog), txtSearchProduct.getText(), "");
 										loadProduct(id);
 									}
 									stmt.close();
@@ -726,7 +745,7 @@ public class ProductsController implements Initializable {
 									connection.commit();
 									ps.close();
 									if (sts == 1) {
-										BuilderProduct(catalogId, txtSearchProduct.getText());
+										BuilderProduct(catalogId, txtSearchProduct.getText(), "");
 										if (tableProducts.getItems().size() > 0) {
 											tableProducts.getSelectionModel().selectFirst();
 											loadProduct(tableProducts.getItems().get(0).getId());
@@ -928,7 +947,7 @@ public class ProductsController implements Initializable {
 					if (sts == 1) {
 						BuilderCatalog(txtSearchCatalog.getText());
 					}
-					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog),true);
+					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(String.valueOf(barcodeDialog), true);
 					barcodeThr.start();
 					// File fileNewBar = barcodeThr.getLink();
 					// System.out.println("fileNewBar " + fileNewBar);
@@ -1065,7 +1084,7 @@ public class ProductsController implements Initializable {
 					ResultSet rs = stmt.getGeneratedKeys();
 					connection.commit();
 					if (rs.next()) {
-						BuilderProduct(hmCatalog.get(catalogIdDialog), txtSearchProduct.getText());
+						BuilderProduct(hmCatalog.get(catalogIdDialog), txtSearchProduct.getText(), "");
 						if (tableProducts.getItems().size() > 0) {
 							tableProducts.getSelectionModel().selectLast();
 							loadProduct(rs.getInt("id"));
@@ -1127,8 +1146,7 @@ public class ProductsController implements Initializable {
 			}
 		} else {
 			if (_QId != 0) {
-				String sql = "UPDATE QuantityPrice SET enable = false  WHERE id = '"
-						+ _QId + "'";
+				String sql = "UPDATE QuantityPrice SET enable = false  WHERE id = '" + _QId + "'";
 				int sts = stmt.executeUpdate(sql);
 				connection.commit();
 				stmt.close();
