@@ -225,7 +225,6 @@ public class HomeController implements Initializable {
 					} else {
 						String bcode = txtBarcode.getText().trim().toLowerCase();
 						String[] barCodeSp = bcode.split("-");
-						System.out.println("txtBarcode.setOnKeyReleased  " + barCodeSp[0]);
 						if (barCodeSp.length > 1) {
 							switch (barCodeSp[0]) {
 							case "BI":

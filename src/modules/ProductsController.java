@@ -74,6 +74,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
+import models.Buy;
 import models.Catalogs;
 import models.Print;
 import models.Products;
@@ -207,9 +208,10 @@ public class ProductsController implements Initializable {
 			});
 
 			txtSearchProduct.textProperty().addListener((a, b, c) -> {
+				txtSearchBarcodeP.setText("");
 				System.out.println(
 						tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex()).getId());
-			
+
 				if (txtSearchProduct.getText().isEmpty() && tableCatalog.getItems()
 						.get(tableCatalog.getSelectionModel().getSelectedIndex()).getId() != 0) {
 					BuilderProduct(
@@ -220,16 +222,26 @@ public class ProductsController implements Initializable {
 				}
 			});
 
-			txtSearchBarcodeP.textProperty().addListener((a, b, c) -> {
-				if (txtSearchBarcodeP.getText().isEmpty() && tableCatalog.getItems()
-						.get(tableCatalog.getSelectionModel().getSelectedIndex()).getId() != 0) {
-					BuilderProduct(
-							tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex()).getId(),
-							"", txtSearchBarcodeP.getText());
-				} else {
-					BuilderProduct(0, "", txtSearchBarcodeP.getText());
+			txtSearchBarcodeP.setOnKeyReleased(new EventHandler<KeyEvent>() {
+				public void handle(KeyEvent ke) {
+					if (ke.getCode().toString().equals("ENTER") && !txtSearchBarcodeP.getText().trim().isEmpty()) {
+						BuilderProduct(tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex())
+								.getId(), "", txtSearchBarcodeP.getText());
+						txtSearchBarcodeP.requestFocus();
+						txtSearchBarcodeP.selectAll();
+					}
+
 				}
+
 			});
+//			txtSearchBarcodeP.textProperty().addListener((a, b, c) -> {
+//				if (txtSearchBarcodeP.getText().isEmpty() && tableCatalog.getItems()
+//						.get(tableCatalog.getSelectionModel().getSelectedIndex()).getId() != 0) {
+//					BuilderProduct(
+//							tableCatalog.getItems().get(tableCatalog.getSelectionModel().getSelectedIndex()).getId(),
+//							"", "");
+//				}
+//			});
 
 			isEnable.selectedProperty().addListener((observable, wasSelected, isSelected) -> {
 				if (isSelected) {
