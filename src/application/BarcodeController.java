@@ -24,11 +24,13 @@ public class BarcodeController {
 					try {
 						System.out.println("isE13");
 						EAN13Bean e13 = new EAN13Bean();
-						int resolution = 250;
-						e13.setModuleWidth(UnitConv.in2mm(7.0f / resolution));
-						e13.setBarHeight(8);
-						e13.setFontSize(5);
+						int resolution = 500;
+						e13.setModuleWidth(UnitConv.in2mm(5.0f / resolution));
+		
+						e13.setBarHeight(5);
+						e13.setFontSize(2);
 						e13.setQuietZone(3.5);
+					
 						outputFile = new File("barImg/" + barcode + ".png");
 						OutputStream out2 = new FileOutputStream(outputFile);
 						BitmapCanvasProvider canvas3 = new BitmapCanvasProvider(out2, "image/x-png", resolution,

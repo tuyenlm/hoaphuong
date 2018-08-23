@@ -17,10 +17,10 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.poi.hssf.usermodel.HSSFHeader;
 import org.apache.poi.hssf.usermodel.HSSFPatriarch;
 import org.apache.poi.hssf.usermodel.HSSFPicture;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -33,6 +33,7 @@ import org.apache.poi.util.IOUtils;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXRadioButton;
 
 import application.BarcodeController;
 import application.Global;
@@ -43,6 +44,8 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -74,7 +77,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
-import models.Buy;
 import models.Catalogs;
 import models.Print;
 import models.Products;
@@ -98,6 +100,8 @@ public class ProductsController implements Initializable {
 	private TextField txtSearchCatalog, txtSearchProduct, txtQuatityQ, txtPriceQ, txtSearchBarcodeP;
 	@FXML
 	private JFXCheckBox isCheckPrint, isEnable;
+	@FXML
+	private JFXRadioButton radio30, radio57;
 
 	private static DbHandler dbHandler;
 	private static Connection connection;
@@ -169,8 +173,6 @@ public class ProductsController implements Initializable {
 							while (rs.next()) {
 								_QId = rs.getInt("id");
 								isEnable.setSelected(rs.getBoolean("enable"));
-								System.out.println("====>" + rs.getInt("sellCost"));
-								System.out.println("====>" + rs.getInt("quantity"));
 								txtPriceQ.setText(String.valueOf(rs.getInt("sellCost")));
 								txtQuatityQ.setText(String.valueOf(rs.getInt("quantity")));
 							}
@@ -810,16 +812,24 @@ public class ProductsController implements Initializable {
 							String nameP = tableProducts.getItems().get(getIndex()).getNameProduct();
 							String barP = tableProducts.getItems().get(getIndex()).getBarcodeProduct();
 							int quanPrint = 1;
-							if (barP.length() == 13 && !printList.containsKey(barP)) {
+							if (!printList.containsKey(barP)) {
+								if (barP.length() == 13) {
 
-								gg.add(new Print(productId, nameP, barP, quanPrint));
-								printList.put(barP, gg);
-								buildPrintTable();
+									gg.add(new Print(productId, nameP, barP, quanPrint));
+									printList.put(barP, gg);
+									buildPrintTable();
+								} else {
+									Alert alert = new Alert(AlertType.WARNING);
+									alert.setTitle(Global.tsl_lblConfirmDialog);
+									alert.setHeaderText(null);
+									alert.setContentText("Mã sản phẩm không đúng tiêu chuẩn.");
+									alert.showAndWait();
+								}
 							} else {
 								Alert alert = new Alert(AlertType.WARNING);
 								alert.setTitle(Global.tsl_lblConfirmDialog);
 								alert.setHeaderText(null);
-								alert.setContentText("Mã sản phẩm không đúng tiêu chuẩn.");
+								alert.setContentText("Sản phẩm này đã chọn.");
 								alert.showAndWait();
 							}
 
@@ -978,60 +988,61 @@ public class ProductsController implements Initializable {
 	@FXML
 	private void actionPrintAll() {
 		System.out.println(gg.size());
+		final String FILE_NAME;
+		if (radio30.isSelected()) {
+			FILE_NAME = "files/PrintTemp30.xls";
+		} else {
+			FILE_NAME = "files/PrintTemp57.xls";
+		}
 		if (gg.size() > 0) {
-			final String FILE_NAME = "files/printBarcode.xls";
+
 			try {
-				boolean isPrint = isCheckPrint.isSelected();
+				POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME));
+
+				int k = 0;
+				wb = new HSSFWorkbook(fs, true);
+				HSSFSheet sheet = wb.getSheetAt(0);
 				for (Print item : gg) {
-					System.out.println(item.getBarcode() + " " + item.getQuantity());
+
 					String barcodeBill = item.getBarcode();
+
+					BarcodeController.renderBarcode(barcodeBill, true);
 					File fileO;
-
 					fileO = new File("barImg" + "/" + barcodeBill + ".png");
-					if (!fileO.exists()) {
-						BarcodeController.renderBarcode(barcodeBill, true);
-					}
 
-					POIFSFileSystem fs = new POIFSFileSystem(new FileInputStream(FILE_NAME));
-					wb = new HSSFWorkbook(fs, true);
-					HSSFSheet sheet = wb.getSheetAt(0);
-					HSSFHeader header = sheet.getHeader();
-					header.setLeft(item.getNameProduct());
+					if (fileO.exists()) {
 
-					FileInputStream fis = new FileInputStream(fileO);
-					ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
-					int b;
-					while ((b = fis.read()) != -1)
-						img_bytes.write(b);
-					fis.close();
-					InputStream inputStream = new FileInputStream("barImg" + "/" + barcodeBill + ".png");
-					byte[] bytes = IOUtils.toByteArray(inputStream);
-					int pictureIdx = wb.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
-					CreationHelper helper = wb.getCreationHelper();
+						FileInputStream fis = new FileInputStream(fileO);
+						ByteArrayOutputStream img_bytes = new ByteArrayOutputStream();
+						int b;
+						while ((b = fis.read()) != -1)
+							img_bytes.write(b);
+						fis.close();
+						InputStream inputStream = new FileInputStream("barImg" + "/" + barcodeBill + ".png");
+						byte[] bytes = IOUtils.toByteArray(inputStream);
+						int pictureIdx = wb.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
+						CreationHelper helper = wb.getCreationHelper();
 
-					HSSFPatriarch drawing = sheet.createDrawingPatriarch();
-					for (int i = 0; i < 17; i++) {
-						for (int j = 0; j < 6; j++) {
+						HSSFPatriarch drawing = sheet.createDrawingPatriarch();
+						for (int i = 0; i < item.getQuantity(); i++) {
 							ClientAnchor anchor = helper.createClientAnchor();
-							anchor.setCol1(j);
-							anchor.setRow1(i);
+							System.out.println("row" + (k) + "| code " + item.getBarcode());
+							anchor.setCol1(0);
+							anchor.setRow1(k);
 							anchor.setDx1(20);
 							anchor.setDy1(10);
 							HSSFPicture pict = drawing.createPicture(anchor, pictureIdx);
 							pict.resize(1);
+							k++;
 						}
 					}
-					File file1 = new File("files/printFiles/printBarcode_"
-							+ item.getNameProduct().replaceAll("[^a-zA-Z0-9]", "") + ".xls");
-					FileOutputStream out = new FileOutputStream(file1);
-					wb.write(out);
-					if (isPrint) {
-						for (int i = 0; i < item.getQuantity(); i++) {
-							Desktop.getDesktop().print(file1);
-						}
-						file1.delete();
-					}
+
 				}
+				File file1 = new File("files/printFiles/printTemp.xls");
+				FileOutputStream out = new FileOutputStream(file1);
+				wb.write(out);
+				Desktop.getDesktop().print(file1);
+//				file1.delete();
 				gg.clear();
 				printList.clear();
 				buildPrintTable();
@@ -1040,6 +1051,33 @@ public class ProductsController implements Initializable {
 			}
 		}
 	}
+	
+	
+	Service<Void> service = new Service<Void>() {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<Void>() {           
+                @Override
+                protected Void call() throws Exception {
+                    //Background work                       
+                    final CountDownLatch latch = new CountDownLatch(1);
+                    Platform.runLater(new Runnable() {                          
+                        @Override
+                        public void run() {
+                            try{
+                                //FX Stuff done here
+                            }finally{
+                                latch.countDown();
+                            }
+                        }
+                    });
+                    latch.await();                      
+                    //Keep with the background work
+                    return null;
+                }
+            };
+        }
+    };
 
 	@FXML
 	private void addProduct() {

@@ -2,11 +2,13 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXCheckBox?>
+<?import com.jfoenix.controls.JFXRadioButton?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -239,21 +241,14 @@
 													style="-fx-background-color: #333; -fx-border-width: 0 1px 1px 1px; -fx-border-color: white;"
 													GridPane.rowIndex="2" />
 												<HBox prefHeight="100.0" prefWidth="200.0"
-													spacing="10.0" GridPane.rowIndex="3">
+													spacing="10.0" visible="false" GridPane.rowIndex="3">
 													<children>
-														<JFXCheckBox fx:id="isCheckPrint" text="In" />
-														<JFXButton fx:id="btnPrintAll"
-															onAction="#actionPrintAll"
-															style="-fx-background-color: green;" text="In Tất Cả"
-															textFill="WHITE">
-															<font>
-																<Font size="10.0" />
-															</font>
-														</JFXButton>
+														<JFXCheckBox fx:id="isCheckPrint"
+															disable="true" text="In" />
 														<JFXButton fx:id="btnOpenFolder"
 															onAction="#actionOpenFolder" ripplerFill="#ff8400"
 															style="-fx-background-color: #ff8400;" text="Mở Thư Mục"
-															textFill="WHITE">
+															textFill="WHITE" visible="false">
 															<font>
 																<Font size="10.0" />
 															</font>
@@ -261,6 +256,33 @@
 													</children>
 													<padding>
 														<Insets left="5.0" top="5.0" />
+													</padding>
+												</HBox>
+												<HBox prefHeight="100.0" prefWidth="200.0"
+													spacing="10.0" GridPane.rowIndex="3">
+													<children>
+														<JFXRadioButton fx:id="radio57"
+															selected="true" text="Giấy 57">
+															<toggleGroup>
+																<ToggleGroup fx:id="paper" />
+															</toggleGroup>
+														</JFXRadioButton>
+														<JFXRadioButton fx:id="radio30"
+															text="Giấy 30" toggleGroup="$paper" />
+														<JFXButton fx:id="btnPrintAll"
+															onAction="#actionPrintAll"
+															style="-fx-background-color: green;" text="IN"
+															textFill="WHITE">
+															<font>
+																<Font size="10.0" />
+															</font>
+															<HBox.margin>
+																<Insets />
+															</HBox.margin>
+														</JFXButton>
+													</children>
+													<padding>
+														<Insets left="5.0" top="4.0" />
 													</padding>
 												</HBox>
 											</children>
