@@ -1039,6 +1039,7 @@ public class ProductsController implements Initializable {
 
 				}
 				File file1 = new File("files/printFiles/printTemp.xls");
+				 file1.canWrite();
 				FileOutputStream out = new FileOutputStream(file1);
 				wb.write(out);
 				Desktop.getDesktop().print(file1);
@@ -1051,33 +1052,32 @@ public class ProductsController implements Initializable {
 			}
 		}
 	}
-	
-	
+
 	Service<Void> service = new Service<Void>() {
-        @Override
-        protected Task<Void> createTask() {
-            return new Task<Void>() {           
-                @Override
-                protected Void call() throws Exception {
-                    //Background work                       
-                    final CountDownLatch latch = new CountDownLatch(1);
-                    Platform.runLater(new Runnable() {                          
-                        @Override
-                        public void run() {
-                            try{
-                                //FX Stuff done here
-                            }finally{
-                                latch.countDown();
-                            }
-                        }
-                    });
-                    latch.await();                      
-                    //Keep with the background work
-                    return null;
-                }
-            };
-        }
-    };
+		@Override
+		protected Task<Void> createTask() {
+			return new Task<Void>() {
+				@Override
+				protected Void call() throws Exception {
+					// Background work
+					final CountDownLatch latch = new CountDownLatch(1);
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								// FX Stuff done here
+							} finally {
+								latch.countDown();
+							}
+						}
+					});
+					latch.await();
+					// Keep with the background work
+					return null;
+				}
+			};
+		}
+	};
 
 	@FXML
 	private void addProduct() {

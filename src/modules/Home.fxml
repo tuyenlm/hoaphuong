@@ -178,7 +178,7 @@
 														</HBox>
 													</left>
 													<right>
-														<Label fx:id="lblTurnedBack" alignment="CENTER_RIGHT" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" text="0" textFill="WHITE" BorderPane.alignment="CENTER">
+														<Label fx:id="lblTurnedBack" alignment="CENTER_RIGHT" maxWidth="259.0" minWidth="120.0" prefHeight="30.0" prefWidth="259.0" text="0" textFill="WHITE" BorderPane.alignment="CENTER">
 															<padding>
 																<Insets right="10.0" />
 															</padding>

@@ -224,11 +224,13 @@ public class HomeController implements Initializable {
 						}
 					} else {
 						String bcode = txtBarcode.getText().trim().toLowerCase();
+						System.out.println("bcode " + bcode);
 						String[] barCodeSp = bcode.split("-");
 						if (barCodeSp.length > 1) {
+							System.out.println("barCodeSp[0] " + barCodeSp[0]);
 							switch (barCodeSp[0]) {
-							case "BI":
-								getBill(bcode);
+							case "bi":
+								getBill(bcode.toUpperCase());
 								break;
 							case "cmd":
 								doActionCMD(bcode, false);
@@ -529,11 +531,9 @@ public class HomeController implements Initializable {
 			connection = handler.getConnection();
 			String query;
 			if (!text.isEmpty() && !field.isEmpty()) {
-				System.out.println("11111");
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) WHERE "
 						+ field + " ILIKE '%" + text + "%' ORDER BY bills.id DESC";
 			} else {
-				System.out.println("22222");
 				query = "SELECT *,to_char(priceTotal, '999,999,990') as priceTotalDe, to_char(priceReceive, '999,999,990') as priceReceiveDe FROM bills LEFT OUTER JOIN users ON (bills.sellerId = users.id) ORDER BY bills.id DESC";
 			}
 			ResultSet rs = connection.createStatement().executeQuery(query);
@@ -1159,6 +1159,9 @@ public class HomeController implements Initializable {
 								+ "', priceSell ='" + value.get(0).getPriceOrigin() + "' WHERE id = '"
 								+ value.get(0).getSaleId() + "'; ";
 						stmt.executeUpdate(sqlUpdate);
+						String sqlUpdateBill = "UPDATE Bills SET priceTotal ='" + priceTotal + "', priceReceive ='"
+								+ priceReceive + "' WHERE id = '" + billId + "'; ";
+						stmt.executeUpdate(sqlUpdateBill);
 
 					}
 					WarehourseController.updateData(value.get(0).getProductId(), value.get(0).getQuatity());
@@ -1181,7 +1184,6 @@ public class HomeController implements Initializable {
 				txtMoneyReceived.clear();
 				lblTurnedBack.setText("0");
 				if (!barcodeBill.isEmpty()) {
-					System.out.println("barcodeBill.isEmpty()|" + barcodeBill.isEmpty());
 					RenderBarcodeThread barcodeThr = new RenderBarcodeThread(barcodeBill, false);
 					barcodeThr.start();
 				}
