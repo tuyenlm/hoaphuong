@@ -1052,11 +1052,13 @@ public class ProductsController implements Initializable {
 //				 file1.canWrite();
 //				FileOutputStream out = new FileOutputStream(file1);
 				wb.write(out);
+				out.close();
 				Desktop.getDesktop().print(file1);
 //				file1.delete();
 				gg.clear();
 				printList.clear();
 				buildPrintTable();
+			
 			} catch (Exception e) {
 				Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 			}
