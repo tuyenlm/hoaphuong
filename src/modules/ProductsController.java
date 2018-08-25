@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -1038,9 +1040,17 @@ public class ProductsController implements Initializable {
 					}
 
 				}
-				File file1 = new File("files/printFiles/printTemp.xls");
-				 file1.canWrite();
-				FileOutputStream out = new FileOutputStream(file1);
+				
+				FileOutputStream out = new FileOutputStream("files/printTemp.xls");
+				Path src = Paths.get("files/printTemp.xls");
+				File file1 = new File(src.toString());
+				wb.write(out);
+				
+				
+				
+//				File file1 = new File("files/printFiles/printTemp.xls");
+//				 file1.canWrite();
+//				FileOutputStream out = new FileOutputStream(file1);
 				wb.write(out);
 				Desktop.getDesktop().print(file1);
 //				file1.delete();
