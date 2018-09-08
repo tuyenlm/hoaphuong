@@ -332,6 +332,9 @@ public class ProductsController implements Initializable {
 
 					}
 				}
+				rsP.close();
+				ps.close();
+				connection.close();
 			} catch (Exception e) {
 				Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 			}
@@ -452,6 +455,7 @@ public class ProductsController implements Initializable {
 									nameCatalog.setText(rs.getString("nameCatalog"));
 									descriptionCatalog.setText(rs.getString("descriptionCatalog"));
 								}
+								connection.close();
 							} catch (Exception e) {
 								Logger.getLogger(ProductsController.class.getName()).log(Level.SEVERE, null, e);
 							}
@@ -587,6 +591,7 @@ public class ProductsController implements Initializable {
 							rs.getString("unit")));
 				}
 			}
+			connection.close();
 			TableColumn<Products, Number> indexColumn = new TableColumn<Products, Number>("#");
 			indexColumn.setSortable(false);
 			indexColumn.setMinWidth(40);

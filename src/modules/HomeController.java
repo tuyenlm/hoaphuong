@@ -219,6 +219,7 @@ public class HomeController implements Initializable {
 									alert.showAndWait();
 								}
 							}
+							connection.close();
 						} catch (Exception e) {
 							Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 						}
@@ -299,6 +300,7 @@ public class HomeController implements Initializable {
 						}
 					}
 					builTableBuy();
+					rs.close();
 					connection.close();
 					txtBarcode.requestFocus();
 					txtBarcode.selectAll();
@@ -501,6 +503,8 @@ public class HomeController implements Initializable {
 
 				}
 			});
+			
+			connection.close();
 		} catch (Exception e) {
 			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);
 		}
@@ -547,6 +551,7 @@ public class HomeController implements Initializable {
 				}
 			}
 			lblSum.setText(decimalFormat.format(sum));
+			rs.close();
 			connection.close();
 		} catch (Exception e) {
 			Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, e);

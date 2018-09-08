@@ -181,7 +181,9 @@ public class UsersController implements Initializable {
 					Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, e);
 				}
 			}
+		
 		});
+		
 	}
 
 	public String DisplayError(TextField txtUser, TextField txtFullname, PasswordField txtPass, PasswordField txtRePass,
@@ -221,6 +223,7 @@ public class UsersController implements Initializable {
 				lists.add(new Users(rs.getInt("id"), rs.getString("username"), rs.getString("fullname"),
 						rs.getInt("type"), rs.getTimestamp("createdAt")));
 			}
+			connection.close();
 			TableColumn<Users, Number> indexColumn = new TableColumn<Users, Number>("#");
 			indexColumn.getStyleClass().add("my-special-column-style");
 			indexColumn.setSortable(false);

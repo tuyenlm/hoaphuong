@@ -6,13 +6,14 @@ import java.sql.SQLException;
 
 public class DbHandler {
 	protected Connection conn;
+	public static String port = "5432";
+	public static String host = "localhost";
+	public static String dbname = "hoaphuong";
+	public static String user = "postgres";
+	public static String password = "abc123";
 
 	public Connection getConnection() {
-		String host = "localhost";
-		String port = "5432";
-		String dbname = "hoaphuong";
-		String user = "postgres";
-		String password = "abc123";
+
 		final String ConnectionString = "jdbc:postgresql://" + host + ":" + port + "/" + dbname;
 
 		try {

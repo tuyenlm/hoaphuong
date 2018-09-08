@@ -21,6 +21,7 @@ public class WarehourseController {
 					+ "', remainingAmount = remainingAmount - '" + num + "' WHERE productId = '" + id + "'; ";
 			stmt6.executeUpdate(sqlUpdate);
 			connection.commit();
+			connection.close();
 		} catch (Exception e) {
 			Logger.getLogger(WarehourseController.class.getName()).log(Level.SEVERE, null, e);
 		}

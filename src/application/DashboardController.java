@@ -29,7 +29,9 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import modules.SettingsController;
 
 /**
  * FXML Controller class
@@ -38,7 +40,7 @@ import javafx.util.Duration;
  */
 
 public class DashboardController implements Initializable {
-
+	private Stage _stage;
 	@FXML
 	private AnchorPane containIndex;
 	@FXML
@@ -177,6 +179,16 @@ public class DashboardController implements Initializable {
 	@FXML
 	private void openSettings(ActionEvent event) throws IOException {
 		settings = FXMLLoader.load(getClass().getResource("/modules/Settings.fxml"));
+
+
+		
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/modules/Settings.fxml"));   
+		settings = (AnchorPane)fxmlLoader.load();   
+
+		SettingsController controller = fxmlLoader.<SettingsController>getController();
+		controller.setStage(_stage);
+		
+		
 		btnSettings.setStyle("-fx-background-color:#3F51B5;-fx-text-fill: WHITE;");
 		btnProducts.setStyle("-fx-background-color: #333;");
 		btnHome.setStyle("-fx-background-color: #333;");
@@ -199,4 +211,9 @@ public class DashboardController implements Initializable {
 	private void actionExit() {
 		System.exit(0);
 	}
+	
+	public void setStage(Stage primaryStage) {
+		this._stage = primaryStage;
+	}
+
 }
