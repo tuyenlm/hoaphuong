@@ -85,12 +85,12 @@ public class SettingsController implements Initializable {
 	private ImageView imgBarcode = new ImageView();
 	private boolean isEdit = false;
 	private int idEdit;
-//	private String dumPathBackup = "C:\\Program Files\\PostgreSQL\\9.6\\bin\\pg_dump.exe";
-//	private String dumPathRestore = "C:\\Program Files\\PostgreSQL\\9.6\\bin\\pg_restore.exe";
-//	public static String dumPathDrop = "C:\\Program Files\\PostgreSQL\\9.6\\bin\\dropdb.exe";
-	public static String dumPathBackup = "/Library/PostgreSQL/9.6/bin/pg_dump";
-	public static String dumPathRestore = "/Library/PostgreSQL/9.6/bin/pg_restore";
-	public static String dumPathDrop = "/Library/PostgreSQL/9.6/bin/dropdb";
+	private static String dumPathBackup = "C:\\Program Files\\PostgreSQL\\9.6\\bin\\pg_dump.exe";
+	private static String dumPathRestore = "C:\\Program Files\\PostgreSQL\\9.6\\bin\\pg_restore.exe";
+	public static String dumPathDrop = "C:\\Program Files\\PostgreSQL\\9.6\\bin\\dropdb.exe";
+//	public static String dumPathBackup = "/Library/PostgreSQL/9.6/bin/pg_dump";
+//	public static String dumPathRestore = "/Library/PostgreSQL/9.6/bin/pg_restore";
+//	public static String dumPathDrop = "/Library/PostgreSQL/9.6/bin/dropdb";
 
 	public void initialize(URL url, ResourceBundle rb) {
 
@@ -445,7 +445,6 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void actionBackup() throws SQLException, IOException, InterruptedException {
 		if (!lblPath.getText().equals("Empty")) {
-
 			connection = dbHandler.getConnection();
 			stmt = connection.createStatement();
 			String sql = "insert into Settings (alias,values) values ('backups','" + lblPath.getText().trim()
@@ -455,11 +454,6 @@ public class SettingsController implements Initializable {
 			stmt.close();
 			connection.close();
 			if (sts == 1) {
-				Alert alert = new Alert(AlertType.WARNING);
-				alert.setTitle(Global.tsl_lblConfirmDialog);
-				alert.setHeaderText(null);
-				alert.setContentText("Da ");
-				alert.showAndWait();
 				exportDb2(lblPath.getText().trim());
 				BuildTableBackups();
 			}
