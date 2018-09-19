@@ -20,6 +20,9 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			Hid4 ss = new Hid4();
+			ss.PureThread();
+		
 			handler = new DbHandler();
 			connection = handler.getConnection();
 			stmt = connection.createStatement();

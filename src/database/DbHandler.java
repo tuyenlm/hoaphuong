@@ -10,7 +10,7 @@ public class DbHandler {
 	public static String host = "localhost";
 	public static String dbname = "hoaphuong";
 	public static String user = "postgres";
-	public static String password = "abc123";
+	public static String password = "postgres";
 
 	public Connection getConnection() {
 
